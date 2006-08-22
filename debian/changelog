@@ -1,0 +1,5 @@
+miredo (1.0.2-1) unstable; urgency=low
+
+  * Initial Debian package (closes: #338128).
+
+ -- Rémi Denis-Courmont <rdenis@simphalempin.com>  Tue, 22 Aug 2006 18:07:47 +0300
