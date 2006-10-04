@@ -8,7 +8,7 @@ Standards-Version: 3.7.2
 
 Package: miredo
 Architecture: any
-Pre-Depends: adduser
+Pre-Depends: adduser, makedev (>= 2.3.1-62)
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Teredo IPv6 tunneling through NATs
  The Teredo IPv6 tunneling protocol encapsulates IPv6 packets into UDP/IPv4

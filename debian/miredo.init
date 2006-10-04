@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Id: miredo.init 1754 2006-09-18 14:25:04Z remi $
+# $Id: miredo.init 1775 2006-10-05 15:04:18Z remi $
 #
 # miredo start/stop script for Debian GNU/Linux
 # Author: Rémi Denis-Courmont <rdenis (at) simphalempin (dot) com>
@@ -41,8 +41,13 @@ CHECKCONF="${DAEMON}-checkconf"
 
 check_start() {
 	if [ "x$START_MIREDO" != "xtrue" ]; then
-		echo "START_MIREDO is set to false in /etc/default/$NAME"
-		echo "$DAEMON not starting"
+		echo "START_MIREDO is set to false in /etc/default/$NAME."
+		echo "$DAEMON not starting."
+		exit 0
+	fi
+	if [ ! -e /dev/net/tun ]; then
+		echo "/dev/net/tun does not exist."
+		echo "$DAEMON cannot be started."
 		exit 0
 	fi
 }

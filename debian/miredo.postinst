@@ -7,6 +7,10 @@ case "$1" in
     if ! getent passwd miredo >/dev/null; then
       adduser --quiet --system --home /var/run/miredo --no-create-home miredo
     fi
+    if [ ! -e /dev/net/tun ]; then
+      echo "Creating required /dev/net/tun device file..."
+      (cd /dev; ./MAKEDEV tun) || true
+    fi
   ;;
 esac
 

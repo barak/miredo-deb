@@ -1,3 +1,12 @@
+miredo (1.0.3-1) unstable; urgency=low
+
+  * New upstream version (closes: #390846).
+  * Create /dev/net/tun (as per Debian Policy Manual §10.6).
+  * Make sure /dev/net/tun is present before starting miredo.
+  * Start miredo by default (closes: #309771).
+
+ -- Rémi Denis-Courmont <rdenis@simphalempin.com>  Wed,  4 Oct 2006 22:40:50 +0300
+
 miredo (1.0.2-1) unstable; urgency=low
 
   * Initial Debian package (closes: #338128).

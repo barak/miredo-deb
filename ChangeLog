@@ -1,9 +1,180 @@
 ------------------------------------------------------------------------
-r1761 | remi | 2006-09-18 18:39:35 +0300 (Mon, 18 Sep 2006) | 2 lines
+r1784 | remi | 2006-10-05 19:40:54 +0300 (Thu, 05 Oct 2006) | 2 lines
 Changed paths:
-   A /tags/1.0.2 (from /trunk:1760)
+   A /tags/1.0.3 (from /trunk:1783)
 
-Tag release 1.0.2
+Tag release 1.0.3
+
+------------------------------------------------------------------------
+r1783 | remi | 2006-10-05 19:40:27 +0300 (Thu, 05 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/packages/debian/changelog
+
+Another Debian bug closed
+
+------------------------------------------------------------------------
+r1782 | remi | 2006-10-05 19:36:36 +0300 (Thu, 05 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+News for release 1.0.3
+
+------------------------------------------------------------------------
+r1781 | remi | 2006-10-05 19:36:17 +0300 (Thu, 05 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/po/en.po
+   M /trunk/po/en_GB.po
+   M /trunk/po/fr.po
+   M /trunk/po/miredo.pot
+
+Sync PO files for release 1.0.3
+
+------------------------------------------------------------------------
+r1780 | remi | 2006-10-05 19:31:52 +0300 (Thu, 05 Oct 2006) | 3 lines
+Changed paths:
+   M /trunk/libtun6/test_diag.c
+
+Ignore failure to create a tunnel because of permission error
+in the test suite
+
+------------------------------------------------------------------------
+r1779 | remi | 2006-10-05 19:07:35 +0300 (Thu, 05 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Use an enumeration for to represent the qualfication state machine state
+
+------------------------------------------------------------------------
+r1778 | remi | 2006-10-05 19:06:07 +0300 (Thu, 05 Oct 2006) | 3 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Avoid spamming syslog with "normal" error states that are expected to
+last for some time
+
+------------------------------------------------------------------------
+r1777 | remi | 2006-10-05 18:50:51 +0300 (Thu, 05 Oct 2006) | 4 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+- Rerun the whole qualification procedure when the external mapping
+  changes since the NAT device/access network might have changed.
+- Some maintenance state machine code factorization.
+
+------------------------------------------------------------------------
+r1776 | remi | 2006-10-05 18:09:15 +0300 (Thu, 05 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/packages/debian/miredo.default
+
+Fix comment
+
+------------------------------------------------------------------------
+r1775 | remi | 2006-10-05 18:04:18 +0300 (Thu, 05 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/packages/debian/changelog
+   M /trunk/packages/debian/miredo.default
+   M /trunk/packages/debian/miredo.init
+
+Debian starts miredo by default again
+
+------------------------------------------------------------------------
+r1774 | remi | 2006-10-04 23:13:43 +0300 (Wed, 04 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/packages/debian/changelog
+   M /trunk/packages/debian/control
+   M /trunk/packages/debian/miredo.postinst
+
+Create /dev/net/tun
+
+------------------------------------------------------------------------
+r1773 | remi | 2006-10-04 22:15:48 +0300 (Wed, 04 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/packets.c
+
+Ignore bogus advertisement silently
+
+------------------------------------------------------------------------
+r1772 | remi | 2006-10-04 22:13:12 +0300 (Wed, 04 Oct 2006) | 3 lines
+Changed paths:
+   M /trunk/libteredo/packets.c
+
+Add work-around to use the standard prefix even though Microsoft Teredo
+advertise the old one.
+
+------------------------------------------------------------------------
+r1771 | remi | 2006-10-04 22:12:17 +0300 (Wed, 04 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/teredo.h
+
+Record the old prefix for reference
+
+------------------------------------------------------------------------
+r1770 | remi | 2006-10-04 22:01:54 +0300 (Wed, 04 Oct 2006) | 3 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Try to detect more symmetric NATs,
+following discussion with Nathan Lutchansky
+
+------------------------------------------------------------------------
+r1769 | remi | 2006-10-04 22:01:17 +0300 (Wed, 04 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/THANKS
+
+More compact THANKS, add some entries that I can think of
+
+------------------------------------------------------------------------
+r1768 | remi | 2006-10-04 21:02:46 +0300 (Wed, 04 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Cosmetic fix
+
+------------------------------------------------------------------------
+r1767 | remi | 2006-10-04 20:56:03 +0300 (Wed, 04 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Minor code factorization
+
+------------------------------------------------------------------------
+r1766 | remi | 2006-09-25 22:34:28 +0300 (Mon, 25 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/Makefile.am
+
+Bump libteredo revision number
+
+------------------------------------------------------------------------
+r1765 | remi | 2006-09-25 22:30:31 +0300 (Mon, 25 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+This is development branch toward 1.0.3
+
+------------------------------------------------------------------------
+r1764 | remi | 2006-09-25 22:24:41 +0300 (Mon, 25 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/compat/Makefile.am
+   D /trunk/compat/barrier.h
+   D /trunk/compat/pthread_barrier_wait.c
+   M /trunk/configure.ac
+
+Remove pthread_barrier_* replacement (no longer needed)
+
+------------------------------------------------------------------------
+r1763 | remi | 2006-09-25 22:21:23 +0300 (Mon, 25 Sep 2006) | 3 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+- Fix thread-safety for would-be multi-threaded maintenance usage
+- Replace overkill "packet processed" barrier with a condition
+
+------------------------------------------------------------------------
+r1762 | remi | 2006-09-18 18:49:16 +0300 (Mon, 18 Sep 2006) | 2 lines
+Changed paths:
+   M /trunk/packages/debian/copyright
+
+Wrap the copyright file properly
 
 ------------------------------------------------------------------------
 r1760 | remi | 2006-09-18 18:38:12 +0300 (Mon, 18 Sep 2006) | 2 lines

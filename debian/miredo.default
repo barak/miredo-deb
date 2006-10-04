@@ -6,8 +6,8 @@
 # This is a POSIX shell fragment
 #
 
-# Set to true to start miredo on system startup
-START_MIREDO=false
+# Comment out not to start miredo on system startup
+START_MIREDO=true
 
 # Additional options that are passed to the Daemon.
 DAEMON_ARGS=""

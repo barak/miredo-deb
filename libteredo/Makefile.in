@@ -278,7 +278,7 @@ libteredo_la_SOURCES = init.c relay.c security.c security.h md5.c \
 libteredo_la_DEPENDENCIES = libteredo.sym $(LIBADD)
 libteredo_la_LIBADD = @LIBJUDY@ @LIBRT@ $(LTLIBINTL) $(LIBADD)
 libteredo_la_LDFLAGS = -no-undefined -export-symbols $(srcdir)/libteredo.sym \
-	-version-info 3:1:0
+	-version-info 3:2:0
 
 
 # libteredo versions:
