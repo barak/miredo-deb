@@ -1,9 +1,63 @@
 ------------------------------------------------------------------------
-r1784 | remi | 2006-10-05 19:40:54 +0300 (Thu, 05 Oct 2006) | 2 lines
+r1792 | remi | 2006-10-08 13:08:12 +0300 (Sun, 08 Oct 2006) | 2 lines
 Changed paths:
-   A /tags/1.0.3 (from /trunk:1783)
+   A /tags/1.0.4 (from /trunk:1791)
 
-Tag release 1.0.3
+Tag release 1.0.4
+
+------------------------------------------------------------------------
+r1791 | remi | 2006-10-08 13:07:42 +0300 (Sun, 08 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/packages/debian/changelog
+
+Fix Debian bug
+
+------------------------------------------------------------------------
+r1790 | remi | 2006-10-08 13:02:50 +0300 (Sun, 08 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/po/en.po
+   M /trunk/po/en_GB.po
+   M /trunk/po/fr.po
+   M /trunk/po/miredo.pot
+
+PO files for release 1.0.4
+
+------------------------------------------------------------------------
+r1789 | remi | 2006-10-08 13:00:24 +0300 (Sun, 08 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/configure.ac
+
+News for release 1.0.4
+
+------------------------------------------------------------------------
+r1788 | remi | 2006-10-08 12:44:02 +0300 (Sun, 08 Oct 2006) | 3 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Fix probe packets storm behind symmetric NATs
+(this should be Debian #391611)
+
+------------------------------------------------------------------------
+r1787 | remi | 2006-10-06 18:03:08 +0300 (Fri, 06 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/packages/debian/changelog
+
+Fix bug number
+
+------------------------------------------------------------------------
+r1786 | remi | 2006-10-06 17:52:21 +0300 (Fri, 06 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/packages/debian/changelog
+
+Document last commit
+
+------------------------------------------------------------------------
+r1785 | remi | 2006-10-06 17:47:41 +0300 (Fri, 06 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/packages/debian/control
+
+Oups, s/freebsd/kfreebsd
 
 ------------------------------------------------------------------------
 r1783 | remi | 2006-10-05 19:40:27 +0300 (Thu, 05 Oct 2006) | 2 lines

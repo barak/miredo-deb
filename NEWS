@@ -1,7 +1,7 @@
 RELEASE NOTES for Miredo
-stable release version 1.0.3
+stable release version 1.0.4
 =============================
-$Id: NEWS 1782 2006-10-05 16:36:36Z remi $
+$Id: NEWS 1789 2006-10-08 10:00:24Z remi $
 
   This is a stable release. There are no known outstanding issues. We
 strongly encourage users from previous releases to upgrade. There are a
@@ -14,9 +14,14 @@ changes, run “miredo -h” to get help. For detailled internal changes, see
 ChangeLog.
 
 ============================================================================
+STABLE RELEASE 1.0.4 : Major bug fix
+
+# Fix packet storm with Teredo client behind symmetric NATs.
+
+============================================================================
 STABLE RELEASE 1.0.3 : Minor feature enhancement
 
-# Work-around for compatibility Microsoft Teredo servers.
+# Work-around for compatibility with Microsoft Teredo servers.
 # Better detection of symmetric NATs and access network changes.
 # Limit spamming of syslog.
 

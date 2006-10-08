@@ -2,8 +2,8 @@ Source: miredo
 Section: net
 Priority: optional
 Maintainer: Rémi Denis-Courmont <rdenis@simphalempin.com>
-Build-Depends: debhelper (>= 4.1.0), cdbs, autotools-dev, gettext,
-               libjudy-dev, libcap-dev [!hurd-i386 !freebsd-i386 !freebsd-amd64]
+Build-Depends: dpkg-dev (>= 1.13.2), debhelper (>= 4.1.0), cdbs, autotools-dev,
+               gettext, libjudy-dev, libcap-dev [!hurd-i386 !kfreebsd-i386 !kfreebsd-amd64]
 Standards-Version: 3.7.2
 
 Package: miredo
