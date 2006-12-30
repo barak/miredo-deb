@@ -1,3 +1,21 @@
+miredo (1.0.4-2) unstable; urgency=medium
+
+  * Disable testsuite everywhere because it includes load-sensitive tests.
+  * Merge various fixes from upstream Subversion:
+    - typo in miredo.conf.5 (r1805)
+    - note about dangerous settings in miredo-server.conf.5 (r1815)
+    - fix for insufficient hop limit in Teredo bubbles (r1822)
+    - fix symmetric NAT detection (r1868)
+    - s/#warn/#warning (r1882) showing up on Hurd
+    - fix possible Teredo client spoofing vulnerability (r1884)
+      Closes: #405111, Closes: #405412
+  * Use time() whenever needed instead of unsafe/badly broken 1Hz clock,
+    though this degrades performance slightly.
+  * Do not send "direct" Teredo bubble when run as a Teredo relay to improve
+    compatibility with Linux/NetFilter (incl. Debian-based NATs); see #404365.
+
+ -- Rémi Denis-Courmont <rdenis@simphalempin.com>  Sat, 30 Dec 2006 22:47:29 +0100
+
 miredo (1.0.4-1) unstable; urgency=medium
 
   * New upstream release fixes packet storm (closes: #391611).

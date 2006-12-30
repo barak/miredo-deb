@@ -87,8 +87,7 @@ struct teredo_tunnel
 	} recv;
 
 	int fd;
-	volatile time_t now;
-	pthread_t clock;
+	time_t now;
 };
 
 #ifdef HAVE_LIBJUDY
@@ -344,6 +343,7 @@ int teredo_transmit (teredo_tunnel *restrict tunnel,
                      const struct ip6_hdr *restrict packet, size_t length)
 {
 	assert (tunnel != NULL);
+	time (&tunnel->now);
 
 	const union teredo_addr *dst = (union teredo_addr *)&packet->ip6_dst;
 
@@ -511,7 +511,7 @@ int teredo_transmit (teredo_tunnel *restrict tunnel,
 			 * Open the return path if we are behind a
 			 * restricted NAT.
 			 */
-			if (/* (!s.cone) && */
+			if (IsClient (tunnel) &&
 			    SendBubbleFromDst (tunnel->fd, &dst->ip6, false))
 				return -1;
 
@@ -559,6 +559,7 @@ teredo_run_inner (teredo_tunnel *restrict tunnel,
 {
 	assert (tunnel != NULL);
 	assert (packet != NULL);
+	time (&tunnel->now);
 
 	const uint8_t *buf = packet->ip6;
 	size_t length = packet->ip6_len;
@@ -732,7 +733,7 @@ teredo_run_inner (teredo_tunnel *restrict tunnel,
 		if (IN6_MATCHES_TEREDO_CLIENT (&ip6.ip6_src, packet->source_ipv4,
 		                               packet->source_port)
 		// Extension: allow mismatch (i.e. clients behind symmetric NATs)
-		 || (IsBubble (&ip6) && CheckBubble (packet)))
+		 || (IsBubble (&ip6) && (CheckBubble (packet) == 0)))
 		{
 #ifdef MIREDO_TEREDO_CLIENT
 			if (IsClient (tunnel) && (p == NULL))
@@ -858,6 +859,7 @@ static void teredo_dummy_state_down_cb (void *o)
 #endif
 
 
+#if 0
 /**
  * Userland low-precision (1 Hz) clock
  *
@@ -888,6 +890,7 @@ static void *teredo_clock (void *val)
 		clock_nanosleep (CLOCK_REALTIME, TIMER_ABSTIME, &now, NULL);
 	}
 }
+#endif
 
 
 /**
@@ -937,8 +940,6 @@ teredo_tunnel *teredo_create (uint32_t ipv4, uint16_t port)
 
 	tunnel->now = time (NULL);
 
-	if (pthread_create (&tunnel->clock, NULL, teredo_clock,
-	                    (void *)&tunnel->now) == 0)
 	{
 		if ((tunnel->fd = teredo_socket (ipv4, port)) != -1)
 		{
@@ -950,8 +951,6 @@ teredo_tunnel *teredo_create (uint32_t ipv4, uint16_t port)
 			}
 			teredo_close (tunnel->fd);
 		}
-		pthread_cancel (tunnel->clock);
-		pthread_join (tunnel->clock, NULL);
 	}
 
 	free (tunnel);
@@ -996,8 +995,6 @@ void teredo_destroy (teredo_tunnel *t)
 	pthread_rwlock_destroy (&t->state_lock);
 	pthread_mutex_destroy (&t->ratelimit.lock);
 	teredo_close (t->fd);
-	pthread_cancel (t->clock);
-	pthread_join (t->clock, NULL);
 	free (t);
 }
 
