@@ -1,10 +1,10 @@
 /*
  * tun6.c - IPv6 tunnel interface definition
- * $Id: tun6.c 1726 2006-08-27 08:13:18Z remi $
+ * $Id: tun6.c 1998 2007-08-13 17:28:44Z remi $
  */
 
 /***********************************************************************
- *  Copyright © 2004-2006 Rémi Denis-Courmont.                         *
+ *  Copyright © 2004-2007 Rémi Denis-Courmont.                         *
  *  This program is free software; you can redistribute and/or modify  *
  *  it under the terms of the GNU General Public License as published  *
  *  by the Free Software Foundation; version 2 of the license.         *
@@ -38,7 +38,6 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <sys/uio.h> // readv() & writev()
-#include <poll.h>
 #include <syslog.h>
 #include <errno.h>
 #include <netinet/in.h> // htons(), struct in6_addr
@@ -108,6 +107,11 @@ const char os_driver[] = "BSD";
 # include <netinet6/nd6.h> // ND6_INFINITE_LIFETIME
 
 # include <pthread.h>
+# ifdef __GLIBC__
+#  ifdef __FreeBSD_kernel__
+#   include <freebsd/stdlib.h> // devname_r()
+#  endif
+# endif
 
 typedef uint32_t tun_head_t;
 
@@ -190,6 +194,10 @@ tun6 *tun6_create (const char *req_name)
 	{
 		syslog (LOG_ERR, _("Tunneling driver error (%s): %s"), "TUNSETIFF",
 		        strerror (errno));
+		if (errno == EBUSY)
+			syslog (LOG_INFO,
+			        _("Please make sure another instance of the program is "
+	        	          "not already running."));
 		goto error;
 	}
 
@@ -266,7 +274,7 @@ tun6 *tun6_create (const char *req_name)
 #  if defined (__APPLE__)
 		if (errno == EINVAL)
 			syslog (LOG_NOTICE,
-			        "*** Ignoring tun-tap-osx spurious error ***\n");
+			        "*** Ignoring tun-tap-osx spurious error ***");
 		else
 #  endif
 		goto error;
@@ -403,17 +411,21 @@ int tun6_getId (const tun6 *t)
 
 
 #if defined (USE_LINUX)
-static void
+static int
 proc_write_zero (const char *path)
 {
-	int fd;
+	int fd = open (path, O_WRONLY);
+	if (fd == -1)
+		return -1;
 
-	fd = open (path, O_WRONLY);
-	if (fd != -1)
-	{
-		write (fd, "0", 1);
-		(void)close (fd);
-	}
+	int retval = 0;
+
+	if (write (fd, "0", 1) != 1)
+		retval = -1;
+	if (close (fd))
+		retval = -1;
+
+	return retval;
 }
 #endif
 
@@ -663,12 +675,9 @@ _iface_route (int reqfd, int id, bool add, const struct in6_addr *addr,
     	else if (errno == EEXIST)
 		syslog (LOG_NOTICE,
 "Miredo could not configure its network tunnel device properly.\n"
-"There is probably another tunnel with a conflicting route present,\n"
-"most likely left from a previous instance of Miredo (see also FreeBSD\n"
-"Problem Report kern/100080); that is a common bug on BSD kernels.\n"
-"Please cleanup your closed tunnel devices manually or reboot to fix\n"
-"this issue. You might also want to check if this issue has been dealt\n"
-"with in newer version of your BSD of choice.\n");
+"There is probably another tunnel with a conflicting route present\n"
+"(see also FreeBSD PR kern/100080).\n"
+"Please upgrade to FreeBSD 6.3 or more recent to fix this.\n");
 
 	(void)close (s);
 #else

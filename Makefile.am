@@ -17,34 +17,45 @@
 # ***********************************************************************
 
 ACLOCAL_AMFLAGS = -I m4
+AUTOMAKE_OPTIONS = \
+	-Wall \
+	check-news \
+	std-options \
+	dist-bzip2 \
+	no-dist-gzip \
+	no-exeext
 
 SUBDIRS = po doc misc compat libteredo libtun6 src
 DIST_SUBDIRS = m4 $(SUBDIRS)
 noinst_HEADERS = include/gettext.h
-EXTRA_DIST = autogen.sh autopackage/default.apspec.in
+EXTRA_DIST = autogen.sh autopackage/default.apspec.in Doxyfile.in
+
+doc: Doxyfile
+	doxygen $<
 
 if CONF_SAMPLE
 # For user's convenience, we install miredo.conf
 # iif it does not already exist.
-# Packagers might consider using --enable-erase-conf instead
-# or do everything by hand with --disable-sample-conf.
+# Packagers will probably use --disable-sample-conf
+# and copy their own default (or those in misc/) to @sysconfdir@/miredo/
 
 example = $(examplesdir)/miredo.conf
-conf = $(sysconfdir)/miredo.conf
+confdir = $(sysconfdir)/miredo
+conf = $(confdir)/miredo.conf
 
 install-data-hook:
 	@echo "************************"
 	@echo "* Miredo configuration *"
 	@echo "************************"
 	@echo " "
-	@echo "A sample configuration file has been installed at:"
+	@echo "An example configuration file has been installed at:"
 	@echo "  $(examplesdir)/miredo.conf"
 	@echo " "
 	@if test ! -e "$(DESTDIR)$(conf)"; then \
-		mkdir -p -- "$(DESTDIR)$(sysconfdir)" || exit $$? ; \
+		mkdir -p -- "$(DESTDIR)$(confdir)" || exit $$? ; \
 		cp -- "$(DESTDIR)$(example)" "$(DESTDIR)$(conf)" || exit $$?; \
 		echo "No pre-existing configuration file for Miredo" ; \
-		echo "could be found, so the sample as been copied as" ; \
+		echo "could be found, so the example as been copied as" ; \
 		echo "  $(conf) too." ; \
 	else \
 		echo "There was already a configuration file at:" ; \
@@ -64,6 +75,10 @@ distclean-local:
 
 dist-hook: stamp-svn
 
+distcheck-hook:
+	cd doc && $(MAKE) $(AM_MAKEFLAGS) distcheck-hook
+
+# ChangeLog
 stamp-svn:
 	@rev=$$(LANG=C svnversion "$(srcdir)" 2>/dev/null || echo exported) ; \
 	oldrev=$$(cat stamp-svn 2>/dev/null || true) ; \
@@ -83,4 +98,22 @@ ChangeLog:
 	$(MAKE) $(AM_MAKEFLAGS) stamp-svn
 	touch $@
 
-.PHONY: stamp-svn
+# Test coverage
+lcov.info:
+	find -name '*.gcda' -delete
+	$(MAKE) $(AM_MAKEFLAGS) check
+	lcov --directory . --capture --output $@.tmp
+	lcov --remove $@.tmp '*test*' '*include*' --output $@
+	rm -f $@.tmp
+
+lcov-report: lcov.info
+	rm -Rf lcov
+	mkdir -p lcov
+	genhtml $< -o lcov
+
+lcov:
+	rm -f lcov.info
+	$(MAKE) $(AM_MAKEFLAGS) lcov-report
+
+.PHONY: distcheck-hook stamp-svn lcov doc
+

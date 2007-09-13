@@ -1,8 +1,8 @@
 # default.apspsec.in - autopackage spec file for miredo
-# $Id: default.apspec.in 1094 2006-04-01 13:29:41Z remi $
+# $Id: default.apspec.in 1938 2007-02-22 20:55:28Z remi $
 
 # ***********************************************************************
-# *  Copyright © 2005-2006 Rémi Denis-Courmont.                         *
+# *  Copyright © 2005-2007 Rémi Denis-Courmont.                         *
 # *  This program is free software; you can redistribute and/or modify  *
 # *  it under the terms of the GNU General Public License as published  *
 # *  by the Free Software Foundation; version 2 of the license.         *
@@ -24,7 +24,7 @@ ShortName: miredo
 Maintainer: Rémi Denis-Courmont <rdenis@simphalempin.com>
 Packager: Rémi Denis-Courmont <rdenis@simphalempin.com>
 Summary: Teredo IPv6 tunneling daemon.
-URL: http://www.simphalempin.com/dev/miredo/
+URL: http://www.remlab.net/miredo/
 License: GNU General Public License, Version 2
 SoftwareVersion: @VERSION@
 AutopackageTarget: 1.0

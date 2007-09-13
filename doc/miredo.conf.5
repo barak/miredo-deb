@@ -13,7 +13,7 @@
 .\" *  along with this program; if not, you can get it from:              *
 .\" *  http://www.gnu.org/copyleft/gpl.html                               *
 .\" ***********************************************************************
-.TH "MIREDO.CONF" "5" "$Date: 2006-06-28 18:21:37 +0300 (mer, 28 jun 2006) $" "miredo" "System Manager's Manual"
+.TH "MIREDO.CONF" "5" "$Date: 2007-08-14 20:06:21 +0300 (Tue, 14 Aug 2007) $" "miredo" "System Manager's Manual"
 .SH NAME
 miredo.conf \- configuration for Miredo
 .SH SYNOPSIS
@@ -32,7 +32,7 @@ directives follows:
 .SH MODES
 
 .TP
-.BR "RelayType" " (" "client" "|" "relay" "|" "autoclient" ")"
+.BR "RelayType" " (" "client" "|" "autoclient" "|" "relay" "|" "cone" "|" "restricted" ")"
 Specifies what type of Teredo relay/client Miredo will serve as.
 There are three possible choices:
 
@@ -60,17 +60,15 @@ tunneling interface has a default route with a higher metric (which is
 to say a lower priority) than the other network interfaces.
 
 .TP
-.BR "autoclient" " mode"
-.RB "In " "autoclient" " mode, " "Miredo" " acts as a "
-.IR "Teredo client" " provided there is no other IPv6-enabled network"
-interfaces. Whenever it detects the availability of global IPv6
-connectivity through another interface, it stops its Teredo tunnel.
+.BR "autoclient" " is currently an alias for " "client" " mode."
 
 .TP
-.BR "relay" " mode"
-.RB "In " "relay" " mode, " "Miredo" " acts as a "
+.BR "cone" " mode (" "relay" " also works)"
+.RB "In " "cone" " mode, " "Miredo" " acts as a "
 .IR "Teredo relay" ". It will assume that it has public global " "IPv4"
-.RI "connectivity or is located behind a " "cone" " NAT device. "
+connectivity with no firewall.
+In other words, the UDP port used by Miredo must receive unsoliticited
+.RB "traffic from the IPv4 Internet (see also " "BindPort" ")."
 Miredo will create a virtual networking interface with a route toward
 Teredo clients.
 
@@ -79,12 +77,22 @@ Teredo clients.
 have a working IPv6 connectivity through a way distinct from Teredo
 tunneling (native, 6to4, ISATAP, etc).
 
-Warning: This mode should only be used if the node has a public IPv4
-address or if it is behind a full cone NAT-router, otherwise the
-tunnel will not work properly.
+.B Warning:
+This mode should only be used if the node has a public IPv4 address, or
+if it is behind a full cone NAT-router with proper port forwarding
+rules.
+.RB "Otherwise the tunnel will " "NOT WORK PROPERLY" "."
+Note that many NAT port forwarding implementations are broken.
 
-.RI "Miredo also accepts " "restricted" " and " "cone" " as aliases"
-for the relay mode, for backward compatibility with older versions.
+.TP
+.BR "restricted" " mode"
+This mode is identical to the cone mode documented above,
+.RI "with the exception that " "direct Teredo bubbles" " will be sent."
+Theoretically (see RFC4380) this permits operation of a Teredo relay
+from behind a restricted-port NAT.
+In practice, this makes NAT traversal extremely unreliable.
+This setting is present for backward syntax compatibility of
+the miredo.conf file. PLEASE DO NOT USE THIS MODE.
 
 .SH CLIENT OPTIONS
 .RI "The following directives are only available in " "(auto)client"
@@ -167,7 +175,7 @@ miredo(8)
 .SH AUTHOR
 R\[char233]mi Denis-Courmont <rdenis at simphalempin.com>
 
-$Id: miredo.conf.5 1540 2006-06-28 15:21:37Z remi $
+$Id: miredo.conf.5 2001 2007-08-14 17:06:21Z remi $
 
-http://www.simphalempin.com/dev/miredo/
+http://www.remlab.net/miredo/
 

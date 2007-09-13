@@ -20,7 +20,8 @@ AM_CPPFLAGS = -I@top_srcdir@ -I@top_srcdir@/libteredo -D_REENTRANT
 AM_LDFLAGS = -static
 LDADD = ../libteredo.la
 
-check_PROGRAMS = libteredo-list libteredo-stresslist md5test
+check_PROGRAMS = libteredo-list libteredo-stresslist libteredo-test \
+		libteredo-clock libteredo-v4global md5test
 TESTS = $(check_PROGRAMS)
 
 if TEREDO_CLIENT
@@ -35,6 +36,15 @@ libteredo_stresslist_SOURCES = stresslist.c
 
 # libteredo-hmac
 libteredo_hmac_SOURCES = hmac.c
+
+# libteredo-test
+libteredo_test_SOURCES = teredo.c
+
+# libteredo-clock
+libteredo_clock_SOURCES = clock.c
+
+# libteredo-v4global
+libteredo_v4global_SOURCES = v4global.c
 
 # md5main
 md5test_SOURCES = md5test.c

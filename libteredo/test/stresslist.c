@@ -1,6 +1,6 @@
 /*
  * stresslist.c - Libteredo peer list stress tests
- * $Id: stresslist.c 1726 2006-08-27 08:13:18Z remi $
+ * $Id: stresslist.c 1847 2006-12-14 18:41:41Z remi $
  */
 
 /***********************************************************************
@@ -36,6 +36,7 @@
 #include <unistd.h>
 
 #include "teredo.h"
+#include "clock.h"
 #include "peerlist.h"
 
 static void make_address (struct in6_addr *addr)
@@ -54,7 +55,8 @@ static void alarm_handler (int sig)
 	count++;
 	signal (sig, alarm_handler);
 	alarm (1);
-	write (2, ".", 1);
+	if (write (2, ".", 1) == 1)
+		fsync (2);
 }
 
 #define STRESS_DELAY 10
@@ -85,7 +87,7 @@ int main (void)
 		bool create;
 
 		make_address (&addr);
-		p = teredo_list_lookup (l, seed, &addr, &create);
+		p = teredo_list_lookup (l, &addr, &create);
 		if ((!create) || (p == NULL))
 			return -1;
 		teredo_list_release (l);
@@ -104,7 +106,7 @@ int main (void)
 		teredo_peer *p;
 
 		make_address (&addr);
-		p = teredo_list_lookup (l, seed, &addr, NULL);
+		p = teredo_list_lookup (l, &addr, NULL);
 		if (p == NULL)
 			return -1;
 		teredo_list_release (l);

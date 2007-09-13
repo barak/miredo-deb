@@ -1,10 +1,10 @@
 /*
- * isatap.c - basic ISATAP implementation
- * $Id: isatap.c 1726 2006-08-27 08:13:18Z remi $
+ * isatapd.c - basic ISATAP daemon implementation
+ * $Id: isatapd.c 1984 2007-08-13 15:14:23Z remi $
  */
 
 /***********************************************************************
- *  Copyright © 2004-2006 Rémi Denis-Courmont.                         *
+ *  Copyright © 2004-2007 Rémi Denis-Courmont.                         *
  *  This program is free software; you can redistribute and/or modify  *
  *  it under the terms of the GNU General Public License as published  *
  *  by the Free Software Foundation; version 2 of the license.         *
@@ -36,10 +36,9 @@
 #include <unistd.h> // close()
 #include <fcntl.h>
 #include <sys/wait.h> // wait()
-#include <sys/select.h> // pselect()
 #include <signal.h> // sigemptyset()
-#include <compat/pselect.h>
 #include <syslog.h>
+#include <pthread.h>
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -70,7 +69,9 @@ isatap_diagnose (void)
 	int fd = socket (AF_INET, SOCK_RAW, IPPROTO_IPV6);
 	if (fd == -1)
 	{
-		perror (_("Raw IPv6 socket not working: %s"));
+		fprintf (stderr, _("Raw IPv6 socket not working: %s"),
+		         strerror (errno));
+		fputc ('\n', stderr);
 		return -1;
 	}
 	close (fd);
@@ -170,9 +171,8 @@ static int get_bind_ipv4 (uint32_t conn_ipv4, uint32_t *bind_ipv4)
 	*bind_ipv4 = addr.sin_addr.s_addr;
 	return bind_ipv4 ? 0 : -1;
 }
-#else /* MIREDO_TEREDO_CLIENT */
-# define run_tunnel( a, b, c ) run_tunnel_ROUTERonly (a, b)
-#endif
+#endif /* MIREDO_TEREDO_CLIENT */
+
 
 
 static tun6 *
@@ -201,30 +201,17 @@ create_static_tunnel (const char *ifname, uint32_t ipv4)
 }
 
 
-
-/**
- * Miredo main daemon function, with UDP datagrams and IPv6 packets
- * receive loop.
- */
-static int
-run_tunnel (int ipv6fd, tun6 *tunnel, uint32_t router_ipv4)
+typedef struct
 {
-	fd_set refset;
+	tun6 *tunnel;
+	int fd;
+	uint32_t router_ipv4;
+} isatapd_t;
 
-	FD_ZERO (&refset);
-	int maxfd = tun6_registerReadSet (tunnel, &refset);
 
-	if ((maxfd == -1) || (ipv6fd >= (int)FD_SETSIZE))
-		return -1;
-
-	FD_SET (ipv6fd, &refset);
-	if (ipv6fd > maxfd)
-		maxfd = ipv6fd;
-
-	maxfd++;
-	sigset_t set;
-	sigemptyset (&set);
-
+static LIBTEREDO_NORETURN void *encap_thread (void *data)
+{
+	isatapd_t conf = *((isatapd_t *)data);
 	struct sockaddr_in dst =
 	{
 		.sin_family = AF_INET,
@@ -233,110 +220,138 @@ run_tunnel (int ipv6fd, tun6 *tunnel, uint32_t router_ipv4)
 #endif
 	};
 
-	/* Main loop */
 	for (;;)
 	{
-		fd_set readset;
-		memcpy (&readset, &refset, sizeof (readset));
-
-		/* Wait until one of them is ready for read */
-		int val = pselect (maxfd, &readset, NULL, NULL, NULL, &set);
-		if (val < 0)
-			return 0;
-		if (val == 0)
-			continue;
-
-		/* Handle incoming data */
-		union
+		struct
 		{
 			struct ip6_hdr ip6;
+			/* well, we do not support Jumbo frames yet */
+			uint8_t fill[65535];
+		} buf;
+
+		ssize_t val = tun6_wait_recv (conf.tunnel, &buf.ip6, sizeof (buf));
+		if (val < (ssize_t)sizeof (buf.ip6))
+			continue;
+
+		dst.sin_addr.s_addr = conf.router_ipv4;
+
+		/*
+		 * FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME
+		 *
+		 * This is not just an ugly piece of code, this is also severely
+		 * _broken_. It will (sometime) send packet to the ISATAP router
+		 * instead of an other on-link node. This typically happends when an
+		 * application binds manually to an address, instead of letting the
+		 * IPv6 stack use the longest-prefix match rule.
+		 *
+		 * A more proper solution would consists of reading the local
+		 * addresses assigned to the tunnel interface, though this is a
+		 * little “racy”. Ultimately, the correct solutions are:
+		 *  - a next-hop hint from the tunnel driver
+		 *    (not supported on Linux, might be IPv4-only on BSD),
+		 *  - better yet, use a fully in-kernel ISATAP client tunnel.
+		 */
+		if (!memcmp (buf.ip6.ip6_src.s6_addr, buf.ip6.ip6_dst.s6_addr, 8)
+		 || (conf.router_ipv4 == INADDR_ANY))
+		{
+			uint32_t v;
+			memcpy (&v, buf.ip6.ip6_dst.s6_addr + 8, sizeof (v));
+
+			if ((ntohl (v) & 0xfcffffff) == 0x00005efe)
+				memcpy (&dst.sin_addr, buf.ip6.ip6_dst.s6_addr + 12, 4);
+			/*else
+			 * If we knew that the destination was actually on-link, we ought
+			 * to send an ICMPv6 unreachable error back here.
+			 */
+		}
+
+		// Make sure the IPv4 destination is valid
+		if ((dst.sin_addr.s_addr == INADDR_ANY)
+		 || IN_MULTICAST (ntohl (dst.sin_addr.s_addr)))
+			continue; // drop packet
+
+		sendto (conf.fd, &buf, val, 0,
+		        (struct sockaddr *)&dst, sizeof (dst));
+	}
+}
+
+
+static LIBTEREDO_NORETURN void *decap_thread (void *data)
+{
+	isatapd_t conf = *((isatapd_t *)data);
+
+	for (;;)
+	{
+		union
+		{
 			struct ip ip4;
 			uint8_t fill[65535];
 		} buf;
 
-		val = tun6_recv (tunnel, &readset, &buf.ip6, sizeof (buf));
-		do
-		{
-			if (val < 40)
-				break;
+		ssize_t val = recv (conf.fd, &buf, sizeof (buf), 0);
 
-#ifdef MIREDO_TEREDO_CLIENT
-			/*
-			 * FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME FIXME
-			 *
-			 * This is not just an ugly piece of code, this is also severely
-			 * _broken_. It will (sometime) fail miserably if any upper layer
-			 * application binds manually to an address that does not obey the
-			 * “logical” longest-prefix match rule.
-			 *
-			 * A more proper solution would consists of reading the local
-			 * addresses assigned to the tunnel interface, though this is a
-			 * little “racy”. Ultimately, the correct solutions are:
-			 *  - handle Router Solicitation in userland (still sucks),
-			 *  - a next-hop hint from the tunnel driver
-			 *    (not supported on Linux, might be IPv4-only on BSD),
-			 *  - better yet, use a fully in-kernel ISATAP client tunnel.
-			 */
-			if ((router_ipv4 != INADDR_ANY)
-			 && memcmp (buf.ip6.ip6_src.s6_addr, buf.ip6.ip6_dst.s6_addr, 8))
-				dst.sin_addr.s_addr = router_ipv4;
-			else
-#endif
-			{
-				uint32_t v;
-				memcpy (&v, buf.ip6.ip6_dst.s6_addr + 8, sizeof (v));
-				if ((ntohl (v) & 0xfcffffff) != 0x00005efe)
-					break; // TODO: send ICMPv6 unreachable?
-	
-				memcpy (&v, buf.ip6.ip6_dst.s6_addr + 12, sizeof (v));
-				// Make sure the destination is not multicast
-				if (IN_MULTICAST (ntohl (v)))
-					break;
-	
-				dst.sin_addr.s_addr = v;
-			}
+		if ((val < (ssize_t)sizeof (struct ip))
+		 || (ntohs (buf.ip4.ip_len) != val))
+			continue;
 
-			sendto (ipv6fd, &buf, val, 0,
-			        (struct sockaddr *)&dst, sizeof (dst));
-		}
-		while (0);
+		val -= buf.ip4.ip_hl << 2;
+		if (val < (ssize_t)sizeof (struct ip6_hdr))
+			continue; // no room for IPv6 header
 
-		do
-		{
-			if (!FD_ISSET (ipv6fd, &readset))
-				break;
+		const struct ip6_hdr *ip6 =
+			(const struct ip6_hdr *)(buf.fill + (buf.ip4.ip_hl << 2));
 
-			val = recv (ipv6fd, &buf, sizeof (buf), 0);
-
-			if ((val < (int)sizeof (struct ip))
-			 || (ntohs (buf.ip4.ip_len) != val))
-				break;
-
-			val -= buf.ip4.ip_hl << 2;
-			if (val < (int)sizeof (struct ip6_hdr))
-				break; // no room for IPv6 header
-
-			const struct ip6_hdr *ip6 =
-				(const struct ip6_hdr *)(buf.fill + (buf.ip4.ip_hl << 2));
-
-			if (((ip6->ip6_vfc >> 4) != 6)
-			 || (ntohs (ip6->ip6_plen) != val))
-				break; // invalid IPv6 header
+		if (((ip6->ip6_vfc >> 4) != 6)
+		 || (ntohs (ip6->ip6_plen) != (val - sizeof (*ip6))))
+			continue; // invalid IPv6 header
 
 #if 0
-			uint32_t v;
-			memcpy (&v, ip6->ip6_src.s6_addr + 8, sizeof (v));
-			if ((ntohl (v) & 0xfcffffff) != 0x00005efe)
-				break; // TODO: check if it comes from the router
+		uint32_t v;
+		memcpy (&v, ip6->ip6_src.s6_addr + 8, sizeof (v));
+		if ((ntohl (v) & 0xfcffffff) != 0x00005efe)
+			break; // TODO: check if it comes from the router
 
-			if (memcmp (ip6->ip6_src.s6_addr + 12, &buf.ip4.ip_src, 4))
-				break;
+		if (memcmp (ip6->ip6_src.s6_addr + 12, &buf.ip4.ip_src, 4))
+			break;
 #endif
 
-			tun6_send (tunnel, ip6, val);
-		}
-		while (0);
+		tun6_send (conf.tunnel, ip6, val);
 	}
+}
+
+
+static int
+run_tunnel (int ipv6fd, tun6 *tunnel, uint32_t router_ipv4)
+{
+	isatapd_t t = { tunnel, ipv6fd, router_ipv4 };
+	pthread_t deth, enth;
+
+	int retval = -1;
+
+	if (pthread_create (&deth, NULL, decap_thread, &t) == 0)
+	{
+		if (pthread_create (&enth, NULL, encap_thread, &t) == 0)
+		{
+			sigset_t dummyset, set;
+
+			/* changes nothing, only gets the current mask */
+			sigemptyset (&dummyset);
+			pthread_sigmask (SIG_BLOCK, &dummyset, &set);
+
+			/* wait for fatal signal */
+			while (sigwait (&set, &(int) { 0 }) != 0);
+
+			retval = 0;
+
+			pthread_cancel (enth);
+			pthread_join (enth, NULL);
+		}
+
+		pthread_cancel (deth);
+		pthread_join (deth, NULL);
+	}
+
+	return retval;
 }
 
 
@@ -346,9 +361,9 @@ isatap_run (miredo_conf *conf, const char *server_name)
 	/*
 	 * CONFIGURATION
 	 */
-#ifdef MIREDO_TEREDO_CLIENT
-	uint32_t router_ip;
+	uint32_t router_ip = INADDR_ANY, bind_ip = INADDR_ANY;
 
+#ifdef MIREDO_TEREDO_CLIENT
 	if ((server_name == NULL)
 		? !miredo_conf_parse_IPv4 (conf, "ServerAddress", &router_ip)
 		: GetIPv4ByName (server_name, &router_ip))
@@ -359,8 +374,6 @@ isatap_run (miredo_conf *conf, const char *server_name)
 #else
 	(void)server_name;
 #endif
-
-	uint32_t bind_ip = INADDR_ANY;
 
 	if (!miredo_conf_parse_IPv4 (conf, "BindAddress", &bind_ip))
 	{
@@ -373,8 +386,8 @@ isatap_run (miredo_conf *conf, const char *server_name)
 #ifdef MIREDO_TEREDO_CLIENT
 		if (router_ip != INADDR_ANY)
 		{
-			if (get_bind_ipv4 (router_ip, &bind_ip)
-			 || IN_MULTICAST (ntohl (router_ip)))
+			if (IN_MULTICAST (ntohl (router_ip))
+			 || get_bind_ipv4 (router_ip, &bind_ip))
 			{
 				syslog (LOG_ALERT, _("Fatal configuration error"));
 				return -2;
@@ -415,7 +428,7 @@ isatap_run (miredo_conf *conf, const char *server_name)
 	int ipv6_fd = socket (AF_INET, SOCK_RAW, IPPROTO_IPV6);
 	if (ipv6_fd != -1)
 	{
-		miredo_setup_nonblock_fd (ipv6_fd);
+		miredo_setup_fd (ipv6_fd);
 
 		struct sockaddr_in a =
 		{
@@ -457,17 +470,6 @@ extern
 void miredo_setup_fd (int fd)
 {
 	(void) fcntl (fd, F_SETFD, FD_CLOEXEC);
-}
-
-
-extern
-void miredo_setup_nonblock_fd (int fd)
-{
-	int flags = fcntl (fd, F_GETFL);
-	if (flags == -1)
-		flags = 0;
-	(void) fcntl (fd, F_SETFL, O_NONBLOCK | flags);
-	miredo_setup_fd (fd);
 }
 
 

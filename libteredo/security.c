@@ -1,6 +1,6 @@
 /*
  * security.c - helpers for security-related stuff
- * $Id: security.c 1726 2006-08-27 08:13:18Z remi $
+ * $Id: security.c 2000 2007-08-13 18:44:32Z remi $
  */
 
 /***********************************************************************
@@ -48,7 +48,7 @@ static const char randfile[] = "/dev/random";
 
 
 /* HMAC authentication */
-#define LIBTEREDO_KEY_LEN LIBTEREDO_NONCE_LEN
+#define LIBTEREDO_KEY_LEN 16
 #define HMAC_BLOCK_LEN 64 /* block size in bytes for MD5 (or SHA1) */
 #if LIBTEREDO_KEY_LEN > HMAC_BLOCK_LEN
 # error HMAC key too long.
@@ -130,10 +130,10 @@ teredo_hash (const void *src, size_t slen, const void *dst, size_t dlen,
 	md5_state_t ctx;
 	md5_init (&ctx);
 	md5_append (&ctx, inner_key.ipad, sizeof (inner_key.ipad));
-	md5_append (&ctx, (unsigned char *)src, slen);
-	md5_append (&ctx, (unsigned char *)dst, dlen);
-	md5_append (&ctx, (unsigned char *)&hmac_pid, sizeof (hmac_pid));
-	md5_append (&ctx, (unsigned char *)&timestamp, sizeof (timestamp));
+	md5_append (&ctx, (const unsigned char *)src, slen);
+	md5_append (&ctx, (const unsigned char *)dst, dlen);
+	md5_append (&ctx, (const unsigned char *)&hmac_pid, sizeof (hmac_pid));
+	md5_append (&ctx, (const unsigned char *)&timestamp, sizeof (timestamp));
 	md5_finish (&ctx, hash);
 
 	md5_init (&ctx);
@@ -221,6 +221,16 @@ teredo_verify_pinghash (uint32_t now, const struct in6_addr *src,
 	/* compare HMAC hash */
 	return memcmp (h1, hash, LIBTEREDO_HASH_LEN) ? -1 : 0;
 }
+
+
+uint16_t teredo_get_flbits (uint32_t timestamp)
+{
+	uint8_t buf[LIBTEREDO_HASH_LEN];
+
+	teredo_hash (NULL, 0, NULL, 0, buf, timestamp);
+	return (buf[0] << 8) | buf[1];
+}
+
 #endif /* MIREDO_TEREDO_CLIENT */
 
 

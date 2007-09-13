@@ -17,5 +17,9 @@ Bernhard Schmidt	Relay deployment and Teredo server hosting
 Pekka Savola		FreeBSD tests, report
 Nathan Lutchansky	Linux tests, report
 Marcus Rückert		OpenSUSE package
+Jari Korva		UMTS testing, bug report
+Robert B. Quattlebaum	Mac OSX package, patches, suggestions...
+Martin Uecker		ARM bug report
+Lutz Donnerhacke	Server filtering regression fix
 
-$Id: THANKS 1769 2006-10-04 19:01:17Z remi $
+$Id: THANKS 2038 2007-09-13 16:59:17Z remi $

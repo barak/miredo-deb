@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Id: miredo.init 1775 2006-10-05 15:04:18Z remi $
+# $Id: miredo.init 134 2007-08-14 17:13:55Z remi $
 #
 # miredo start/stop script for Debian GNU/Linux
 # Author: Rémi Denis-Courmont <rdenis (at) simphalempin (dot) com>
@@ -35,7 +35,7 @@ CHECKCONF="${DAEMON}-checkconf"
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
 
 # Ensure configuration is readable.
-[ -r /etc/$NAME.conf ] || exit 0
+[ -r /etc/miredo/$NAME.conf ] || exit 0
 
 . /lib/lsb/init-functions
 
@@ -44,6 +44,10 @@ check_start() {
 		echo "START_MIREDO is set to false in /etc/default/$NAME."
 		echo "$DAEMON not starting."
 		exit 0
+	fi
+	if [ -e /proc/sys/kernel/modprobe ]; then
+		`cat /proc/sys/kernel/modprobe` tun 2>/dev/null
+		`cat /proc/sys/kernel/modprobe` ipv6 2>/dev/null
 	fi
 	if [ ! -e /dev/net/tun ]; then
 		echo "/dev/net/tun does not exist."
@@ -55,7 +59,7 @@ check_start() {
 check_conf_file() {
 	# FIXME: should use DAEMON_ARGS as set when the daemon was started
 	if ! "$CHECKCONF" $DAEMON_ARGS; then
-		echo "Cannot reload miredo: fix /etc/$NAME.conf first."
+		echo "Cannot reload miredo: fix /etc/miredo/$NAME.conf first."
 		exit 1
 	fi
 }

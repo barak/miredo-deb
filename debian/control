@@ -3,12 +3,14 @@ Section: net
 Priority: optional
 Maintainer: Rémi Denis-Courmont <rdenis@simphalempin.com>
 Build-Depends: dpkg-dev (>= 1.13.2), debhelper (>= 4.1.0), cdbs, autotools-dev,
-               gettext, libjudy-dev, libcap-dev [!hurd-i386 !kfreebsd-i386 !kfreebsd-amd64]
-Standards-Version: 3.7.2
+               gettext, libjudy-dev, libcap-dev [!hurd-i386 !kfreebsd-i386 !kfreebsd-amd64],
+               libfreebsd-dev [kfreebsd-i386 kfreebsd-amd64]
+Standards-Version: 3.7.2.2
+XS-Vcs-Svn: http://anonsvn.remlab.net/svn/pkg-remlab/miredo
 
 Package: miredo
 Architecture: any
-Pre-Depends: adduser, makedev (>= 2.3.1-62)
+Pre-Depends: adduser, makedev (>= 2.3.1-62) | udev
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Teredo IPv6 tunneling through NATs
  The Teredo IPv6 tunneling protocol encapsulates IPv6 packets into UDP/IPv4
@@ -19,14 +21,15 @@ Description: Teredo IPv6 tunneling through NATs
  NAT. It can also operate as a Teredo relay which forwards IPv6 packets
  between the IPv6 Internet and remote Teredo clients.
  .
- Homepage: http://www.simphalempin.com/dev/miredo/
+ Homepage: http://www.remlab.net/miredo/
 
 Package: miredo-server
 Priority: extra
 Architecture: any
 Pre-Depends: adduser
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Suggests: miredo (= ${Source-Version})
+Conflicts: miredo (<< 1.0.4-2)
+Suggests: miredo (= ${binary:Version})
 Description: Teredo IPv6 tunneling server
  The Teredo IPv6 tunneling protocol encapsulates IPv6 packets into UDP/IPv4
  datagrams, to allow hosts behind NAT devices to access the IPv6 Internet.
@@ -36,4 +39,4 @@ Description: Teredo IPv6 tunneling server
  hole punching when transmitting IPv6 packets to other Teredo clients and/or
  Teredo relays.
  .
- Homepage: http://www.simphalempin.com/dev/miredo/
+ Homepage: http://www.remlab.net/miredo/

@@ -1,6 +1,6 @@
 /*
  * peerlist.c - Teredo relay internal peers list manipulation
- * $Id: peerlist.c 1726 2006-08-27 08:13:18Z remi $
+ * $Id: peerlist.c 2012 2007-08-18 10:55:17Z remi $
  */
 
 /***********************************************************************
@@ -23,6 +23,7 @@
 # include <config.h>
 #endif
 
+#include <stdbool.h>
 #include <string.h>
 #include <time.h>
 #include <stdlib.h> /* malloc() / free() */
@@ -45,7 +46,7 @@
 #include "teredo.h"
 #include "teredo-udp.h" // FIXME: ugly
 #include "debug.h"
-#include <stdbool.h>
+#include "clock.h"
 #include "peerlist.h"
 
 /*
@@ -71,7 +72,7 @@ static inline void teredo_peer_init (teredo_peer *peer)
 }
 
 
-static void teredo_peer_destroy (teredo_peer *peer)
+static inline void teredo_peer_destroy (teredo_peer *peer)
 {
 	teredo_queue *p = peer->queue;
 
@@ -155,117 +156,106 @@ void teredo_queue_emit (teredo_queue *q, int fd, uint32_t ipv4, uint16_t port,
 /*** Peer list handling ***/
 typedef struct teredo_listitem
 {
-	struct teredo_listitem *prev, *next;
+	struct teredo_listitem **pprev, *next;
 	teredo_peer peer;
 	union teredo_addr key;
-	time_t atime;
 } teredo_listitem;
 
 struct teredo_peerlist
 {
-	teredo_listitem sentinel;
+	teredo_listitem *recent, *old;
 	unsigned left;
 	unsigned expiration;
 	pthread_t gc;
 	pthread_mutex_t lock;
-	pthread_cond_t cond;
 #ifdef HAVE_LIBJUDY
 	Pvoid_t PJHSArray;
 #endif
 };
 
 
-static void mutex_unlock (void *mutex)
+static inline teredo_listitem *listitem_create (void)
 {
-	(void)pthread_mutex_unlock ((pthread_mutex_t *)mutex);
+	teredo_listitem *entry = malloc (sizeof (*entry));
+	if (entry != NULL)
+		teredo_peer_init (&entry->peer);
+	return entry;
 }
+
+
+static inline void listitem_destroy (teredo_listitem *entry)
+{
+	teredo_peer_destroy (&entry->peer);
+	free (entry);
+}
+
+
+static void listitem_recdestroy (teredo_listitem *entry)
+{
+	while (entry != NULL)
+	{
+		teredo_listitem *buf = entry->next;
+		listitem_destroy (entry);
+		entry = buf;
+	}
+}
+
 
 /**
  * Peer list garbage collector entry point.
  *
  * @return never ever.
  */
-static void *garbage_collector (void *data)
+static LIBTEREDO_NORETURN void *garbage_collector (void *data)
 {
 	struct teredo_peerlist *l = (struct teredo_peerlist *)data;
 
-	pthread_mutex_lock (&l->lock);
-	pthread_cleanup_push (mutex_unlock, &l->lock);
-
 	for (;;)
 	{
-		while (l->sentinel.prev != &l->sentinel)
+		struct timespec delay = { .tv_sec = l->expiration };
+		while (clock_nanosleep (CLOCK_REALTIME, 0, &delay, &delay));
+
+		int state;
+		pthread_setcancelstate (PTHREAD_CANCEL_DISABLE, &state);
+		/* cancel-unsafe section starts */
+		pthread_mutex_lock (&l->lock);
+
+		// remove expired peers from hash table
+		for (teredo_listitem *p = l->old; p != NULL; p = p->next)
 		{
-			struct timespec deadline;
-
-			deadline.tv_sec = l->sentinel.prev->atime + l->expiration;
-			deadline.tv_nsec = 0;
-
-			if (pthread_cond_timedwait (&l->cond, &l->lock,
-			                            &deadline) != ETIMEDOUT)
-				continue;
-
-			int state;
-			pthread_setcancelstate (PTHREAD_CANCEL_DISABLE, &state);
-			/* cancel-unsafe section starts */
-			teredo_listitem *victim = NULL;
-
-			for (teredo_listitem *p = l->sentinel.prev;
-			     p != &l->sentinel;
-			     p = p->prev)
-			{
-				if ((p->atime + l->expiration) > (unsigned)deadline.tv_sec)
-					break;
-
-				// The victim was not touched in the mean time... destroy it.
 #ifdef HAVE_LIBJUDY
-				int Rc_int;
-				JHSD (Rc_int, l->PJHSArray, (uint8_t *)&p->key, 16);
+			int Rc_int;
+			JHSD (Rc_int, l->PJHSArray, (uint8_t *)&p->key, 16);
+			assert (Rc_int);
 #endif
-				victim = p;
-				l->left++;
-			}
-
-			if (victim != NULL)
-			{
-				victim->prev->next = &l->sentinel;
-				l->sentinel.prev->next = NULL;
-				l->sentinel.prev = victim->prev;
-			}
-
-			pthread_mutex_unlock (&l->lock);
-
-			// Perform possibly expensive memory release without the lock
-			while (victim != NULL)
-			{
-				teredo_listitem *buf = victim->next;
-				teredo_peer_destroy (&victim->peer);
-				free (victim);
-				victim = buf;
-			}
-
-			pthread_mutex_lock (&l->lock);
-			/* cancel-unsafe section ends */
-			pthread_setcancelstate (state, NULL);
+			l->left++;
 		}
 
-		/* wait until the list is not empty */
-		pthread_cond_wait (&l->cond, &l->lock);
-	}
+		// unlinks old peers
+		teredo_listitem *old = l->old;
 
-	pthread_cleanup_pop (1);
-	return NULL;
+		// moves recent peers to old peers area
+		l->old = l->recent;
+		l->recent = NULL;
+		if (l->old != NULL)
+			l->old->pprev = &l->old;
+
+		pthread_mutex_unlock (&l->lock);
+
+		// Perform possibly expensive memory release without the lock
+		listitem_recdestroy (old);
+
+		/* cancel-unsafe section ends */
+		pthread_setcancelstate (state, NULL);
+	}
 }
 
-/**
- * Creates an empty peer list.
- *
- * @return NULL on error (see errno for actual problem).
- */
+
 teredo_peerlist *teredo_list_create (unsigned max, unsigned expiration)
 {
 	/*printf ("Peer size: %u/%u bytes\n",sizeof (teredo_peer),
 	        sizeof (teredo_listitem));*/
+	assert (expiration > 0);
 
 	teredo_peerlist *l = (teredo_peerlist *)malloc (sizeof (*l));
 	if (l == NULL)
@@ -273,8 +263,7 @@ teredo_peerlist *teredo_list_create (unsigned max, unsigned expiration)
 
 	memset (l, 0, sizeof (l));
 	pthread_mutex_init (&l->lock, NULL);
-	pthread_cond_init (&l->cond, NULL);
-	l->sentinel.next = l->sentinel.prev = &l->sentinel;
+	l->recent = l->old = NULL;
 	l->left = max;
 	l->expiration = expiration;
 #ifdef HAVE_LIBJUDY
@@ -283,7 +272,6 @@ teredo_peerlist *teredo_list_create (unsigned max, unsigned expiration)
 
 	if (pthread_create (&l->gc, NULL, garbage_collector, l))
 	{
-		pthread_cond_destroy (&l->cond);
 		pthread_mutex_destroy (&l->lock);
 		free (l);
 		return NULL;
@@ -292,11 +280,7 @@ teredo_peerlist *teredo_list_create (unsigned max, unsigned expiration)
 	return l;
 }
 
-/**
- * Empties an existing unlocked list. Always succeeds.
- *
- * @param max new value for maximum number of items allowed.
- */
+
 void teredo_list_reset (teredo_peerlist *l, unsigned max)
 {
 	pthread_mutex_lock (&l->lock);
@@ -305,78 +289,40 @@ void teredo_list_reset (teredo_peerlist *l, unsigned max)
 	// detach old array
 	Pvoid_t array = l->PJHSArray;
 	l->PJHSArray = (Pvoid_t)NULL;
-#endif	
+#endif
 
-	teredo_listitem *p = l->sentinel.next;
+	teredo_listitem *recent = l->recent, *old = l->old;
+	// unlinks peers and resets lists
+	l->recent = l->old = NULL;
 	l->left = max;
-
-	if (p != &l->sentinel)
-	{
-		assert (l->sentinel.prev != &l->sentinel);
-		l->sentinel.prev->next = NULL;
-
-		// resets garbage collector
-		pthread_cond_signal (&l->cond);
-		l->sentinel.next = l->sentinel.prev = &l->sentinel;
-	}
-	else
-		p = NULL;
 
 	pthread_mutex_unlock (&l->lock);
 
 	/* the mutex is not needed for actual memory release */
-	while (p != NULL)
-	{
-		teredo_listitem *buf = p->next;
-		teredo_peer_destroy (&p->peer);
-		free (p);
-		p = buf;
-	}
+	listitem_recdestroy (old);
+	listitem_recdestroy (recent);
 
 #ifdef HAVE_LIBJUDY
 	// destroy the old array that was detached before unlocking
-	long Rc_word;
+	Word_t Rc_word;
 	JHSFA (Rc_word, array);
 #endif
 }
 
-/**
- * Destroys an existing unlocked list.
- */
+
 void teredo_list_destroy (teredo_peerlist *l)
 {
 	teredo_list_reset (l, 0);
 
 	pthread_cancel (l->gc);
 	pthread_join (l->gc, NULL);
-	pthread_cond_destroy (&l->cond);
 	pthread_mutex_destroy (&l->lock);
 
 	free (l);
 }
 
-/**
- * Locks the list and looks up a peer in an unlocked list.
- * On success, the list must be unlocked with teredo_list_release(), otherwise
- * the next call to teredo_list_lookup will deadlock. Unlocking the list after
- * a failure is not defined.
- *
- * @param atime time value to be used for garbage collection of the peer.
- * When current time exceeds (atime + expiration), the peer is destroyed.
- * The expiration value (in seconds) is specified defined when calling
- * teredo_list_create()). atime should normally be the result of time().
- * It is not computed internally to allow clock caching (and avoid thousands
- * of system call for the current time).
- *
- * @param create if not NULL, the peer will be added to the list if it is not
- * present already, and *create will be true on return. If create is not NULL
- * but the peer was already present, *create will be false on return.
- * *create is undefined on return in case of error.
- *
- * @return The peer if found or created. NULL on error (when create is not
- * NULL), or if the peer was not found (when create is NULL).
- */
-teredo_peer *teredo_list_lookup (teredo_peerlist *restrict list, time_t atime,
+
+teredo_peer *teredo_list_lookup (teredo_peerlist *restrict list,
                                  const struct in6_addr *restrict addr,
                                  bool *restrict create)
 {
@@ -412,48 +358,51 @@ teredo_peer *teredo_list_lookup (teredo_peerlist *restrict list, time_t atime,
 	}
 #else
 	/* Slow O(n) simplistic peer lookup */
-	bool found = false;
-	p = list->sentinel.next;
-	while (p != &list->sentinel)
-	{
-		if (memcmp (&p->key, addr, sizeof (*addr)) == 0)
-		{
-			found = true;
-			break;
-		}
-		p = p->next;
-	}
+	p = NULL;
 
-	if (!found)
-		p = NULL;
+	for (p = list->recent; p != NULL; p = p->next)
+		if (IN6_ARE_ADDR_EQUAL (&p->key, addr))
+			break;
+
+	if (p == NULL)
+		for (p = list->old; p != NULL; p = p->next)
+			if (IN6_ARE_ADDR_EQUAL (&p->key, addr))
+				break;
 #endif
 
 	if (p != NULL)
 	{
 		/* peer was already in list */
-		assert (p->prev->next == p);
-		assert (p->next->prev == p);
+		assert (*(p->pprev) == p);
+		assert ((p->next == NULL) || (p->next->pprev == &p->next));
 
 		if (create != NULL)
 			*create = false;
-	
-		/* touch peer toward garbage collector */
-		p->atime = atime;
-		if (p->prev != &list->sentinel)
+
+		/* move peer to the top of the head of the "recent" list */
+		if (list->recent != p)
 		{
-			/* remove peer from list */
-			p->prev->next = p->next;
-			p->next->prev = p->prev;
-	
-			/* bring peer to the head of the list if it is not already */
-			p->next = list->sentinel.next;
-			p->next->prev = p;
-			p->prev = &list->sentinel;
-			list->sentinel.next = p;
+			// unlinks
+			if (p->next != NULL)
+				p->next->pprev = p->pprev;
+			*(p->pprev) = p->next;
+
+			// inserts at head
+			p->next = list->recent;
+			if (p->next != NULL)
+				p->next->pprev = &p->next;
+
+			list->recent = p;
+			p->pprev = &list->recent;
+
+			assert (*(p->pprev) == p);
+			assert ((p->next == NULL) || (p->next->pprev == &p->next));
 		}
-	
+
 		return &p->peer;
 	}
+
+	assert (p == NULL);
 
 	/* otherwise, peer was not in list */
 	if (create == NULL)
@@ -465,7 +414,8 @@ teredo_peer *teredo_list_lookup (teredo_peerlist *restrict list, time_t atime,
 	*create = true;
 
 	/* Allocates a new peer entry */
-	p = (list->left != 0) ? (teredo_listitem *)malloc (sizeof (*p)) : NULL;
+	if (list->left > 0)
+		p = listitem_create ();
 
 	if (p == NULL)
 	{
@@ -477,35 +427,28 @@ teredo_peer *teredo_list_lookup (teredo_peerlist *restrict list, time_t atime,
 		return NULL;
 	}
 
-	teredo_peer_init (&p->peer);
-
-	if (list->sentinel.next == &list->sentinel)
-		/* tell GC the list is no longer empty */
-		pthread_cond_signal (&list->cond);
-
 	/* Puts new entry at the head of the list */
-	p->next = list->sentinel.next;
-	p->next->prev = p;
-	p->prev = &list->sentinel;
-	list->sentinel.next = p;
+	p->next = list->recent;
+	if (p->next != NULL)
+		p->next->pprev = &p->next;
+
+	p->pprev = &list->recent;
+	list->recent = p;
+	p->pprev = &list->recent;
 
 	list->left--;
 
-	assert (p->next->prev == p);
-	assert (p->prev->next == p);
+	assert (*(p->pprev) == p);
+	assert ((p->next == NULL) || (p->next->pprev == &p->next));
 
 #ifdef HAVE_LIBJUDY
 	*pp = p;
 #endif
-	memcpy (&p->key.ip6, addr, sizeof (struct in6_addr));
-	p->atime = atime;
+	p->key.ip6 = *addr;
 	return &p->peer;
 }
 
 
-/**
- * Unlocks a list that was locked by teredo_list_lookup().
- */
 void teredo_list_release (teredo_peerlist *l)
 {
 	pthread_mutex_unlock (&l->lock);

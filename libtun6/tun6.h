@@ -1,6 +1,6 @@
 /*
  * tun6.h - IPv6 tunnel interface declaration
- * $Id: tun6.h 1552 2006-07-04 15:38:38Z remi $
+ * $Id: tun6.h 1982 2007-08-13 15:11:06Z remi $
  */
 
 /***********************************************************************
@@ -56,7 +56,6 @@
 #  define LIBTUN6_PURE
 # endif
 
-struct ip6_hdr;
 struct in6_addr;
 
 typedef struct tun6 tun6;

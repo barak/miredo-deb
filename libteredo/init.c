@@ -1,6 +1,6 @@
 /*
  * init.c
- * $Id: init.c 1726 2006-08-27 08:13:18Z remi $
+ * $Id: init.c 2004 2007-08-14 19:53:15Z remi $
  */
 
 /***********************************************************************
@@ -32,18 +32,7 @@
 #include "security.h"
 #include "tunnel.h"
 
-/**
- * Initializes libteredo. That function must be called before any other
- * libteredo functions. It can safely be called multiple times and is
- * thread-safe. If the process is to be chrooted(), it should be called
- * before chroot().
- *
- * @param use_client true if libteredo is to be used in client-mode
- *
- * @return 0 on success, -1 on failure.
- * -1 is also returned when use_client is true while libteredo was
- *  compiled without client support.
- */
+
 int teredo_startup (bool use_client)
 {
 	(void)bindtextdomain (PACKAGE_NAME, LOCALEDIR);
@@ -54,23 +43,19 @@ int teredo_startup (bool use_client)
 	if (use_client)
 		return -1;
 #endif
-	return teredo_init_HMAC ();
+
+	if (teredo_init_HMAC () == 0)
+		return 0;
+	return -1;
 }
 
 
-/**
- * Releases resources allocated with teredo_startup().
- * Should be called as many times as teredo_startup() was called.
- * Thread-safe.
- *
- * @param use_client true if the matching teredo_preinit call
- * had the use_client parameter set.
- */
 void teredo_cleanup (bool use_client)
 {
 	(void)use_client;
 #ifndef MIREDO_TEREDO_CLIENT
 	assert (!use_client);
 #endif
+
 	teredo_deinit_HMAC ();
 }

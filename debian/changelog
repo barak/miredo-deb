@@ -1,3 +1,19 @@
+miredo (1.1.2-1) unstable; urgency=low
+
+  * New upstream release (Closes: #441842):
+    - merge or supersede all fixes from 1.0.4-2,
+    - restore "cone" relay type (Closes: #404365),
+    - should fix arm padding bug (Closes: #440539).
+  * Update upstream website URL.
+  * Depends on libfreebsd-dev on kfreebsd-* for devname_r().
+  * Added XS-Vcs-Svn field.
+  * Update to standards version 3.7.2.2.
+  * Switch to new binNMU-safe substitution variables.
+  * Allow udev as an alternative to makedev (Closes: #428221).
+  * Try to load tun and ipv6 modules automatically if applicable.
+
+ -- Rémi Denis-Courmont <rdenis@simphalempin.com>  Mon, 13 Sep 2007 21:00:28 +0200
+
 miredo (1.0.4-2) unstable; urgency=medium
 
   * Disable testsuite everywhere because it includes load-sensitive tests.

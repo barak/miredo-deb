@@ -1,10 +1,10 @@
 /*
  * mire.c s Stateless Teredo ping responder
- * $Id: mire.c 1705 2006-08-21 17:04:08Z remi $
+ * $Id: mire.c 2036 2007-09-10 17:30:09Z remi $
  */
 
 /***********************************************************************
- *  Copyright © 2006 Rémi Denis-Courmont.                              *
+ *  Copyright © 2006-2007 Rémi Denis-Courmont.                         *
  *  This program is free software; you can redistribute and/or modify  *
  *  it under the terms of the GNU General Public License as published  *
  *  by the Free Software Foundation; version 2 of the license.         *
@@ -24,8 +24,8 @@
 #endif
 
 #include <inttypes.h>
+#include <stdbool.h>
 #include <stdio.h>
-#include <string.h>
 
 #include <sys/types.h>
 #include <sys/uio.h>
@@ -33,6 +33,7 @@
 #include <netinet/ip6.h>
 #include <netinet/icmp6.h>
 #include <errno.h>
+#include <pthread.h>
 
 #include <libteredo/teredo-udp.h>
 #include <libteredo/checksum.h>
@@ -40,9 +41,12 @@
 # include <getopt.h>
 #endif
 
+#include <libteredo/teredo.h>
+#include <stdbool.h>
+#include "packets.h"
+#include "debug.h"
 
 //#define MIRE_COUNTER 1
-//#define MIRE_NOALIGN 1
 
 #ifdef MIRE_COUNTER
 #include <signal.h>
@@ -80,36 +84,12 @@ process_icmpv6 (int fd, struct ip6_hdr *ip6, size_t plen,
 	if (hdr->icmp6_type != ICMP6_ECHO_REQUEST)
 		return;
 
-#ifndef MIRE_NOALIGN
-	struct
-	{
-		struct ip6_hdr   ip6;
-		struct icmp6_hdr icmp6;
-		uint8_t          data[plen - sizeof (struct icmp6_hdr)];
-	} reply;
-
-	reply.ip6.ip6_flow = htonl (6 << 28);
-	reply.ip6.ip6_plen = htons (plen);
-	reply.ip6.ip6_nxt = IPPROTO_ICMPV6;
-	reply.ip6.ip6_hlim = 255;
-	memcpy (&reply.ip6.ip6_src, &ip6->ip6_dst, sizeof (reply.ip6.ip6_src));
-	memcpy (&reply.ip6.ip6_dst, &ip6->ip6_src, sizeof (reply.ip6.ip6_dst));
-
-	reply.icmp6.icmp6_type = ICMP6_ECHO_REPLY;
-	reply.icmp6.icmp6_code = 0;
-	reply.icmp6.icmp6_cksum = 0;
-	memcpy (&reply.icmp6.icmp6_id, &hdr->icmp6_id, plen - 4);
-
-	reply.icmp6.icmp6_cksum = icmp6_checksum (&reply.ip6, &reply.icmp6);
-
-	teredo_send (fd, &reply, sizeof (*ip6) + plen, ipv4, port);
-#else
 	ip6->ip6_hlim = 255;
 
 	struct in6_addr buf;
-	memcpy (&buf, &ip6->ip6_dst, sizeof (buf));
-	memcpy (&ip6->ip6_dst, &ip6->ip6_src, sizeof (ip6->ip6_dst));
-	memcpy (&ip6->ip6_src, &buf, sizeof (ip6->ip6_src));
+	buf = ip6->ip6_dst;
+	ip6->ip6_dst = ip6->ip6_src;
+	ip6->ip6_src = buf;;
 
 	hdr->icmp6_type = ICMP6_ECHO_REPLY;
 	hdr->icmp6_code = 0;
@@ -117,7 +97,6 @@ process_icmpv6 (int fd, struct ip6_hdr *ip6, size_t plen,
 	hdr->icmp6_cksum = icmp6_checksum (ip6, hdr);
 
 	teredo_send (fd, ip6, sizeof (*ip6) + plen, ipv4, port);
-#endif
 }
 
 
@@ -128,68 +107,124 @@ process_none (int fd, const struct ip6_hdr *ip6, size_t plen,
 	if (plen != 0)
 		return;
 
-	/*
-	 * Teredo bubbles
-	 *
-	 * Contrary to normal Teredo relays & clients, this program is completely
-	 * stateless. We still have to ensure that we don't reply to a reply to
-	 * one of our own packet. Otherwise, it would be trivial to trigger an
-	 * infinite packet exchange loop between two instances of this program.
-	 * On the other hand, we have to reply to bubble so that we can be reached
-	 * from clients and relays as if we were behind a restricted NAT.
-	 *
-	 * To avoid the infinite packet loop, we use a very nasty kludge: we put a
-	 * dummy *non-empty* payload into our pseudo-bubbles instead of genuine
-	 * Teredo bubbles. This should still interoperate against a conformant
-	 * Teredo peer (it wants to receive a packet from us, not specifically a
-	 * Teredo bubble).
-	 */
-
-	struct iovec reply[4];
-	reply[0].iov_base = "\x60\x00\x00\x00" "\x00\x04" "\x3b" "\x00";
-	reply[0].iov_len = 8;
-	reply[1].iov_base = (uint8_t *)&ip6->ip6_dst;
-	reply[1].iov_len = 16;
-	reply[2].iov_base = (uint8_t *)&ip6->ip6_src;
-	reply[2].iov_len = 16;
-	reply[3].iov_base = "MIRE";
-	reply[3].iov_len = 4;
-	teredo_sendv (fd, reply, sizeof (reply) / sizeof (reply[0]), ipv4, port);
+	teredo_reply_bubble (fd, ipv4, port, ip6);
 }
 
 
 static void
-process_unknown (int fd, const struct ip6_hdr *ip6, size_t plen,
+process_unknown (int fd, const struct ip6_hdr *in, size_t plen,
                  uint32_t ipv4, uint16_t port)
 {
-	plen += sizeof (*ip6);
-	if (plen > (1280 - sizeof (struct icmp6_hdr)))
-		plen = 1280 - sizeof (struct icmp6_hdr);
+	plen += sizeof (struct ip6_hdr);
+	if (plen > 1232)
+		plen = 1232;
 
-	// TODO: use an iovec instead - needs to rewrite checksum though
-	struct
+	struct ip6_hdr   ip6;
+	struct icmp6_hdr icmp6;
+	struct iovec iov[] =
 	{
-		struct ip6_hdr   ip6;
-		struct icmp6_hdr icmp6;
-		uint8_t          payload[plen];
-	} reply;
+		{ &ip6, sizeof (ip6) },
+		{ &icmp6, sizeof (icmp6) },
+		{ (void *)in, plen }
+	};
 
-	reply.ip6.ip6_flow = htonl (6 << 28);
-	reply.ip6.ip6_plen = htons (sizeof (struct icmp6_hdr) + plen);
-	reply.ip6.ip6_nxt = IPPROTO_ICMPV6;
-	reply.ip6.ip6_hlim = 255;
-	memcpy (&reply.ip6.ip6_src, &ip6->ip6_dst, sizeof (reply.ip6.ip6_src));
-	memcpy (&reply.ip6.ip6_dst, &ip6->ip6_src, sizeof (reply.ip6.ip6_dst));
+	ip6.ip6_flow = htonl (6 << 28);
+	ip6.ip6_plen = htons (sizeof (struct icmp6_hdr) + plen);
+	ip6.ip6_nxt = IPPROTO_ICMPV6;
+	ip6.ip6_hlim = 255;
+	ip6.ip6_src = in->ip6_dst;
+	ip6.ip6_dst = in->ip6_src;
 
-	reply.icmp6.icmp6_type = ICMP6_PARAM_PROB;
-	reply.icmp6.icmp6_code = ICMP6_PARAMPROB_NEXTHEADER;
-	reply.icmp6.icmp6_cksum = 0;
-	reply.icmp6.icmp6_pptr = htonl (6);
+	icmp6.icmp6_type = ICMP6_PARAM_PROB;
+	icmp6.icmp6_code = ICMP6_PARAMPROB_NEXTHEADER;
+	icmp6.icmp6_cksum = 0;
+	icmp6.icmp6_pptr = htonl (6);
 
-	memcpy (&reply.payload, ip6, plen);
-	reply.icmp6.icmp6_cksum = icmp6_checksum (&reply.ip6, &reply.icmp6);
+	icmp6.icmp6_cksum = teredo_cksum (&ip6.ip6_src, &ip6.ip6_dst,
+	                                  IPPROTO_ICMPV6, iov + 1, 2);
 
-	teredo_send (fd, &reply, 48 + plen, ipv4, port);
+	teredo_sendv (fd, iov, sizeof (iov) / sizeof (iov[0]), ipv4, port);
+}
+
+
+/**
+ * Receives and validates Teredo packet.
+ * @param fd socket from which to receive a packet.
+ * @param p pointer to structure where the received packet will be stored.
+ *
+ * @return payload byte length of received packet, or -1 on error.
+ */
+static ssize_t
+recv_packet (int fd, teredo_packet *p)
+{
+	if (teredo_wait_recv (fd, p))
+		return -1;
+
+	struct ip6_hdr *ip6 = p->ip6;
+	uint16_t plen;
+
+	// Check packet size
+	if ((p->ip6_len < sizeof (*ip6)) || (p->ip6_len > 1280))
+		return -1;
+
+	// Check packet validity
+	plen = ntohs (ip6->ip6_plen);
+#ifdef MIRE_COUNTER
+	count_pkt++;
+	count_bytes += plen + 40;
+#endif
+
+	if (((ip6->ip6_vfc >> 4) != 6)
+	 || ((plen + sizeof (*ip6)) != p->ip6_len))
+		return -1;
+
+	return plen;
+}
+
+
+static LIBTEREDO_NORETURN void *server_thread (void *data)
+{
+	int fdserv = ((int *)data)[0], fd = ((int *)data)[1];
+
+	for (;;)
+	{
+		struct teredo_packet p;
+		ssize_t plen = recv_packet (fdserv, &p);
+		if (plen == -1)
+			continue;
+
+		if (p.ip6->ip6_nxt == IPPROTO_NONE)
+			process_none (fd, p.ip6, plen, p.source_ipv4, p.source_port);
+	}
+}
+
+
+static LIBTEREDO_NORETURN int client_thread (int fd)
+{
+	for (;;)
+	{
+		struct teredo_packet p;
+		ssize_t plen = recv_packet (fd, &p);
+		if (plen == -1)
+			continue;
+
+		switch (p.ip6->ip6_nxt)
+		{
+			// TODO: support routing and hop-by-hop headers?
+
+			case IPPROTO_ICMPV6:
+				process_icmpv6 (fd, p.ip6, plen,
+				                p.source_ipv4, p.source_port);
+				break;
+
+			case IPPROTO_NONE: // ignore direct bubbles
+			case IPPROTO_ROUTING:
+				break;
+
+			default:
+				process_unknown (fd, p.ip6, plen, p.source_ipv4, p.source_port);
+		}
+	}
 }
 
 
@@ -228,61 +263,37 @@ int main(int argc, char *argv[])
 				return 1;
 		}
 
-	int fd = teredo_socket (0, htons (3544));
-	if (fd == -1)
+	int socks[2] = { -1, -1 }, retval = -1;
+	pthread_t thserv;
+
+	socks[0] = teredo_socket (0, htons (IPPORT_TEREDO));
+	if (socks[0] != -1)
 	{
-		perror ("teredo_socket");
-		return 1;
-	}
-
-#ifdef MIRE_COUNTER
-	signal (SIGALRM, handler);
-	alarm (1);
-#endif
-	for (;;)
-	{
-		struct teredo_packet p;
-		if (teredo_wait_recv (fd, &p))
-			continue;
-
-		// Beware: the inner IPv6 packet might not be aligned
-		// so only single bytes shall be read
-		struct ip6_hdr *ip6 = (struct ip6_hdr *)p.ip6;
-		uint16_t plen;
-
-		// Check packet size
-		if ((p.ip6_len < sizeof (*ip6)) || (p.ip6_len > 1280))
-			continue;
-
-		// Check packet validity
-		memcpy (&plen, &ip6->ip6_plen, sizeof (plen));
-		plen = ntohs (plen);
-#ifdef MIRE_COUNTER
-		count_pkt++;
-		count_bytes += plen + 40;
-#endif
-
-		if (((ip6->ip6_vfc >> 4) != 6)
-		 || ((plen + sizeof (*ip6)) != p.ip6_len))
-			continue;
-
-		switch (ip6->ip6_nxt)
+		socks[1] = teredo_socket (0, htons (IPPORT_TEREDO + 1));
+		if (socks[1] != -1)
 		{
-			case IPPROTO_NONE:
-				process_none (fd, ip6, plen, p.source_ipv4, p.source_port);
-				break;
+			errno = pthread_create (&thserv, NULL, server_thread, socks);
+			if (errno == 0)
+			{
+#ifdef MIRE_COUNTER
+				signal (SIGALRM, handler);
+				alarm (1);
+#endif
+				retval = -client_thread (socks[1]);
+			}
+			else
+				perror ("pthread_create");
 
-			// TODO: support routing and hop-by-hop headers?
-
-			case IPPROTO_ICMPV6:
-				process_icmpv6 (fd, ip6, plen, p.source_ipv4, p.source_port);
-				break;
-
-			default:
-				process_unknown (fd, ip6, plen, p.source_ipv4, p.source_port);
+			teredo_close (socks[1]);
 		}
+		else
+			perror ("teredo_socket");
+		teredo_close (socks[0]);
 	}
+	else
+		perror ("teredo_socket(server)");
 
-	teredo_close (fd);
+	return retval;
+
 	return 0;
 }

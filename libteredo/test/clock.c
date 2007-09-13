@@ -1,10 +1,10 @@
 /*
- * pselect replacement declaration
- * $Id: pselect.h 1144 2006-04-06 20:54:27Z remi $
+ * clock.c - Libteredo clock tests
+ * $Id$
  */
 
 /***********************************************************************
- *  Copyright © 2006 Rémi Denis-Courmont.                              *
+ *  Copyright © 2007 Rémi Denis-Courmont.                              *
  *  This program is free software; you can redistribute and/or modify  *
  *  it under the terms of the GNU General Public License as published  *
  *  by the Free Software Foundation; version 2 of the license.         *
@@ -19,21 +19,28 @@
  *  http://www.gnu.org/copyleft/gpl.html                               *
  ***********************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
 
-#ifndef __MIREDO_COMPAT_PSELECT_H
-# define __MIREDO_COMPAT_PSELECT_H
+#undef NDEBUG
+#include <assert.h>
+#include <sched.h>
 
-# ifndef HAVE_PSELECT
+#include "clock.h"
 
-#  ifdef __cplusplus
-extern "C" {
-#  endif
+int main (void)
+{
+	teredo_clock_t start = teredo_clock (), now;
 
-int pselect (int max, fd_set *rfds, fd_set *wfds, fd_set *efds,
-             const struct timespec *ts, const sigset_t *mask);
+	do
+	{
+		now = teredo_clock ();
+		sched_yield ();
+	}
+	while (now == start);
 
-#  ifdef __cplusplus
+	assert (now > start);
+
+	return 0;
 }
-#  endif
-# endif /* !HAVE_PSELECT */
-#endif /* __MIREDO_COMPAT_PSELECT_H */

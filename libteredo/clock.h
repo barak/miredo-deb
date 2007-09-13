@@ -1,6 +1,17 @@
-/*
- * addrwatch.h - Watch system IPv6 addresses
- * $Id: addrwatch.h 1241 2006-04-14 11:03:58Z remi $
+/**
+ * @file clock.h
+ * @brief libteredo internal low-precision (1 Hz) clock
+ *
+ * This is way faster than calling time() for every packet transmitted or
+ * received. The first implementation was using POSIX timers, but it might
+ * be a bit overkill to spawn a thread every second to simply increment an
+ * integer. Also, POSIX timers with thread event delivery has a terrible
+ * portability at the time of writing (June 2006). Basically, recent
+ * GNU/Linux have it, and that's about it... no uClibc support, only in
+ * -current for FreeBSD...
+ *
+ * $Id: clock.h 2004 2007-08-14 19:53:15Z remi $
+ *
  */
 
 /***********************************************************************
@@ -19,22 +30,24 @@
  *  http://www.gnu.org/copyleft/gpl.html                               *
  ***********************************************************************/
 
-#ifndef __MIREDO_ADDRWATCH_H
-# define __MIREDO_ADDRWATCH_H
+#ifndef LIBTEREDO_CLOCK_H
+# define LIBTEREDO_CLOCK_H
 
-typedef struct miredo_addrwatch miredo_addrwatch;
+/**
+ * Low-precision clock time value
+ */
+typedef unsigned long teredo_clock_t;
 
 # ifdef __cplusplus
 extern "C" {
 # endif
 
-miredo_addrwatch *miredo_addrwatch_start (int self_scope);
-int miredo_addrwatch_getfd (miredo_addrwatch *self);
-void miredo_addrwatch_stop (miredo_addrwatch *self);
-int miredo_addrwatch_available (miredo_addrwatch *self);
+/**
+ * @return current clock value; undefined if the clock is not running.
+ */
+teredo_clock_t teredo_clock (void);
 
 # ifdef __cplusplus
 }
-# endif
-
-#endif /* __MIREDO_ADDRWATCH_H */
+# endif /* ifdef __cplusplus */
+#endif /* ifndef LIBTEREDO_CLOCK_H */

@@ -1,6 +1,6 @@
 /*
  * security.h - helpers for security-related stuff
- * $Id: security.h 1668 2006-08-12 07:54:35Z remi $
+ * $Id: security.h 2000 2007-08-13 18:44:32Z remi $
  */
 
 /***********************************************************************
@@ -41,7 +41,7 @@ int teredo_verify_pinghash (uint32_t now, const struct in6_addr *src,
 
 void teredo_get_nonce (uint32_t timestamp, uint32_t ipv4, uint16_t port,
                        uint8_t *restrict nonce);
-
+uint16_t teredo_get_flbits (uint32_t timestamp);
 
 # ifdef __cplusplus
 }

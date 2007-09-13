@@ -1,10 +1,10 @@
 /*
  * checkconf.c - Miredo conf parser unit test
- * $Id: checkconf.c 1726 2006-08-27 08:13:18Z remi $
+ * $Id: checkconf.c 1938 2007-02-22 20:55:28Z remi $
  */
 
 /***********************************************************************
- *  Copyright © 2005-2006 Rémi Denis-Courmont.                         *
+ *  Copyright © 2005-2007 Rémi Denis-Courmont.                         *
  *  This program is free software; you can redistribute and/or modify  *
  *  it under the terms of the GNU General Public License as published  *
  *  by the Free Software Foundation; version 2 of the license.         *
@@ -53,7 +53,7 @@ static void logger (void *fail, bool error, const char *fmt, va_list ap)
 }
 
 /* FIXME: use same more clever code as in main.c */
-static const char conffile[] = SYSCONFDIR"/miredo.conf";
+static const char conffile[] = SYSCONFDIR"/miredo/miredo.conf";
 
 static int miredo_checkconf (miredo_conf *conf)
 {

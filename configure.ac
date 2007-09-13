@@ -4,7 +4,7 @@ dnl based on earlier configure.ac from tcpreen by the same author
 dnl Process this file with GNU Autoconf to produce a configure script
 
 dnl ***********************************************************************
-dnl *  Copyright © 2002-2006 Rémi Denis-Courmont.                         *
+dnl *  Copyright © 2002-2007 Rémi Denis-Courmont.                         *
 dnl *  This program is free software; you can redistribute and/or modify  *
 dnl *  it under the terms of the GNU General Public License as published  *
 dnl *  by the Free Software Foundation; version 2 of the license.         *
@@ -19,8 +19,8 @@ dnl *  along with this program; if not, you can get it from:              *
 dnl *  http://www.gnu.org/copyleft/gpl.html                               *
 dnl ***********************************************************************
 
-AC_COPYRIGHT([Copyright (C) 2004-2006 Remi Denis-Courmont])
-AC_INIT(miredo, 1.0.4, miredo-devel_no_bulk_mail@remlab.net)
+AC_COPYRIGHT([Copyright (C) 2004-2007 Remi Denis-Courmont])
+AC_INIT(miredo, 1.1.2, miredo-devel_no_bulk_mail@remlab.net)
 AC_PREREQ(2.59c)
 INVOCATION="$0 $ac_configure_args"
 
@@ -34,6 +34,7 @@ AC_CONFIG_HEADERS(config.h)
 AC_DEFINE_UNQUOTED(PACKAGE_CONFIGURE_INVOCATION, "$INVOCATION",
                 [Define to the command line used to invoke the configure script.])
 RDC_BUILD_HOSTNAME
+AC_CANONICAL_HOST
 
 
 # Checks for programs.
@@ -49,14 +50,13 @@ m4_defun([AC_PROG_CXX],[])
 m4_undefine([AC_PROG_F77])
 m4_defun([AC_PROG_F77],[])
 AC_PROG_LIBTOOL
-
-AM_INIT_AUTOMAKE([check-news dist-bzip2 no-dist-gzip no-exeext std-options])
+AM_INIT_AUTOMAKE
 
 
 # Checks for libraries.
 AS_MESSAGE([checking required libraries...])
 AM_BINRELOC
-AM_GNU_GETTEXT_VERSION([0.12.1])
+AM_GNU_GETTEXT_VERSION([0.16.1])
 AM_GNU_GETTEXT([external])
 
 LIBRT=""
@@ -64,7 +64,33 @@ AC_CHECK_LIB(rt, clock_gettime, [LIBRT="-lrt"])
 AC_SUBST(LIBRT)
 RDC_FUNC_SOCKET
 AC_SEARCH_LIBS(inet_ntop, [nsl])
+AC_SEARCH_LIBS(devname, [freebsd])
 AC_CHECK_LIB(resolv, res_init)
+
+# Oooh, evil platform-rather-than-feature tests
+case "${host_os}" in
+	darwin*)
+		AC_DEFINE(HAVE_SYSTEMCONFIGURATION_FRAMEWORK, 1,
+		          [Define to 1 if Apple's SystemConfiguration framework is available.])
+		CFLAGS="${CFLAGS} -framework SystemConfiguration"
+		AC_DEFINE(HAVE_COREFOUNDATION_FRAMEWORK, 1,
+		          [Define to 1 if Apple's CoreFoundation framework is available.])
+		CFLAGS="${CFLAGS} -framework CoreFoundation"
+		;;
+esac
+
+AC_MSG_CHECKING([which hook scripts to use])
+case "${host_os}" in
+	*linux*)
+		hook_suffix=iproute
+		;;
+	*)
+		hook_suffix=bsd
+		;;
+esac
+AC_MSG_RESULT([${hook_suffix}])
+AC_SUBST(hook_suffix)
+
 
 # POSIX threads
 AC_ARG_VAR(PTHREAD_CFLAGS, [C compiler flags for POSIX threads])
@@ -99,6 +125,11 @@ AC_CHECK_HEADERS([net/if_var.h],,,
 
 # Checks for typedefs, structures, and compiler characteristics.
 AS_MESSAGE([checking target characteristics...])
+RDC_PROG_CC_WFLAGS([all extra undef pointer-arith bad-function-cast cast-align write-strings aggregate-return strict-prototypes old-style-definition missing-prototypes missing-noreturn packed nested-externs redundant-decls volatile-register-var])
+#shadow fails because of ntohl()
+#cast-qual fails because of const/iovec, libcap, Judy
+# padded unreachable-code missing-format-attribute inline
+
 AC_C_BIGENDIAN
 RDC_STRUCT_SOCKADDR_LEN
 AC_CHECK_TYPE([clockid_t],, [
@@ -113,7 +144,7 @@ AC_CHECK_FUNCS([devname_r pthread_condattr_setclock])
 RDC_REPLACE_FUNC_GETOPT_LONG
 LIBS_save="$LIBS"
 LIBS="$LIBRT $LIBS"
-AC_REPLACE_FUNCS([clearenv closefrom pselect strlcpy clock_gettime clock_nanosleep])
+AC_REPLACE_FUNCS([clearenv closefrom strlcpy clock_gettime clock_nanosleep fdatasync])
 LIBS="$LIBS_save"
 
 # Checks for optionnal features
@@ -158,6 +189,20 @@ AS_IF([test "${use_Judy}" = "no"], [
 	AC_MSG_WARN([Miredo is considerably less scalable without libJudy!])
 ])
 
+
+# Test coverage build
+AC_MSG_CHECKING([whether to build for test coverage])
+AC_ARG_ENABLE(coverage,
+	[AS_HELP_STRING(--enable-coverage,
+		[build for test coverage (default disabled)])],,
+	[enable_coverage="no"])
+AS_IF([test "${enable_coverage}" != "no"], [
+	CFLAGS="${CFLAGS} -g -O0 -fprofile-arcs -ftest-coverage"
+	LDFLAGS="${LDFLAGS} -lgcov"
+	AC_MSG_RESULT(yes)
+], [
+	AC_MSG_RESULT(no)
+])
 
 # Teredo client
 AC_MSG_CHECKING([whether to include Teredo client support])
@@ -216,5 +261,5 @@ AH_BOTTOM([#include "compat/fixups.h"])
 
 # END
 AS_MESSAGE(writing results...)
-AC_CONFIG_FILES([Makefile m4/Makefile doc/Makefile misc/Makefile compat/Makefile libtun6/Makefile libteredo/Makefile libteredo/test/Makefile src/Makefile po/Makefile.in ])
+AC_CONFIG_FILES([Makefile m4/Makefile doc/Makefile misc/Makefile compat/Makefile libtun6/Makefile libteredo/Makefile libteredo/test/Makefile src/Makefile po/Makefile.in Doxyfile])
 AC_OUTPUT

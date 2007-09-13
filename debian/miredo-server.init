@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Id: miredo-server.init 1754 2006-09-18 14:25:04Z remi $
+# $Id: miredo-server.init 134 2007-08-14 17:13:55Z remi $
 #
 # miredo-server start/stop script for Debian GNU/Linux
 # Author: Rémi Denis-Courmont <rdenis (at) simphalempin (dot) com>
@@ -33,7 +33,7 @@ SCRIPTNAME=/etc/init.d/$NAME
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
 
 # Ensure configuration is readable.
-[ -r /etc/$NAME.conf ] || exit 0
+[ -r /etc/miredo/$NAME.conf ] || exit 0
 
 . /lib/lsb/init-functions
 
@@ -42,6 +42,9 @@ check_start() {
 		echo "START_MIREDO_SERVER is set to false in /etc/default/$NAME"
 		echo "$DAEMON not starting"
 		exit 0
+	fi
+	if [ -e /proc/sys/kernel/modprobe ]; then
+		`cat /proc/sys/kernel/modprobe` ipv6 2>/dev/null
 	fi
 }
 

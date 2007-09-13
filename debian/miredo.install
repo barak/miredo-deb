@@ -1,4 +1,4 @@
-etc/miredo.conf
+etc/miredo/client-hook
 usr/bin/teredo-mire
 usr/sbin/miredo
 usr/sbin/miredo-checkconf
