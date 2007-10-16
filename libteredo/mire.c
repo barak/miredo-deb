@@ -1,13 +1,14 @@
 /*
  * mire.c s Stateless Teredo ping responder
- * $Id: mire.c 2036 2007-09-10 17:30:09Z remi $
+ * $Id: mire.c 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************
  *  Copyright © 2006-2007 Rémi Denis-Courmont.                         *
  *  This program is free software; you can redistribute and/or modify  *
  *  it under the terms of the GNU General Public License as published  *
- *  by the Free Software Foundation; version 2 of the license.         *
+ *  by the Free Software Foundation; version 2 of the license, or (at  *
+ *  your option) any later version.                                    *
  *                                                                     *
  *  This program is distributed in the hope that it will be useful,    *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of     *
@@ -164,7 +165,7 @@ recv_packet (int fd, teredo_packet *p)
 	uint16_t plen;
 
 	// Check packet size
-	if ((p->ip6_len < sizeof (*ip6)) || (p->ip6_len > 1280))
+	if (p->ip6_len < sizeof (*ip6))
 		return -1;
 
 	// Check packet validity
@@ -175,7 +176,7 @@ recv_packet (int fd, teredo_packet *p)
 #endif
 
 	if (((ip6->ip6_vfc >> 4) != 6)
-	 || ((plen + sizeof (*ip6)) != p->ip6_len))
+	 || ((plen + sizeof (*ip6)) > p->ip6_len))
 		return -1;
 
 	return plen;

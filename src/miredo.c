@@ -1,6 +1,6 @@
 /*
  * miredo.c - Miredo common daemon functions
- * $Id: miredo.c 2010 2007-08-18 08:41:47Z remi $
+ * $Id: miredo.c 2052 2007-10-03 18:53:24Z remi $
  *
  * See "Teredo: Tunneling IPv6 over UDP through NATs"
  * for more information
@@ -10,7 +10,8 @@
  *  Copyright © 2004-2007 Rémi Denis-Courmont.                         *
  *  This program is free software; you can redistribute and/or modify  *
  *  it under the terms of the GNU General Public License as published  *
- *  by the Free Software Foundation; version 2 of the license.         *
+ *  by the Free Software Foundation; version 2 of the license, or (at  *
+ *  your option) any later version.                                    *
  *                                                                     *
  *  This program is distributed in the hope that it will be useful,    *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of     *

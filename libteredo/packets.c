@@ -1,6 +1,6 @@
 /*
  * packets.c - helpers to send Teredo packet from relay/client
- * $Id: packets.c 2028 2007-09-02 19:21:06Z remi $
+ * $Id: packets.c 2052 2007-10-03 18:53:24Z remi $
  *
  * See "Teredo: Tunneling IPv6 over UDP through NATs"
  * for more information
@@ -10,7 +10,8 @@
  *  Copyright © 2004-2007 Rémi Denis-Courmont.                         *
  *  This program is free software; you can redistribute and/or modify  *
  *  it under the terms of the GNU General Public License as published  *
- *  by the Free Software Foundation; version 2 of the license.         *
+ *  by the Free Software Foundation; version 2 of the license, or (at  *
+ *  your option) any later version.                                    *
  *                                                                     *
  *  This program is distributed in the hope that it will be useful,    *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of     *
@@ -163,9 +164,7 @@ teredo_parse_ra (const teredo_packet *restrict packet,
 		return -1;
 
 	const struct ip6_hdr *ip6 = packet->ip6;
-	size_t length = packet->ip6_len;
-
-	length -= sizeof (*ip6);
+	size_t length = ntohs (ip6->ip6_plen);
 
 	if (!IN6_ARE_ADDR_EQUAL (&ip6->ip6_dst,
 	                         cone ? &teredo_cone : &teredo_restrict)
@@ -311,10 +310,10 @@ SendPing (int fd, const union teredo_addr *src, const struct in6_addr *dst)
 int CheckPing (const teredo_packet *packet)
 {
 	const struct ip6_hdr *ip6 = packet->ip6;
-	size_t length = packet->ip6_len;
+	size_t length = ntohs (ip6->ip6_plen);
 
 	if ((ip6->ip6_nxt != IPPROTO_ICMPV6)
-	 || (length < (sizeof (*ip6) + sizeof (struct icmp6_hdr) + PING_PAYLOAD)))
+	 || (length < (sizeof (struct icmp6_hdr) + PING_PAYLOAD)))
 		return -1;
 
 	const struct icmp6_hdr *icmp6 = (const struct icmp6_hdr *)(ip6 + 1);
@@ -334,14 +333,15 @@ int CheckPing (const teredo_packet *packet)
 		 * NOTE 2:
 		 * We don't check source and destination addresses there...
 		 */
-		length -= sizeof (*ip6) + sizeof (*icmp6);
+		length -= sizeof (*icmp6);
 		ip6 = (const struct ip6_hdr *)(icmp6 + 1);
 
 		if ((length < (sizeof (*ip6) + sizeof (*icmp6) + PING_PAYLOAD))
 		 || (ip6->ip6_nxt != IPPROTO_ICMPV6))
 			return -1;
 
-		if (ntohs (ip6->ip6_plen) != (sizeof (*icmp6) + PING_PAYLOAD))
+		length = ntohs (ip6->ip6_plen);
+		if (length != (sizeof (*icmp6) + PING_PAYLOAD))
 			return -1; // not a ping from us
 
 		icmp6 = (const struct icmp6_hdr *)(ip6 + 1);

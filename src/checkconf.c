@@ -1,13 +1,14 @@
 /*
  * checkconf.c - Miredo conf parser unit test
- * $Id: checkconf.c 1938 2007-02-22 20:55:28Z remi $
+ * $Id: checkconf.c 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************
  *  Copyright © 2005-2007 Rémi Denis-Courmont.                         *
  *  This program is free software; you can redistribute and/or modify  *
  *  it under the terms of the GNU General Public License as published  *
- *  by the Free Software Foundation; version 2 of the license.         *
+ *  by the Free Software Foundation; version 2 of the license, or (at  *
+ *  your option) any later version.                                    *
  *                                                                     *
  *  This program is distributed in the hope that it will be useful,    *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of     *

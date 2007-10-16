@@ -1,3 +1,10 @@
+miredo (1.1.3-1) unstable; urgency=low
+
+  * New upstream release fixes reachability issues.
+  * Add iproute dependency (Closes: #445052).
+
+ -- Rémi Denis-Courmont <rdenis@simphalempin.com>  Tue, 16 Oct 2007 19:36:34 +0300
+
 miredo (1.1.2-1) unstable; urgency=low
 
   * New upstream release (Closes: #441842):

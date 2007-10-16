@@ -1,13 +1,14 @@
 /*
  * clock_nanosleep.c - clock_nanosleep() replacement
- * $Id: clock_nanosleep.c 1744 2006-09-03 19:22:35Z remi $
+ * $Id: clock_nanosleep.c 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************
  *  Copyright © 2006 Rémi Denis-Courmont.                              *
  *  This program is free software; you can redistribute and/or modify  *
  *  it under the terms of the GNU General Public License as published  *
- *  by the Free Software Foundation; version 2 of the license.         *
+ *  by the Free Software Foundation; version 2 of the license, or (at  *
+ *  your option) any later version.                                    *
  *                                                                     *
  *  This program is distributed in the hope that it will be useful,    *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of     *

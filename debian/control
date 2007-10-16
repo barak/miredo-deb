@@ -11,7 +11,7 @@ XS-Vcs-Svn: http://anonsvn.remlab.net/svn/pkg-remlab/miredo
 Package: miredo
 Architecture: any
 Pre-Depends: adduser, makedev (>= 2.3.1-62) | udev
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, iproute
 Description: Teredo IPv6 tunneling through NATs
  The Teredo IPv6 tunneling protocol encapsulates IPv6 packets into UDP/IPv4
  datagrams, to allow hosts behind NAT devices to access the IPv6 Internet.
