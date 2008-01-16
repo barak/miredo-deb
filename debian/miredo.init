@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Id: miredo.init 134 2007-08-14 17:13:55Z remi $
+# $Id: miredo.init 158 2007-12-15 10:54:32Z remi $
 #
 # miredo start/stop script for Debian GNU/Linux
 # Author: Rémi Denis-Courmont <rdenis (at) simphalempin (dot) com>
@@ -65,7 +65,7 @@ check_conf_file() {
 }
 
 check_chroot_dir() {
-	if [ -d "/var/run/$NAME" ]; then
+	if ! [ -d "/var/run/$NAME" ]; then
 		mkdir -p "/var/run/$NAME"
 		chmod 0755 "/var/run/$NAME"
 	fi

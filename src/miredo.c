@@ -1,6 +1,6 @@
 /*
  * miredo.c - Miredo common daemon functions
- * $Id: miredo.c 2052 2007-10-03 18:53:24Z remi $
+ * $Id: miredo.c 2092 2008-01-05 14:33:12Z remi $
  *
  * See "Teredo: Tunneling IPv6 over UDP through NATs"
  * for more information
@@ -103,10 +103,22 @@ static void logger (void *dummy, bool error, const char *fmt, va_list ap)
 }
 
 
+static LIBTEREDO_NORETURN void dummy_handler (int signum)
+{
+	(void)signum;
+	abort (); /* never happens */
+}
+
+
 extern int
 miredo (const char *confpath, const char *server_name, int pidfd)
 {
 	sigset_t set, exit_set, reload_set;
+	struct sigaction act =
+	{
+		.sa_handler = dummy_handler,
+		.sa_flags = SA_NOCLDSTOP,
+	};
 	int retval;
 	miredo_conf *cnf = miredo_conf_create (logger, NULL);
 
@@ -119,7 +131,6 @@ miredo (const char *confpath, const char *server_name, int pidfd)
 	sigaddset (&set, SIGINT);
 	sigaddset (&set, SIGQUIT);
 	sigaddset (&set, SIGTERM);
-	sigaddset (&set, SIGCHLD);
 	exit_set = set;
 
 	/* Reload signal */
@@ -127,9 +138,11 @@ miredo (const char *confpath, const char *server_name, int pidfd)
 	reload_set = set;
 
 	/* No-op signal */
+	sigaddset (&set, SIGCHLD);
 	sigaddset (&set, SIGPIPE);
 
 	pthread_sigmask (SIG_BLOCK, &set, NULL);
+	sigaction (SIGCHLD, &act, NULL);
 
 	openlog (miredo_name, LOG_PID | LOG_PERROR, LOG_DAEMON);
 
@@ -172,31 +185,34 @@ miredo (const char *confpath, const char *server_name, int pidfd)
 		}
 
 		// Waits until the miredo process terminates
-		int signum;
-		do
-			sigwait (&set, &signum);
-		while (!sigismember (&reload_set, signum));
+		int status;
 
-		if (sigismember (&exit_set, signum))
+		while (waitpid (pid, &status, WNOHANG) != pid)
 		{
-			syslog (LOG_NOTICE, _("Exiting on signal %d (%s)"),
-			        signum, strsignal (signum));
-			retval = 0;
-		}
-		else
-		{
-			syslog (LOG_NOTICE,
-			        _("Reloading configuration on signal %d (%s)"),
-			        signum, strsignal (signum));
-			retval = 2;
-		}
+			int signum;
 
-		/* Terminate children (if not already done) */
-		if (signum != SIGCHLD)
+			if (sigwait (&set, &signum))
+				continue;
+			if (!sigismember (&reload_set, signum))
+				continue;
+
+			/* Request children termination */
 			kill (pid, SIGTERM);
 
-		int status;
-		while (waitpid (pid, &status, 0) == -1);
+			if (sigismember (&exit_set, signum))
+			{
+				syslog (LOG_NOTICE, _("Exiting on signal %d (%s)"),
+				        signum, strsignal (signum));
+				retval = 0;
+			}
+			else
+			{
+				syslog (LOG_NOTICE,
+				        _("Reloading configuration on signal %d (%s)"),
+				        signum, strsignal (signum));
+				retval = 2;
+			}
+		}
 
 		if (WIFEXITED (status))
 		{
@@ -209,9 +225,9 @@ miredo (const char *confpath, const char *server_name, int pidfd)
 		else
 		if (WIFSIGNALED (status))
 		{
-			signum = WTERMSIG (status);
+			status = WTERMSIG (status);
 			syslog (LOG_INFO, _("Child %d killed by signal %d (%s)"),
-			        (int)pid, signum, strsignal (signum));
+			        (int)pid, status, strsignal (status));
 			retval = 2;
 			sleep (1);
 		}

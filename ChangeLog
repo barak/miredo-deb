@@ -1,9 +1,302 @@
 ------------------------------------------------------------------------
-r2060 | remi | 2007-10-16 19:42:55 +0300 (Tue, 16 Oct 2007) | 2 lines
+r2102 | remi | 2008-01-16 19:09:10 +0200 (Wed, 16 Jan 2008) | 2 lines
 Changed paths:
-   A /tags/1.1.3 (from /trunk:2059)
+   A /tags/1.1.5 (from /trunk:2101)
 
-Tag release 1.1.3
+Tagged release 1.1.5
+
+------------------------------------------------------------------------
+r2101 | remi | 2008-01-16 19:08:34 +0200 (Wed, 16 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+More precise news
+
+------------------------------------------------------------------------
+r2100 | remi | 2008-01-16 19:06:35 +0200 (Wed, 16 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/po/en.po
+   M /trunk/po/en_GB.po
+   M /trunk/po/fr.po
+   M /trunk/po/miredo.pot
+
+Sync PO files
+
+------------------------------------------------------------------------
+r2099 | remi | 2008-01-16 19:04:13 +0200 (Wed, 16 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+More news
+
+------------------------------------------------------------------------
+r2098 | remi | 2008-01-05 23:05:48 +0200 (Sat, 05 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Yet another MacOS X compile fix
+
+------------------------------------------------------------------------
+r2097 | remi | 2008-01-05 22:31:20 +0200 (Sat, 05 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/misc/client-hook.iproute
+
+Don't use $TABLE when we unset it
+
+------------------------------------------------------------------------
+r2096 | remi | 2008-01-05 20:08:54 +0200 (Sat, 05 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/autogen.sh
+
+MacOS ports directory
+
+------------------------------------------------------------------------
+r2095 | remi | 2008-01-05 20:08:39 +0200 (Sat, 05 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Another compile fix for MacOS X
+
+------------------------------------------------------------------------
+r2094 | remi | 2008-01-05 16:43:28 +0200 (Sat, 05 Jan 2008) | 3 lines
+Changed paths:
+   M /trunk/src/privproc.c
+
+Clears the signal mask before running the callback script.
+Some programs could potentially be confused otherwise if they use signals.
+
+------------------------------------------------------------------------
+r2093 | remi | 2008-01-05 16:37:52 +0200 (Sat, 05 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/src/main.c
+
+Handle some almost impossible errors (as in the-whole-system-is-likely-going-to-fail-shortly-anyway)
+
+------------------------------------------------------------------------
+r2092 | remi | 2008-01-05 16:33:12 +0200 (Sat, 05 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/src/miredo.c
+
+Flag the dummy handler has noreturn
+
+------------------------------------------------------------------------
+r2091 | remi | 2008-01-05 16:27:24 +0200 (Sat, 05 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/libteredo/teredo.h
+
+Work around (seemingly bogus) GCC 4.3 warning ~ promotion warning (the thing, we don't use ~ here)
+
+------------------------------------------------------------------------
+r2090 | remi | 2008-01-05 16:21:22 +0200 (Sat, 05 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/libteredo/test/addrcmp.c
+
+Fix casting error
+
+------------------------------------------------------------------------
+r2089 | remi | 2008-01-05 16:20:34 +0200 (Sat, 05 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/libteredo/teredo.h
+
+Completely remove bogus symmetric match macro
+
+------------------------------------------------------------------------
+r2088 | remi | 2008-01-05 16:10:26 +0200 (Sat, 05 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/libteredo/teredo.h
+
+Fix casting error, and remove bogus macro
+
+------------------------------------------------------------------------
+r2087 | remi | 2008-01-05 16:00:00 +0200 (Sat, 05 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/libteredo/test/Makefile.am
+   M /trunk/libteredo/test/addrcmp.c
+
+Restore still-relevant part of addrcmp test
+
+------------------------------------------------------------------------
+r2086 | remi | 2008-01-05 15:57:01 +0200 (Sat, 05 Jan 2008) | 2 lines
+Changed paths:
+   A /trunk/libteredo/test/addrcmp.c (from /trunk/libteredo/test/addrcmp.c:1525)
+
+Resurrect the address comparison regression test
+
+------------------------------------------------------------------------
+r2085 | remi | 2008-01-05 15:46:06 +0200 (Sat, 05 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/libteredo/teredo.h
+
+Make is_valid_teredo_prefix expansion-safe
+
+------------------------------------------------------------------------
+r2084 | remi | 2008-01-05 15:45:16 +0200 (Sat, 05 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/libteredo/teredo.h
+
+Factorize Teredo addresses macros and make them expansion-safe
+
+------------------------------------------------------------------------
+r2083 | remi | 2008-01-05 14:08:43 +0200 (Sat, 05 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/libteredo/clock.c
+
+Work around for systems without POSIX timers
+
+------------------------------------------------------------------------
+r2082 | remi | 2008-01-05 14:08:33 +0200 (Sat, 05 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/compat/clock_nanosleep.c
+
+Small code factorization
+
+------------------------------------------------------------------------
+r2081 | remi | 2008-01-05 11:34:51 +0200 (Sat, 05 Jan 2008) | 2 lines
+Changed paths:
+   M /trunk/libteredo/peerlist.c
+
+Compile fix for non-Judy builds
+
+------------------------------------------------------------------------
+r2080 | remi | 2007-12-22 11:51:52 +0200 (Sat, 22 Dec 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/packets.h
+
+Fix documentation
+
+------------------------------------------------------------------------
+r2079 | remi | 2007-12-22 11:48:03 +0200 (Sat, 22 Dec 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/packets.h
+
+Punctuation
+
+------------------------------------------------------------------------
+r2078 | remi | 2007-11-12 18:35:41 +0200 (Mon, 12 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/src/miredo.c
+
+Put dummy handler for SIGCHLD. Linux (suspiciously) won't deliver SIGCHLD on sigwait without handler.
+
+------------------------------------------------------------------------
+r2077 | remi | 2007-11-11 20:21:24 +0200 (Sun, 11 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/src/main.c
+
+Create PID file in the real process
+
+------------------------------------------------------------------------
+r2076 | remi | 2007-11-11 19:59:44 +0200 (Sun, 11 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/src/main.c
+
+Don't unlock the PID file - this is automatic with close()
+
+------------------------------------------------------------------------
+r2075 | remi | 2007-11-11 19:57:38 +0200 (Sun, 11 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/src/main.c
+
+Unlink PID file before closing it
+
+------------------------------------------------------------------------
+r2074 | remi | 2007-11-11 19:56:16 +0200 (Sun, 11 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/src/main.c
+
+Close PID file on exec (should never happen atm)
+
+------------------------------------------------------------------------
+r2073 | remi | 2007-11-11 19:52:45 +0200 (Sun, 11 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/src/miredo.c
+
+Fix SIGHUP handling
+
+------------------------------------------------------------------------
+r2072 | remi | 2007-11-11 19:25:06 +0200 (Sun, 11 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/peerlist.c
+
+Fix libjudy-induced warning
+
+------------------------------------------------------------------------
+r2071 | remi | 2007-11-08 19:00:02 +0200 (Thu, 08 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+Bump version
+
+------------------------------------------------------------------------
+r2069 | remi | 2007-11-08 18:53:45 +0200 (Thu, 08 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/po/en.po
+   M /trunk/po/en_GB.po
+   M /trunk/po/fr.po
+   M /trunk/po/miredo.pot
+
+More news
+
+------------------------------------------------------------------------
+r2068 | remi | 2007-11-08 18:51:50 +0200 (Thu, 08 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/configure.ac
+
+News for 1.1.4
+
+------------------------------------------------------------------------
+r2067 | remi | 2007-11-08 18:49:08 +0200 (Thu, 08 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/misc/client-hook.iproute
+
+Don't flush route cache
+
+------------------------------------------------------------------------
+r2066 | remi | 2007-11-07 18:33:41 +0200 (Wed, 07 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/misc/client-hook.iproute
+
+Fix and cleanup previous commit
+
+------------------------------------------------------------------------
+r2065 | remi | 2007-11-07 18:30:47 +0200 (Wed, 07 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/misc/client-hook.iproute
+
+Automatically use source routing if configured
+
+------------------------------------------------------------------------
+r2064 | remi | 2007-11-07 18:28:39 +0200 (Wed, 07 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/misc/client-hook.bsd
+   M /trunk/misc/client-hook.iproute
+
+Disable source routing by default
+
+------------------------------------------------------------------------
+r2063 | remi | 2007-11-07 18:16:04 +0200 (Wed, 07 Nov 2007) | 2 lines
+Changed paths:
+   M /trunk/misc/client-hook.iproute
+
+Don't use Debian-specific which
+
+------------------------------------------------------------------------
+r2062 | remi | 2007-10-28 20:14:34 +0200 (Sun, 28 Oct 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Fix unlikely race condition whereby we receive a packet from the server before we sent any.
+
+------------------------------------------------------------------------
+r2061 | remi | 2007-10-28 20:14:02 +0200 (Sun, 28 Oct 2007) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+Bump version
 
 ------------------------------------------------------------------------
 r2059 | remi | 2007-10-16 19:40:32 +0300 (Tue, 16 Oct 2007) | 2 lines

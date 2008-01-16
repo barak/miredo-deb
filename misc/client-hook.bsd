@@ -1,8 +1,8 @@
-#!/bin/sh
+#! /bin/sh
 #
 # Miredo client hook script for BSD
 # Untested and incomplete FIXME FIXME FIXME
-# $Id: client-hook.bsd 1937 2007-02-22 20:13:52Z remi $
+# $Id: client-hook.bsd 2064 2007-11-07 16:28:39Z remi $
 
 IFCONFIG=/sbin/ifconfig
 ROUTE=/sbin/route

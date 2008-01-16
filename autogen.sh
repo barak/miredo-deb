@@ -1,6 +1,6 @@
 #!/bin/sh
 # SVN package rebuild script
-# $Id: autogen.sh 1947 2007-04-12 15:26:58Z remi $
+# $Id: autogen.sh 2096 2008-01-05 18:08:54Z remi $
 #
 # ***********************************************************************
 # *  Copyright © 2002-2005 Rémi Denis-Courmont.                         *
@@ -34,7 +34,8 @@ echo "Autoreconf in $PWD ..."
 autoreconf -sfi
 unlink po/Makevars.template
 
-for d in /usr /usr/local /opt/gettext /usr/pkg "$HOME"; do
+for d in /usr /usr/local /opt/gettext /opt/local/share/gettext \
+		/usr/pkg "$HOME"; do
 	if test -f "$d/share/gettext/gettext.h" ; then
 		ln -sf "$d/share/gettext/gettext.h" include/gettext.h
 	fi
