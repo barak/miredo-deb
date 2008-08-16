@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Id: miredo-server.init 158 2007-12-15 10:54:32Z remi $
+# $Id: miredo-server.init 158M 2008-08-16 13:40:36Z (local) $
 #
 # miredo-server start/stop script for Debian GNU/Linux
 # Author: Rémi Denis-Courmont <rdenis (at) simphalempin (dot) com>
@@ -9,7 +9,7 @@
 #	       used to provide a Teredo server.
 #
 ### BEGIN INIT INFO
-# Provides:          
+# Provides:          teredo-server
 # Required-Start:    $local_fs $remote_fs $network $syslog $time
 # Required-Stop:     $local_fs $remote_fs $syslog
 # Short-Description: Teredo server

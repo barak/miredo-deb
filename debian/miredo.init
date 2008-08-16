@@ -1,22 +1,18 @@
 #! /bin/sh
-# $Id: miredo.init 158 2007-12-15 10:54:32Z remi $
+# $Id: miredo.init 187M 2008-08-16 13:40:42Z (local) $
 #
 # miredo start/stop script for Debian GNU/Linux
 # Author: Rémi Denis-Courmont <rdenis (at) simphalempin (dot) com>
 #
-# chkconfig: 345 17 83
-# description: Starts and stops the Miredo daemon \
-#	       used to provide IPv6 tunneling over UDP through NAT.
-#
 ### BEGIN INIT INFO
-# Provides:          
-# Required-Start:    $local_fs $remote_fs $network $syslog $time
+# Provides:          teredo
+# Required-Start:    $local_fs $remote_fs $network $syslog
 # Required-Stop:     $local_fs $remote_fs $syslog
 # Short-Description: Teredo IPv6 tunnel
 # Description:       Miredo daemon for tunneling of IPv6 through NAT
 #                    within UDP/IPv4, as specified by the Teredo mechanism.
-# Default-Start:     3 4 5
-# Default-Stop:      0 1 2 6
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
 ### END INIT INFO
 
 

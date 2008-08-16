@@ -1,3 +1,15 @@
+miredo (1.1.5-2) unstable; urgency=low
+
+  * Remove bogus chkconfig entries from initscript.
+  * Initscript does not need $time (miredo does not use the RTC anymore).
+  * Initscript starts at runlevel 2, consistent with postinst script.
+  * Initscript Provides not empty.
+  * Switch to libcap2-dev (Closes: #492633).
+  * Switch to debhelper compatibility level 7.
+  * Update standards version to 3.8.0.
+
+ -- Rémi Denis-Courmont <rdenis@simphalempin.com>  Sat, 16 Aug 2008 16:27:26 +0300
+
 miredo (1.1.5-1) unstable; urgency=low
 
   * New upstream release fixes signal handling and script.
