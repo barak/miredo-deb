@@ -1,6 +1,5 @@
 /*
  * v4global.c - Check whether an IPv4 address is global
- * $Id: v4global.c 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************

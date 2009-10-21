@@ -1,8 +1,6 @@
 /**
  * @file maintain.h
  * @brief Teredo client qualification & maintenance
- *
- * $Id: maintain.h 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************
@@ -33,6 +31,9 @@ typedef struct teredo_state
 {
 	/** Teredo client IPv6 address */
 	union teredo_addr addr;
+
+	/** Local IPv4 address */
+	uint32_t ipv4;
 
 	/** Teredo tunnel Maximum Transmission Unit (bytes) */
 	uint16_t mtu; 

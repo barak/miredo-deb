@@ -1,6 +1,5 @@
 /*
  * clearenv.c - clearenv() replacement
- * $Id: clearenv.c 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************
@@ -34,6 +33,6 @@ extern char **environ;
 
 int clearenv (void)
 {
-	environ = NULL;
+	environ[0] = NULL;
 	return 0;
 }

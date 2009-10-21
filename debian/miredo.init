@@ -1,11 +1,11 @@
 #! /bin/sh
-# $Id: miredo.init 187M 2008-08-16 13:40:42Z (local) $
+# $Id: miredo.init 230 2009-10-21 18:53:15Z remi $
 #
 # miredo start/stop script for Debian GNU/Linux
 # Author: Rémi Denis-Courmont <rdenis (at) simphalempin (dot) com>
 #
 ### BEGIN INIT INFO
-# Provides:          teredo
+# Provides:          miredo
 # Required-Start:    $local_fs $remote_fs $network $syslog
 # Required-Stop:     $local_fs $remote_fs $syslog
 # Short-Description: Teredo IPv6 tunnel
@@ -41,14 +41,20 @@ check_start() {
 		echo "$DAEMON not starting."
 		exit 0
 	fi
-	if [ -e /proc/sys/kernel/modprobe ]; then
-		`cat /proc/sys/kernel/modprobe` tun 2>/dev/null
-		`cat /proc/sys/kernel/modprobe` ipv6 2>/dev/null
-	fi
-	if [ ! -e /dev/net/tun ]; then
-		echo "/dev/net/tun does not exist."
-		echo "$DAEMON cannot be started."
-		exit 0
+	if [ `uname -s` = Linux ]; then
+		if [ -e /proc/sys/kernel/modprobe ]; then
+			`cat /proc/sys/kernel/modprobe` tun 2>/dev/null
+			`cat /proc/sys/kernel/modprobe` ipv6 2>/dev/null
+		fi
+		if [ ! -e /dev/net/tun ]; then
+			echo "/dev/net/tun does not exist."
+			echo "$DAEMON cannot be started."
+			exit 0
+		fi
+	elif [ `uname -s` = GNU/kFreeBSD ]; then
+		if ! kldstat | grep if_tun; then
+			kldload if_tun
+		fi
 	fi
 }
 
@@ -69,7 +75,8 @@ check_chroot_dir() {
 
 
 case "$1" in
-  start)
+  start|force-start)
+	[ "x$1" = "xforce-start" ] && START_MIREDO=true
 	check_start
 	check_chroot_dir
 	log_daemon_msg "Starting $DESC" "$NAME"
@@ -77,7 +84,7 @@ case "$1" in
 		--exec "$DAEMON" --oknodo -- $DAEMON_ARGS
 	log_end_msg $?
 	;;
-  stop)
+  stop|force-stop)
 	log_daemon_msg "Stopping $DESC" "$NAME"
 	start-stop-daemon --stop --quiet --pidfile "$PIDFILE" \
 		--retry 1 --oknodo
@@ -98,7 +105,7 @@ case "$1" in
 	$0 start
 	;;
   *)
-	echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}" >&2
+	echo "Usage: $SCRIPTNAME {start|force-start|stop|force-stop|restart|reload|force-reload}" >&2
 	exit 1
 	;;
 esac

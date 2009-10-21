@@ -2,8 +2,6 @@
  * @file teredo-udp.h
  * @brief Low-level Teredo packets handling
  *
- * $Id: teredo-udp.h 2052 2007-10-03 18:53:24Z remi $
- *
  * See "Teredo: Tunneling IPv6 over UDP through NATs"
  * for more information
  */
@@ -59,6 +57,8 @@ typedef struct teredo_packet
 	uint16_t orig_port;
 	/** Origin indication IPv4 address, or 0 if absent */
 	uint32_t orig_ipv4;
+	/** Destination IPv4 address */
+	uint32_t dest_ipv4;
 
 	/** Whether a authentication header is present at all */
 	bool     auth_present;

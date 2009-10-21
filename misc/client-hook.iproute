@@ -3,8 +3,6 @@
 # Miredo client hook script for Linux/iproute2
 # Copyright © 2007 Rémi Denis-Courmont.
 # Distributed under the terms of the GNU General Public License version 2.
-#
-# $Id: client-hook.iproute 2097 2008-01-05 20:31:20Z remi $
 
 # Linux iproute2 path:
 IP="/sbin/ip"
@@ -29,6 +27,9 @@ if ! test -x "$IP"; then
 	echo "$0: iproute2 is required! Please install it." >&2
 	exit 1
 fi
+
+# Nothing to do with destroy event
+if test "$STATE" = "destroy"; then exit 0; fi
 
 # If the source routing table is not configured, ignore it.
 if ! "$IP" route show table "$TABLE" >/dev/null 2>&1; then

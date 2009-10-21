@@ -1,6 +1,5 @@
 /*
  * clock_nanosleep.c - clock_nanosleep() replacement
- * $Id: clock_nanosleep.c 2082 2008-01-05 12:08:33Z remi $
  */
 
 /***********************************************************************

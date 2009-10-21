@@ -1,7 +1,7 @@
 # Makefile.am - src/ directory Makefile for miredo
 
 # ***********************************************************************
-# *  Copyright © 2004-2006 Rémi Denis-Courmont.                         *
+# *  Copyright © 2004-2009 Rémi Denis-Courmont.                         *
 # *  This program is free software; you can redistribute and/or modify  *
 # *  it under the terms of the GNU General Public License as published  *
 # *  by the Free Software Foundation; version 2 of the license, or (at  *
@@ -28,9 +28,12 @@ LIBCAP = @LIBCAP@
 
 AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir) -D_REENTRANT \
 	-DLOCALEDIR=\"$(localedir)\" -DSYSCONFDIR=\"$(sysconfdir)\" \
-	-DLOCALSTATEDIR=\"$(localstatedir)\"
+	-DLOCALSTATEDIR=\"$(localstatedir)\" \
+	-DPKGLIBDIR=\"$(pkglibdir)\"
 
-sbin_PROGRAMS = miredo miredo-server miredo-checkconf isatapd
+sbin_PROGRAMS = miredo miredo-server miredo-checkconf
+pkglib_PROGRAMS =
+EXTRA_PROGRAMS = privproc
 noinst_LTLIBRARIES = libmiredo.la
 TESTS =
 
@@ -49,12 +52,16 @@ libmiredo_la_LDFLAGS = -no-undefined -static
 
 # miredo
 miredo_SOURCES = relayd.c
-if TEREDO_CLIENT
-miredo_SOURCES += privproc.c privproc.h
-TESTS += miredo-checkconf
-endif
 miredo_LDADD = ../libtun6/libtun6.la ../libteredo/libteredo.la libmiredo.la \
 		@LIBRT@ $(LIBINTL)
+
+# privproc
+miredo_privproc_SOURCES = privproc.c privproc.h
+miredo_privproc_LDADD = ../libteredo/libteredo.la $(LIBCAP)
+if TEREDO_CLIENT
+pkglib_PROGRAMS += miredo-privproc
+TESTS += miredo-checkconf
+endif
 
 # miredo-server
 miredo_server_SOURCES = serverd.c
@@ -63,10 +70,6 @@ miredo_server_LDADD = ../libteredo/libteredo-server.la libmiredo.la $(LIBINTL)
 # miredo-checkconf
 miredo_checkconf_SOURCES = checkconf.c
 miredo_checkconf_LDADD = libmiredo.la $(LIBINTL)
-
-# isatapd
-isatapd_SOURCES = isatapd.c
-isatapd_LDADD = ../libtun6/libtun6.la libmiredo.la $(LIBINTL)
 
 install-exec-local:
 	$(install_sh) -d "$(DESTDIR)$(localstatedir)/run"

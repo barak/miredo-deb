@@ -1,8 +1,6 @@
 /**
  * @file v4global.h
  * @brief Check whether an IPv4 address is global
- *
- * $Id: v4global.h 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************

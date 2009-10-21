@@ -29,7 +29,7 @@ common-install-arch::
 
 install/miredo::
 	-rm -Rf debian/tmp/usr/include
-	-rm -Rf debian/tmp/usr/lib
+	-rm -Rf debian/tmp/usr/lib/*.*a
 
 install/miredo-server::
 	mkdir -p debian/tmp/usr/share/doc/miredo-server/examples/
@@ -38,6 +38,8 @@ install/miredo-server::
 
 binary-post-install/miredo::
 	cp -f debian/miredo.conf debian/miredo/etc
+	install -m 0755 debian/miredo.ifup \
+		debian/miredo/etc/network/if-up.d/miredo
 
 binary-post-install/miredo-server::
 	cp -f debian/miredo-server.conf debian/miredo-server/etc/

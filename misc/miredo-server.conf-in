@@ -1,7 +1,6 @@
 #! @sbindir@/miredo-server -f -c
 #
 # Sample configuration file for miredo-server
-# $Id: miredo-server.conf-in 1715 2006-08-24 16:05:53Z remi $
 
 # Please refer to the miredo-server.conf(5) manpage for details.
 

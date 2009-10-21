@@ -1,7 +1,6 @@
 RELEASE NOTES for Miredo
-stable release version 1.1.5
+stable release version 1.2.1
 =============================
-$Id: NEWS 2101 2008-01-16 17:08:34Z remi $
 
   This is a stable release. There are no known outstanding issues. We
 strongly encourage users from previous releases to upgrade, as some important
@@ -12,6 +11,32 @@ fixes are included.
 informations on this program, see README. For syntax details and
 changes, run “miredo -h” to get help. For detailled internal changes, see
 ChangeLog.
+
+===========================================================================
+STABLE RELEASE 1.2.1 : Minor bug fixes
+
+# Fix deadlock if Miredo fails to start.
+
+===========================================================================
+STABLE RELEASE 1.2.0 : Minor portability fix
+
+# Fix compilation on FreeBSD
+
+===========================================================================
+STABLE RELEASE 1.1.7 : Major bug fixes
+
+# Fix crash in client more (regression from 1.1.6).
+# Thread-safety fixes (with regards to sigaction and strerror).
+# Fix client hook script for FreeBSD
+
+===========================================================================
+STABLE RELEASE 1.1.6 : Minor bug fixes
+
+# Fix compiling on FreeBSD.
+# Incomplete ISATAP support removed.
+  In the mean time, proper support was added within the Linux kernel.
+# Fix client error handling when resolving server name.
+# Fix server link-local address, compatibility with Vista clients.
 
 ===========================================================================
 STABLE RELEASE 1.1.5 : Minor bug fixes
@@ -197,7 +222,7 @@ BETA RELEASE 0.9.3 : Major features enhancement, major bug fixes
 =============================================================================
 BETA RELEASE 0.9.1 : Major features enhancement
 
-# Created and referenced a developper mailing list: <miredo-devel at
+# Created and referenced a developer mailing list: <miredo-devel at
   remlab.net>. Send a mail with subject “subscribe” to <miredo-devel-request
   at remlab.net> to subscribe.
 

@@ -1,6 +1,5 @@
 /*
  * debug.h - libteredo transparent threading debugging
- * $Id: debug.h 2056 2007-10-16 16:23:57Z remi $
  */
 
 /***********************************************************************

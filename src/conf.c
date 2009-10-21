@@ -1,6 +1,5 @@
 /*
  * conf.c - Configuration text file parsing definition
- * $Id: conf.c 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************

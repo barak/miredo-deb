@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Id: miredo-server.init 158M 2008-08-16 13:40:36Z (local) $
+# $Id: miredo-server.init 230 2009-10-21 18:53:15Z remi $
 #
 # miredo-server start/stop script for Debian GNU/Linux
 # Author: Rémi Denis-Courmont <rdenis (at) simphalempin (dot) com>
@@ -9,13 +9,13 @@
 #	       used to provide a Teredo server.
 #
 ### BEGIN INIT INFO
-# Provides:          teredo-server
+# Provides:          miredo-server
 # Required-Start:    $local_fs $remote_fs $network $syslog $time
 # Required-Stop:     $local_fs $remote_fs $syslog
 # Short-Description: Teredo server
 # Description:       miredo-server daemon to provide a Teredo server
-# Default-Start:     3 4 5
-# Default-Stop:      0 1 2 6
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
 ### END INIT INFO
 
 
@@ -57,7 +57,8 @@ check_chroot_dir() {
 
 
 case "$1" in
-  start)
+  start|force-start)
+	[ "x$1" = "xforce-start" ] && START_MIREDO_SERVER=true
 	check_start
 	check_chroot_dir
 	log_daemon_msg "Starting $DESC" "$NAME"
@@ -65,7 +66,7 @@ case "$1" in
 		--exec "$DAEMON" --oknodo -- $DAEMON_ARGS
 	log_end_msg $?
 	;;
-  stop)
+  stop|force-stop)
 	log_daemon_msg "Stopping $DESC" "$NAME"
 	start-stop-daemon --stop --quiet --pidfile "$PIDFILE" \
 		--retry 1 --oknodo
@@ -84,7 +85,7 @@ case "$1" in
 	$0 start
 	;;
   *)
-	echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}" >&2
+	echo "Usage: $SCRIPTNAME {start|force-start|stop|force-stop|restart|reload|force-reload}" >&2
 	exit 1
 	;;
 esac

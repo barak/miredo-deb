@@ -1,6 +1,5 @@
 /*
  * Various fixes for obsolete, or plain broken, C libraries.
- * $Id: fixups.h 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************
@@ -87,4 +86,8 @@ EXTERN int clock_nanosleep (clockid_t id, int flags,
  */
 # undef _POSIX_CLOCK_SELECTION
 # define _POSIX_CLOCK_SELECTION (-1)
+#endif
+
+#ifndef HAVE_FDATASYNC
+EXTERN int fdatasync (int fd);
 #endif

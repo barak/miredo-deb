@@ -1,6 +1,5 @@
 /*
  * security.c - helpers for security-related stuff
- * $Id: security.c 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************

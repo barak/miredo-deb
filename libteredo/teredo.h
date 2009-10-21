@@ -2,8 +2,6 @@
  * @file teredo.h
  * @brief Common Teredo protocol typedefs
  *
- * $Id: teredo.h 2091 2008-01-05 14:27:24Z remi $
- *
  * See "Teredo: Tunneling IPv6 over UDP through NATs"
  * for more information
  */

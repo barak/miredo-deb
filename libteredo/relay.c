@@ -1,6 +1,5 @@
 /*
  * relay.c - Teredo relay core
- * $Id: relay.c 2056 2007-10-16 16:23:57Z remi $
  *
  * See "Teredo: Tunneling IPv6 over UDP through NATs"
  * for more information
@@ -56,6 +55,9 @@
 # include "security.h"
 #endif
 #include "debug.h"
+#ifndef NDEBUG
+# include <sys/socket.h>
+#endif
 
 struct teredo_tunnel
 {
@@ -192,6 +194,12 @@ teredo_state_change (const teredo_state *state, void *self)
 		teredo_list_reset (tunnel->list, MAX_PEERS);
 		tunnel->up_cb (tunnel->opaque,
 		               &tunnel->state.addr.ip6, tunnel->state.mtu);
+
+#ifndef NDEBUG
+		char b[INET_ADDRSTRLEN];
+		debug ("Internal IPv4 address: %s",
+		       inet_ntop (AF_INET, &tunnel->state.ipv4, b, sizeof (b)));
+#endif
 	}
 	else
 	if (previously_up)
@@ -200,7 +208,7 @@ teredo_state_change (const teredo_state *state, void *self)
 	/*
 	 * NOTE: the lock is retained until here to ensure notifications remain
 	 * properly ordered. Unfortunately, we cannot be re-entrant from within
-	* up_cb/down_cb.
+	 * up_cb/down_cb.
 	 */
 	pthread_rwlock_unlock (&tunnel->state_lock);
 }
@@ -334,7 +342,7 @@ int teredo_transmit (teredo_tunnel *restrict tunnel,
 	/*
 	 * We can afford to use a slightly outdated state, but we cannot afford to
 	 * use an inconsistent state, hence this lock.
-	*/
+	 */
 	pthread_rwlock_unlock (&tunnel->state_lock);
 
 #ifdef MIREDO_TEREDO_CLIENT
@@ -426,7 +434,8 @@ int teredo_transmit (teredo_tunnel *restrict tunnel,
 	}
 
 	debug ("Connecting %s: %strusted, %svalid, %u pings, %u bubbles",
-	       inet_ntop(AF_INET, &p->mapped_addr, b, sizeof (b)),
+	       created ? "<unknown>" : inet_ntop(AF_INET, &p->mapped_addr,
+	                                         b, sizeof (b)),
 	       p->trusted       ? "" : "NOT ",
 	       IsValid (p, now) ? "" : "NOT ",
 	       p->pings, p->bubbles);
@@ -555,8 +564,7 @@ teredo_run_inner (teredo_tunnel *restrict tunnel,
 	// Checks packet
 	if (packet->ip6_len < sizeof (*ip6))
      	{
-		debug ("Packet size invalid: %u bytes.",
-		       (unsigned)packet->ip6_len);
+		debug ("Packet size invalid: %zu bytes.", packet->ip6_len);
 		return; // invalid packet
 	}
 

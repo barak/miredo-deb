@@ -1,6 +1,5 @@
 /*
  * miredo.c - Miredo common daemon functions
- * $Id: miredo.c 2092 2008-01-05 14:33:12Z remi $
  *
  * See "Teredo: Tunneling IPv6 over UDP through NATs"
  * for more information
@@ -36,7 +35,7 @@
 #include <stdarg.h>
 
 #include <pthread.h> // pthread_sigmask()
-#include <signal.h> // sigaction()
+#include <signal.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -68,15 +67,14 @@ drop_privileges (void)
 	if ((miredo_chrootdir != NULL)
 	 && (chroot (miredo_chrootdir) || chdir ("/")))
 	{
-		syslog (LOG_ALERT, _("Error (%s): %s\n"),
-				"chroot", strerror (errno));
+		syslog (LOG_ALERT, _("Error (%s): %m"), "chroot");
 		return -1;
 	}
 
 	// Definitely drops privileges
 	if (setuid (unpriv_uid))
 	{
-		syslog (LOG_ALERT, _("Error (%s): %s\n"), "setuid", strerror (errno));
+		syslog (LOG_ALERT, _("Error (%s): %m"), "setuid");
 		return -1;
 	}
 
@@ -103,22 +101,10 @@ static void logger (void *dummy, bool error, const char *fmt, va_list ap)
 }
 
 
-static LIBTEREDO_NORETURN void dummy_handler (int signum)
-{
-	(void)signum;
-	abort (); /* never happens */
-}
-
-
 extern int
 miredo (const char *confpath, const char *server_name, int pidfd)
 {
 	sigset_t set, exit_set, reload_set;
-	struct sigaction act =
-	{
-		.sa_handler = dummy_handler,
-		.sa_flags = SA_NOCLDSTOP,
-	};
 	int retval;
 	miredo_conf *cnf = miredo_conf_create (logger, NULL);
 
@@ -139,10 +125,8 @@ miredo (const char *confpath, const char *server_name, int pidfd)
 
 	/* No-op signal */
 	sigaddset (&set, SIGCHLD);
-	sigaddset (&set, SIGPIPE);
 
 	pthread_sigmask (SIG_BLOCK, &set, NULL);
-	sigaction (SIGCHLD, &act, NULL);
 
 	openlog (miredo_name, LOG_PID | LOG_PERROR, LOG_DAEMON);
 
@@ -168,8 +152,7 @@ miredo (const char *confpath, const char *server_name, int pidfd)
 		switch (pid)
 		{
 			case -1:
-				syslog (LOG_ALERT, _("Error (%s): %s\n"), "fork",
-				        strerror (errno));
+				syslog (LOG_ALERT, _("Error (%s): %m"), "fork");
 				continue;
 
 			case 0:
@@ -184,35 +167,34 @@ miredo (const char *confpath, const char *server_name, int pidfd)
 				miredo_conf_clear (cnf, 0);
 		}
 
-		// Waits until the miredo process terminates
-		int status;
+		int status, signum;
 
-		while (waitpid (pid, &status, WNOHANG) != pid)
+		do
 		{
-			int signum;
-
-			if (sigwait (&set, &signum))
-				continue;
-			if (!sigismember (&reload_set, signum))
-				continue;
-
-			/* Request children termination */
-			kill (pid, SIGTERM);
-
-			if (sigismember (&exit_set, signum))
-			{
-				syslog (LOG_NOTICE, _("Exiting on signal %d (%s)"),
-				        signum, strsignal (signum));
-				retval = 0;
-			}
-			else
-			{
-				syslog (LOG_NOTICE,
-				        _("Reloading configuration on signal %d (%s)"),
-				        signum, strsignal (signum));
-				retval = 2;
-			}
+			while (sigwait (&set, &signum));
 		}
+		while (!sigismember (&set, signum));
+
+		/* Request children termination */
+		kill (pid, SIGTERM);
+
+		if (sigismember (&exit_set, signum))
+		{
+			syslog (LOG_NOTICE, _("Exiting on signal %d (%s)"),
+			        signum, strsignal (signum));
+			retval = 0;
+		}
+		else
+		if (sigismember (&reload_set, signum))
+		{
+			syslog (LOG_NOTICE,
+			        _("Reloading configuration on signal %d (%s)"),
+			        signum, strsignal (signum));
+			retval = 2;
+		}
+
+		// Waits until the miredo process terminates
+		while (waitpid (pid, &status, 0) != pid);
 
 		if (WIFEXITED (status))
 		{

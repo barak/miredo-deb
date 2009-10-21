@@ -1,3 +1,20 @@
+miredo (1.2.1-1) unstable; urgency=low
+
+  * New upstream version.
+  * Initscript handles force-start and force-stop (Closes: #538290)
+    (Patch by Jakob Haufe).
+  * Fix miredo-server runlevels (Closes: #541225)
+    (Patch by Petter Reinholdtsen).
+  * Put udev before makedev as pre-dependency (Closes: #546881).
+  * Remove /var/run subdirectories from the packages.
+  * Update standards version to 3.8.3.
+  * Make the package installable on FreeBSD kernel (Closes: #550114).
+  * Remove legacy libfreebsd-dev dependency (Closes: #552603).
+  * Fix LSB initscripts Provides statements to match package names.
+  * Reload miredo when an IPv4 interface is brought up (LP: #304958).
+
+ -- Rémi Denis-Courmont <rdenis@simphalempin.com>  Wed, 21 Oct 2009 21:38:02 +0300
+
 miredo (1.1.5-2) unstable; urgency=low
 
   * Remove bogus chkconfig entries from initscript.

@@ -1,6 +1,5 @@
 /*
  * serverd.c - Teredo server implementation daemon
- * $Id: serverd.c 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************

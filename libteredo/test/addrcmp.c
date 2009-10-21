@@ -1,6 +1,5 @@
 /*
  * addrcmp.c - Libteredo addresses comparison regression tests
- * $Id: addrcmp.c 2090 2008-01-05 14:21:22Z remi $
  */
 
 /***********************************************************************

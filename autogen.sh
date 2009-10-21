@@ -1,9 +1,8 @@
-#!/bin/sh
-# SVN package rebuild script
-# $Id: autogen.sh 2096 2008-01-05 18:08:54Z remi $
+#! /bin/sh
+# GIT package rebuild script
 #
 # ***********************************************************************
-# *  Copyright © 2002-2005 Rémi Denis-Courmont.                         *
+# *  Copyright © 2002-2008 Rémi Denis-Courmont.                         *
 # *  This program is free software; you can redistribute and/or modify  *
 # *  it under the terms of the GNU General Public License as published  *
 # *  by the Free Software Foundation; version 2 of the license.         *
@@ -37,7 +36,7 @@ unlink po/Makevars.template
 for d in /usr /usr/local /opt/gettext /opt/local/share/gettext \
 		/usr/pkg "$HOME"; do
 	if test -f "$d/share/gettext/gettext.h" ; then
-		ln -sf "$d/share/gettext/gettext.h" include/gettext.h
+		cp -f -- "$d/share/gettext/gettext.h" include/gettext.h
 	fi
 done
 
@@ -48,6 +47,10 @@ echo "Error: can't find <gettext.h> convenience C header."
 echo "Please put a link to it by hand as include/gettext.h"
 exit 1
 }
+sed \
+	-e 's,!__STRICT_ANSI__,!defined(__STRICT_ANSI__),g' \
+	-e 's,if ENABLE_NLS,ifdef ENABLE_NLS,g' \
+	-i include/gettext.h
 
 echo ""
 echo "Type \`./configure' to configure the package for your system"
