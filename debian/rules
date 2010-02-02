@@ -24,6 +24,14 @@ endif
 
 DEB_UPDATE_RCD_PARAMS_miredo = "defaults"
 
+pre-build:: stamp-autoreconf
+clean::
+	rm -f stamp-autoreconf
+
+stamp-autoreconf:
+	autoreconf -fi
+	touch $@
+
 common-install-arch::
 	find debian/tmp/ -name '*isatap*' -exec rm -f -- {} ';'
 

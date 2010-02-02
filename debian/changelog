@@ -1,3 +1,18 @@
+miredo (1.2.2-1) unstable; urgency=low
+
+  * New upstream version:
+    - fixes signal handling (Closes: #554577) (LP: #485377).
+    - drop merged libfreebsd-dev libtun6 patch.
+  * Update my mail address and copyright statements.
+  * Backport FreeBSD >= 7.2 fix from 1.2-stable branch.
+  * Run autoreconf before build (Closes: #558583).
+  * Build-Depend on automake and cvs as autoreconf requires both.
+  * Fix closefrom() usage (returns void on FreeBSD) in src/main.c
+    (backported from upstream 91ae0afe2cda419a733699a0479021882ea950aa)
+  * Update standards version to 3.8.4.
+
+ -- Rémi Denis-Courmont <remi@remlab.net>  Tue, 02 Feb 2010 23:17:25 +0200
+
 miredo (1.2.1-1) unstable; urgency=low
 
   * New upstream version.

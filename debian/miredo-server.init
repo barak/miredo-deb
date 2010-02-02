@@ -1,8 +1,8 @@
 #! /bin/sh
-# $Id: miredo-server.init 230 2009-10-21 18:53:15Z remi $
+# $Id: miredo-server.init 240 2010-01-30 20:38:04Z remi $
 #
 # miredo-server start/stop script for Debian GNU/Linux
-# Author: Rémi Denis-Courmont <rdenis (at) simphalempin (dot) com>
+# Author: Rémi Denis-Courmont <remi (at) remlab (dot) net>
 #
 # chkconfig: 345 17 83
 # description: Starts and stops the miredo-server daemon \
