@@ -1,3 +1,13 @@
+miredo (1.2.3-1) unstable; urgency=low
+
+  * New upstream version:
+    - drop merged closefrom() FreeBSD patch.
+  * Build-Depend on autopoint (Closes: #572475)
+    instead of gettext and cvs.
+  * Switch to dpkg-source 3.0 (quilt) format.
+
+ -- Rémi Denis-Courmont <remi@remlab.net>  Thu, 04 Mar 2010 17:28:08 +0200
+
 miredo (1.2.2-1) unstable; urgency=low
 
   * New upstream version:

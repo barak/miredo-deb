@@ -1,3 +1,60 @@
+commit 5e4c7a8a48e2aa2fcc20ceefeb7a97f57e36a1de
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Sat Apr 10 12:24:13 2010 +0300
+
+    Sync PO files
+
+commit 440ca7d4789091ce4f4373807b25280ae8fd6dbe
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Sat Apr 10 12:23:53 2010 +0300
+
+    Bump version and news for 1.2.3
+
+commit 7f1d39a4482d9e83b0cf864c837e18f65133c2f6
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Sat Apr 10 12:22:55 2010 +0300
+
+    Update French locale
+
+commit 336549f1ae686c62746140ce1da921372ec67640
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Wed Jan 20 19:47:59 2010 +0200
+
+    Fix aliasing violations
+    
+    Unfortunately, I am not sure how portable this code is.
+
+commit 3a354b5ab2221bc5b6aa1916b335a940a2bf7798
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Sun Dec 13 18:17:39 2009 +0200
+
+    Update my email address
+
+commit 7e357ead3e60bf69d1b3a65cf51aee594510c42c
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Sat Dec 5 14:43:35 2009 +0200
+
+    Update THANKS
+
+commit 91ae0afe2cda419a733699a0479021882ea950aa
+Author: Andrius Morkūnas <hinokind@gmail.com>
+Date:   Wed Dec 2 19:46:58 2009 +0200
+
+    Fix build on FreeBSD versions higher than 7.2
+    
+    FreeBSD now has it's own closefrom(2), but it's defined as void, not int
+    and breaks miredo build.
+    This patch fixes build on FreeBSD 7.2-STABLE (r195694) and later. Hopefully,
+    without breaking anything else.
+    
+    Signed-off-by: Rémi Denis-Courmont <remi@remlab.net>
+
+commit 29ef1c52d91f6c15bcb97102d96d3cdb4bd1f526
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Thu Nov 5 21:05:47 2009 +0200
+
+    Sync PO files for 1.2.2
+
 commit 2cff05b0f30116e139d21d5a2d79634580e684d4
 Author: Rémi Denis-Courmont <remi@remlab.net>
 Date:   Thu Nov 5 21:03:27 2009 +0200
