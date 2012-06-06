@@ -1,6 +1,6 @@
 /*
  * maintain.c - Teredo client qualification & maintenance
- * $Id: maintain.c 1748 2006-09-16 16:42:53Z remi $
+ * $Id: maintain.c 1779 2006-10-05 16:07:35Z remi $
  *
  * See "Teredo: Tunneling IPv6 over UDP through NATs"
  * for more information
@@ -55,13 +55,6 @@
 #include "v4global.h" // is_ipv4_global_unicast()
 #include "debug.h"
 
-#include <compat/barrier.h>
-
-#define QUALIFIED	0
-#define PROBE_RESTRICT	2
-#define PROBE_SYMMETRIC	3
-#define NOT_RUNNING	(-1)
-
 #if (_POSIX_CLOCK_SELECTION - 0 >= 0) && (_POSIX_MONOTONIC_CLOCK - 0 >= 0)
 static inline void gettime (struct timespec *now)
 {
@@ -85,10 +78,12 @@ static inline void gettime (struct timespec *now)
 struct teredo_maintenance
 {
 	pthread_t thread;
-	pthread_mutex_t lock;
+	pthread_mutex_t outer;
+	pthread_mutex_t inner;
 	pthread_cond_t received;
+	pthread_cond_t processed;
+
 	const teredo_packet *incoming;
-	pthread_barrier_t processed;
 
 	int fd;
 	struct
@@ -194,10 +189,12 @@ maintenance_recv (const teredo_packet *restrict packet, uint32_t server_ip,
 static int wait_reply (teredo_maintenance *restrict m,
                        const struct timespec *restrict deadline)
 {
+	assert (m->incoming == NULL);
+
 	/* Ignore EINTR */
 	for (;;)
 	{
-		int val = pthread_cond_timedwait (&m->received, &m->lock, deadline);
+		int val = pthread_cond_timedwait (&m->received, &m->inner, deadline);
 
 		switch (val)
 		{
@@ -223,7 +220,7 @@ static void wait_reply_ignore (teredo_maintenance *restrict m,
 	while (wait_reply (m, deadline) == 0)
 	{
 		m->incoming = NULL;
-		(void)pthread_barrier_wait (&m->processed);
+		pthread_cond_signal (&m->processed);
 	}
 }
 
@@ -280,16 +277,29 @@ static inline void maintenance_thread (teredo_maintenance *m)
 	teredo_state *c_state = &m->state.state;
 	uint32_t server_ip = 0, server_ip2 = 0;
 	unsigned count = 0;
-	int state = PROBE_RESTRICT;
+	enum
+	{
+		QUALIFIED,
+		PROBE_RESTRICT,
+		PROBE_SYMMETRIC
+	} state = PROBE_RESTRICT;
+	enum
+	{
+		TERR_NONE,
+		TERR_BLACKHOLE,
+		TERR_SYMM
+	} last_error = TERR_NONE;
 
-	pthread_mutex_lock (&m->lock);
+	pthread_mutex_lock (&m->inner);
 
 	/*
 	 * Qualification/maintenance procedure
 	 */
-	pthread_cleanup_push (cleanup_unlock, &m->lock);
+	pthread_cleanup_push (cleanup_unlock, &m->inner);
 	for (;;)
 	{
+		assert (c_state->up == (state == QUALIFIED));
+
 		/* Resolve server IPv4 addresses */
 		while (server_ip == 0)
 		{
@@ -333,6 +343,21 @@ static inline void maintenance_thread (teredo_maintenance *m)
 		uint8_t nonce[8];
 		uint32_t dst = (state == PROBE_RESTRICT) ? server_ip2 : server_ip;
 		teredo_get_nonce (deadline.tv_sec, dst, htons (IPPORT_TEREDO), nonce);
+
+		if (state == PROBE_RESTRICT)
+		{
+			/*
+			 * Send a cone probe with an incorrect nonce - so that we won't
+			 * process any would-be reply. This helps detects some symmetric
+			 * NATs that would otherwise be seen as restricted NATs.
+			 */
+			uint8_t bad_nonce[8];
+			for (unsigned i = 0; i < sizeof (nonce); i++)
+				bad_nonce[i] = nonce[i] ^ 0x96;
+
+			teredo_send_rs (m->fd, server_ip, bad_nonce, true);
+		}
+
 		teredo_send_rs (m->fd, dst, nonce, false);
 
 		int val = 0;
@@ -352,7 +377,7 @@ static inline void maintenance_thread (teredo_maintenance *m)
 			                           nonce, false, &mtu, &newaddr);
 			m->incoming = NULL;
 
-			(void)pthread_barrier_wait (&m->processed);
+			pthread_cond_signal (&m->processed);
 			if (accept)
 				break;
 		}
@@ -380,7 +405,11 @@ static inline void maintenance_thread (teredo_maintenance *m)
 
 				count = 0;
 				/* No response from server */
-				syslog (LOG_INFO, _("No reply from Teredo server"));
+				if (last_error != TERR_BLACKHOLE)
+				{
+					syslog (LOG_INFO, _("No reply from Teredo server"));
+					last_error = TERR_BLACKHOLE;
+				}
 				/* Wait some time before retrying */
 				state = PROBE_RESTRICT;
 				sleep = RestartDelay;
@@ -388,56 +417,65 @@ static inline void maintenance_thread (teredo_maintenance *m)
 		}
 		else
 		/* RA received and parsed succesfully */
-		switch (state)
+		if (state == PROBE_RESTRICT)
 		{
-			case QUALIFIED:
-				/* packet received, already qualified */
-				count = 0;
-				/* Success: schedule next NAT binding maintenance */
-				sleep = SERVER_PING_DELAY;
-				if (memcmp (&c_state->addr, &newaddr, sizeof (newaddr))
-				|| (c_state->mtu != mtu))
+			state = PROBE_SYMMETRIC;
+			memcpy (&c_state->addr, &newaddr, sizeof (c_state->addr));
+			gettime (&deadline);
+		}
+		else
+		{
+			count = 0;
+
+			if ((c_state->addr.teredo.client_port != newaddr.teredo.client_port)
+			 || (c_state->addr.teredo.client_ip != newaddr.teredo.client_ip))
+			{
+				state = PROBE_RESTRICT;
+
+				if (state == PROBE_SYMMETRIC)
+				{
+					// Symmetric NAT failure
+					if (last_error != TERR_SYMM)
+					{
+						last_error = TERR_SYMM;
+						syslog (LOG_ERR,
+						        _("Unsupported symmetric NAT detected."));
+					}
+					sleep = RestartDelay; // Wait some time before retry
+				}
+				else
+				{
+					// External mapping changed! Reset everything.
+					c_state->up = false;
+					m->state.cb (c_state, m->state.opaque);
+					gettime (&deadline);
+				}
+			}
+			else
+			{
+				if (state != QUALIFIED)
+				{
+					syslog (LOG_INFO, _("Qualified (NAT type: %s)"),
+					        _("restricted"));
+					state = QUALIFIED;
+				}
+
+				if ((!c_state->up)
+				 || memcmp (&c_state->addr, &newaddr, sizeof (c_state->addr))
+				 || (c_state->mtu != mtu))
 				{
 					memcpy (&c_state->addr, &newaddr, sizeof (c_state->addr));
 					c_state->mtu = mtu;
-		
-					syslog (LOG_NOTICE, _("Teredo address/MTU changed"));
+					c_state->up = true;
+
+					syslog (LOG_NOTICE, _("New Teredo address/MTU"));
 					m->state.cb (c_state, m->state.opaque);
 				}
-				break;
 
-			case PROBE_RESTRICT:
-				state = PROBE_SYMMETRIC;
-				memcpy (&c_state->addr, &newaddr, sizeof (c_state->addr));
-				gettime (&deadline);
-				break;
-
-			case PROBE_SYMMETRIC:
-				if ((c_state->addr.teredo.client_port != newaddr.teredo.client_port)
-				 || (c_state->addr.teredo.client_ip != newaddr.teredo.client_ip))
-				{
-					/* Symmetric NAT failure */
-					/* Wait some time before retrying */
-					syslog (LOG_ERR,
-					        _("Unsupported symmetric NAT detected."));
-					count = 0;
-					state = PROBE_RESTRICT;
-					sleep = RestartDelay;
-					break;
-				}
-
-				syslog (LOG_INFO, _("Qualified (NAT type: %s)"),
-				        _("restricted"));
-				count = 0;
-				state = QUALIFIED;
-				memcpy (&c_state->addr, &newaddr, sizeof (c_state->addr));
-				c_state->mtu = mtu;
-				c_state->up = true;
-				m->state.cb (c_state, m->state.opaque);
-
-				/* Success: schedule NAT binding maintenance */
+				/* Success: schedule next NAT binding maintenance */
+				last_error = TERR_NONE;
 				sleep = SERVER_PING_DELAY;
-				break;
+			}
 		}
 
 		/* WAIT UNTIL NEXT SOLICITATION */
@@ -462,7 +500,7 @@ static void *do_maintenance (void *opaque)
 }
 
 /**
- * Creates and starts a Teredo client maintenance procedure thread
+ * Creates and starts a Teredo client maintenance procedure thread.
  *
  * @return NULL on error.
  */
@@ -490,29 +528,33 @@ teredo_maintenance_start (int fd, teredo_state_cb cb, void *opaque,
 	m->server2 = (s2 != NULL) ? strdup (s2) : NULL;
 	if ((s2 != NULL) != (m->server2 != NULL))
 		goto error;
+	else
+	{
+		pthread_condattr_t attr;
 
-	pthread_condattr_t attr;
+		pthread_condattr_init (&attr);
+		(void)pthread_condattr_setclock (&attr, CLOCK_MONOTONIC);
+		/* EINVAL: CLOCK_MONOTONIC unknown */
 
-	pthread_condattr_init (&attr);
-	(void)pthread_condattr_setclock (&attr, CLOCK_MONOTONIC);
-	/* EINVAL: CLOCK_MONOTONIC unknown */
+		pthread_cond_init (&m->received, &attr);
+		pthread_condattr_destroy (&attr);
+	}
 
-	pthread_cond_init (&m->received, &attr);
-	pthread_condattr_destroy (&attr);
-
-	pthread_mutex_init (&m->lock, NULL);
-	pthread_barrier_init (&m->processed, NULL, 2);
+	pthread_cond_init (&m->processed, NULL);
+	pthread_mutex_init (&m->outer, NULL);
+	pthread_mutex_init (&m->inner, NULL);
 
 	int err = pthread_create (&m->thread, NULL, do_maintenance, m);
 	if (err == 0)
 		return m;
 
 	syslog (LOG_ALERT, _("Error (%s): %s\n"), "pthread_create",
-			strerror (err));
+	        strerror (err));
 
-	pthread_barrier_destroy (&m->processed);
+	pthread_cond_destroy (&m->processed);
 	pthread_cond_destroy (&m->received);
-	pthread_mutex_destroy (&m->lock);
+	pthread_mutex_destroy (&m->outer);
+	pthread_mutex_destroy (&m->inner);
 
 error:
 	if (m->server2 != NULL)
@@ -531,9 +573,10 @@ void teredo_maintenance_stop (teredo_maintenance *m)
 	pthread_cancel (m->thread);
 	pthread_join (m->thread, NULL);
 
-	pthread_barrier_destroy (&m->processed);
+	pthread_cond_destroy (&m->processed);
 	pthread_cond_destroy (&m->received);
-	pthread_mutex_destroy (&m->lock);
+	pthread_mutex_destroy (&m->inner);
+	pthread_mutex_destroy (&m->outer);
 
 	if (m->server2 != NULL)
 		free (m->server2);
@@ -544,12 +587,16 @@ void teredo_maintenance_stop (teredo_maintenance *m)
 
 /**
  * Passes a Teredo packet to a maintenance thread for processing.
+ * Thread-safe, not async-cancel safe.
  *
  * @return 0 if processed, -1 if not a valid router solicitation.
  */
 int teredo_maintenance_process (teredo_maintenance *restrict m,
                                 const teredo_packet *restrict packet)
 {
+	assert (m != NULL);
+	assert (packet != NULL);
+
 	/*
 	 * We don't accept router advertisement without nonce.
 	 * It is far too easy to spoof such packets.
@@ -560,10 +607,19 @@ int teredo_maintenance_process (teredo_maintenance *restrict m,
 	 || memcmp (packet->ip6 + 24, &teredo_restrict, 16))
 		return -1;
 
-	(void)pthread_mutex_lock (&m->lock);
+	pthread_mutex_lock (&m->outer);
+	pthread_mutex_lock (&m->inner);
+
 	m->incoming = packet;
-	(void)pthread_cond_signal (&m->received);
-	(void)pthread_mutex_unlock (&m->lock);
-	(void)pthread_barrier_wait (&m->processed);
+	pthread_cond_signal (&m->received);
+
+	/* Waits for maintenance thread to process packet... */
+	do
+		pthread_cond_wait (&m->processed, &m->inner);
+	while (m->incoming != NULL);
+
+	pthread_mutex_unlock (&m->inner);
+	pthread_mutex_unlock (&m->outer);
+
 	return 0;
 }

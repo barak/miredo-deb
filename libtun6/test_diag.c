@@ -1,6 +1,6 @@
 /*
  * diagnose.c - Libtun6 sanity test
- * $Id: test_diag.c 1741 2006-09-03 16:21:10Z remi $
+ * $Id: test_diag.c 1780 2006-10-05 16:31:52Z remi $
  */
 
 /***********************************************************************
@@ -49,10 +49,17 @@ int main (void)
 	}
 
 	t = tun6_create (NULL);
-	if (t != NULL)
+	if (t == NULL)
+	{
+		if ((res == 0) && (errno != EPERM) && (errno != EACCES))
+			return 1;
+	}
+	else
+	{
 		tun6_destroy (t);
-	if ((t == NULL) != (res != 0))
-		return 1;
+		if (res)
+			return 1;
+	}
 
 	if (t == NULL)
 	{

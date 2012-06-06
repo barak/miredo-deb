@@ -1,6 +1,6 @@
 /*
  * packets.c - helpers to send Teredo packet from relay/client
- * $Id: packets.c 1726 2006-08-27 08:13:18Z remi $
+ * $Id: packets.c 1773 2006-10-04 19:15:48Z remi $
  *
  * See "Teredo: Tunneling IPv6 over UDP through NATs"
  * for more information
@@ -305,15 +305,20 @@ teredo_parse_ra (const teredo_packet *restrict packet,
 	}
 
 	/*
-	 * FIXME: look for the Teredo prefix (TEREDO_PREFIX).
-	 * At the moment, it is wiser to still accept experimental 3ffe:831f::/32,
-	 * so we accept any "acceptable" prefix.
+	 * NOTE: bug-to-bug-to-bug (sic!) compatibility with Microsoft servers.
+	 * These severs still advertise the obsolete broken experimental Teredo
+	 * prefix. That's obviously for backward (but kinda useless) compatibility
+	 * with Windows XP SP1/SP2 clients, that only accept that broken prefix,
+	 * unless a dedicated registry key is merged.
+	 *
+	 * This work-around works because Microsoft servers handles both the
+	 * standard and the experimental prefixes.
 	 */
+	if (newaddr->teredo.prefix == htonl (TEREDO_PREFIX_OBSOLETE))
+		newaddr->teredo.prefix = htonl (TEREDO_PREFIX);
+
 	if (!is_valid_teredo_prefix (newaddr->teredo.prefix))
-	{
-		syslog (LOG_WARNING, _("Invalid Teredo prefix received"));
 		return -1;
-	}
 
 	// only accept the cone flag:
 	newaddr->teredo.flags = cone ? htons (TEREDO_FLAG_CONE) : 0;

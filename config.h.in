@@ -80,9 +80,6 @@
 /* Define to 1 if you have the `pselect' function. */
 #undef HAVE_PSELECT
 
-/* Define to 1 if you have the `pthread_barrier_wait' function. */
-#undef HAVE_PTHREAD_BARRIER_WAIT
-
 /* Define to 1 if you have the `pthread_condattr_setclock' function. */
 #undef HAVE_PTHREAD_CONDATTR_SETCLOCK
 

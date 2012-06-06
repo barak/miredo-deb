@@ -58,7 +58,7 @@ check_PROGRAMS = test-strlcpy$(EXEEXT)
 subdir = compat
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in clearenv.c \
 	clock_gettime.c clock_nanosleep.c closefrom.c pselect.c \
-	pthread_barrier_wait.c strlcpy.c
+	strlcpy.c
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/binreloc.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/gettext.m4 \
@@ -218,7 +218,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AM_CPPFLAGS = -D_REENTRANT -I@top_srcdir@
 noinst_LTLIBRARIES = libcompat.la
-libcompat_la_SOURCES = fixups.h dummy.c barrier.h pselect.h
+libcompat_la_SOURCES = fixups.h dummy.c pselect.h
 libcompat_la_LIBADD = $(LTLIBOBJS)
 libcompat_la_LDFLAGS = -no-undefined
 TESTS = $(check_PROGRAMS)
@@ -290,7 +290,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/clock_nanosleep.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/closefrom.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/pselect.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/pthread_barrier_wait.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/strlcpy.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-strlcpy.Po@am__quote@
