@@ -2,7 +2,7 @@
  * @file teredo.h
  * @brief Common Teredo protocol typedefs
  *
- * $Id: teredo.h 2031 2007-09-02 19:52:17Z remi $
+ * $Id: teredo.h 2057 2007-10-16 16:32:24Z remi $
  *
  * See "Teredo: Tunneling IPv6 over UDP through NATs"
  * for more information
@@ -12,7 +12,8 @@
  *  Copyright © 2004-2007 Rémi Denis-Courmont.                         *
  *  This program is free software; you can redistribute and/or modify  *
  *  it under the terms of the GNU General Public License as published  *
- *  by the Free Software Foundation; version 2 of the license.         *
+ *  by the Free Software Foundation; version 2 of the license, or (at  *
+ *  your option) any later version.                                    *
  *                                                                     *
  *  This program is distributed in the hope that it will be useful,    *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of     *
@@ -70,7 +71,7 @@ union teredo_addr
 
 /* Non-standard flags (taken from draft-ietf-ngtrans-shipworm-07) */
 #define TEREDO_FLAG_RANDOM	0x4000
-#define TEREDO_RANDOM_MASK	0xc3ff
+#define TEREDO_RANDOM_MASK	0x3cff
 
 #define ip6_teredo( ip6 ) (((union teredo_addr *)ip6)->teredo)
 

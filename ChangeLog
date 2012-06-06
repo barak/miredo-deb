@@ -1,4 +1,203 @@
 ------------------------------------------------------------------------
+r2060 | remi | 2007-10-16 19:42:55 +0300 (Tue, 16 Oct 2007) | 2 lines
+Changed paths:
+   A /tags/1.1.3 (from /trunk:2059)
+
+Tag release 1.1.3
+
+------------------------------------------------------------------------
+r2059 | remi | 2007-10-16 19:40:32 +0300 (Tue, 16 Oct 2007) | 2 lines
+Changed paths:
+   M /trunk/po/en.po
+   M /trunk/po/en_GB.po
+   M /trunk/po/fr.po
+   M /trunk/po/miredo.pot
+
+Sync PO files
+
+------------------------------------------------------------------------
+r2058 | remi | 2007-10-16 19:32:43 +0300 (Tue, 16 Oct 2007) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+News for 1.1.3
+
+------------------------------------------------------------------------
+r2057 | remi | 2007-10-16 19:32:24 +0300 (Tue, 16 Oct 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/teredo.h
+
+Fix random bit mask (ouch)
+
+------------------------------------------------------------------------
+r2056 | remi | 2007-10-16 19:23:57 +0300 (Tue, 16 Oct 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/debug.h
+   M /trunk/libteredo/relay.c
+
+Fix non-debug compilation errors
+
+------------------------------------------------------------------------
+r2055 | remi | 2007-10-11 21:24:58 +0300 (Thu, 11 Oct 2007) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+Error out when Judy is absent and not explicitly disabled
+
+------------------------------------------------------------------------
+r2054 | remi | 2007-10-03 22:09:28 +0300 (Wed, 03 Oct 2007) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+Some news
+
+------------------------------------------------------------------------
+r2053 | remi | 2007-10-03 21:56:23 +0300 (Wed, 03 Oct 2007) | 2 lines
+Changed paths:
+   M /trunk/Makefile.am
+   M /trunk/compat/Makefile.am
+   M /trunk/configure.ac
+   M /trunk/doc/Makefile.am
+   M /trunk/libteredo/Makefile.am
+   M /trunk/libteredo/test/Makefile.am
+   M /trunk/libtun6/Makefile.am
+   M /trunk/m4/Makefile.am
+   M /trunk/m4/flags.m4
+   M /trunk/m4/sockaddr.m4
+   M /trunk/misc/Makefile.am
+   M /trunk/src/Makefile.am
+
+Fix license infos
+
+------------------------------------------------------------------------
+r2052 | remi | 2007-10-03 21:53:24 +0300 (Wed, 03 Oct 2007) | 2 lines
+Changed paths:
+   M /trunk/compat/clearenv.c
+   M /trunk/compat/clock_gettime.c
+   M /trunk/compat/clock_nanosleep.c
+   M /trunk/compat/closefrom.c
+   M /trunk/compat/fdatasync.c
+   M /trunk/compat/fixups.h
+   M /trunk/compat/strlcpy.c
+   M /trunk/compat/test-closefrom.c
+   M /trunk/compat/test-strlcpy.c
+   M /trunk/libteredo/checksum.h
+   M /trunk/libteredo/clock.c
+   M /trunk/libteredo/clock.h
+   M /trunk/libteredo/debug.h
+   M /trunk/libteredo/init.c
+   M /trunk/libteredo/maintain.c
+   M /trunk/libteredo/maintain.h
+   M /trunk/libteredo/mire.c
+   M /trunk/libteredo/packets.c
+   M /trunk/libteredo/packets.h
+   M /trunk/libteredo/peerlist.c
+   M /trunk/libteredo/peerlist.h
+   M /trunk/libteredo/relay.c
+   M /trunk/libteredo/security.c
+   M /trunk/libteredo/security.h
+   M /trunk/libteredo/server.c
+   M /trunk/libteredo/server.h
+   M /trunk/libteredo/stub.c
+   M /trunk/libteredo/teredo-udp.h
+   M /trunk/libteredo/teredo.c
+   M /trunk/libteredo/teredo.h
+   M /trunk/libteredo/test/clock.c
+   M /trunk/libteredo/test/hmac.c
+   M /trunk/libteredo/test/list.c
+   M /trunk/libteredo/test/stresslist.c
+   M /trunk/libteredo/test/teredo.c
+   M /trunk/libteredo/test/v4global.c
+   M /trunk/libteredo/tunnel.h
+   M /trunk/libteredo/v4global.c
+   M /trunk/libteredo/v4global.h
+   M /trunk/libtun6/diag.c
+   M /trunk/libtun6/test_diag.c
+   M /trunk/libtun6/tun6.c
+   M /trunk/libtun6/tun6.h
+   M /trunk/src/checkconf.c
+   M /trunk/src/conf.c
+   M /trunk/src/conf.h
+   M /trunk/src/isatapd.c
+   M /trunk/src/main.c
+   M /trunk/src/miredo.c
+   M /trunk/src/miredo.h
+   M /trunk/src/privproc.c
+   M /trunk/src/privproc.h
+   M /trunk/src/relayd.c
+   M /trunk/src/serverd.c
+
+Switch back to GPLv2+
+
+------------------------------------------------------------------------
+r2051 | remi | 2007-09-21 17:39:30 +0300 (Fri, 21 Sep 2007) | 2 lines
+Changed paths:
+   M /trunk/misc/client-hook.iproute
+
+Set the MTU according to environment variable
+
+------------------------------------------------------------------------
+r2050 | remi | 2007-09-20 20:16:17 +0300 (Thu, 20 Sep 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/packets.c
+   M /trunk/libteredo/relay.c
+
+Tolerate larger-than-needed packets in relay/client
+
+------------------------------------------------------------------------
+r2049 | remi | 2007-09-20 20:16:05 +0300 (Thu, 20 Sep 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/server.c
+
+Tolerate larger-than-needed UDP packets in Teredo server
+
+------------------------------------------------------------------------
+r2048 | remi | 2007-09-20 19:58:13 +0300 (Thu, 20 Sep 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/mire.c
+
+Be more tolerant with regard to encapsulated packet size
+
+------------------------------------------------------------------------
+r2047 | remi | 2007-09-20 19:51:20 +0300 (Thu, 20 Sep 2007) | 3 lines
+Changed paths:
+   M /trunk/libteredo/relay.c
+
+Merge relay part of the debug messages patch
+with minor fixes
+
+------------------------------------------------------------------------
+r2046 | remi | 2007-09-20 19:39:35 +0300 (Thu, 20 Sep 2007) | 3 lines
+Changed paths:
+   M /trunk/THANKS
+   M /trunk/libteredo/server.c
+
+Merge Teredo server part of the debug messages patch
+(with cosmetic changes)
+
+------------------------------------------------------------------------
+r2045 | remi | 2007-09-15 11:57:39 +0300 (Sat, 15 Sep 2007) | 2 lines
+Changed paths:
+   M /trunk/src/isatapd.c
+
+Fix ARM compiler warning (from Debian buildd)
+
+------------------------------------------------------------------------
+r2044 | remi | 2007-09-13 22:12:33 +0300 (Thu, 13 Sep 2007) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+Bump version number
+
+------------------------------------------------------------------------
+r2043 | remi | 2007-09-13 22:12:15 +0300 (Thu, 13 Sep 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/debug.h
+   M /trunk/libteredo/relay.c
+
+Move debug() to debug.h so it could be reused
+
+------------------------------------------------------------------------
 r2041 | remi | 2007-09-13 20:39:49 +0300 (Thu, 13 Sep 2007) | 2 lines
 Changed paths:
    M /trunk/po/en.po

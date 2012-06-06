@@ -7,7 +7,8 @@ dnl ***********************************************************************
 dnl *  Copyright © 2002-2007 Rémi Denis-Courmont.                         *
 dnl *  This program is free software; you can redistribute and/or modify  *
 dnl *  it under the terms of the GNU General Public License as published  *
-dnl *  by the Free Software Foundation; version 2 of the license.         *
+dnl *  by the Free Software Foundation; version 2 of the license, or (at  *
+dnl *  your option) any later version.                                    *
 dnl *                                                                     *
 dnl *  This program is distributed in the hope that it will be useful,    *
 dnl *  but WITHOUT ANY WARRANTY; without even the implied warranty of     *
@@ -20,7 +21,7 @@ dnl *  http://www.gnu.org/copyleft/gpl.html                               *
 dnl ***********************************************************************
 
 AC_COPYRIGHT([Copyright (C) 2004-2007 Remi Denis-Courmont])
-AC_INIT(miredo, 1.1.2, miredo-devel_no_bulk_mail@remlab.net)
+AC_INIT(miredo, 1.1.3, miredo-devel_no_bulk_mail@remlab.net)
 AC_PREREQ(2.59c)
 INVOCATION="$0 $ac_configure_args"
 
@@ -165,29 +166,24 @@ AC_SUBST(LIBCAP)
 # Judy
 AC_ARG_WITH(Judy,
 	    [AS_HELP_STRING(--with-Judy,
-	    		    [use Judy dynamic arrays (default automatic)])])
-use_Judy=no
+	    		    [use Judy dynamic arrays (default enabled)])],,
+	    [with_Judy=yes])
 LIBJUDY=""
 AS_IF([test "${with_Judy}" != "no"], [
 	AC_CHECK_HEADERS([Judy.h], [
 		AC_CHECK_LIB(Judy, JudyHSIns, [
-			use_Judy=yes
 			LIBJUDY="-lJudy"
 			AC_DEFINE(HAVE_LIBJUDY, 1,
 				  [Define to 1 if you the `Judy' library (-lJudy).])
-		], [
-			AS_IF([test "${with_Judy}"], [
-				AC_MSG_ERROR([Judy requested while not available])
-			])
 		])
 	])
+	AS_IF([test "x${LIBJUDY}" = "x"], [
+		AC_MSG_WARN([If you don't care about scalability, re-run configure with '--without-Judy'.])
+		AC_MSG_ERROR([Required Judy dynamic arrays library missing.])
+	])
+
 ])
 AC_SUBST(LIBJUDY)
-AC_MSG_CHECKING([whether to use Judy dynamic arrays])
-AC_MSG_RESULT([${use_Judy}])
-AS_IF([test "${use_Judy}" = "no"], [
-	AC_MSG_WARN([Miredo is considerably less scalable without libJudy!])
-])
 
 
 # Test coverage build
@@ -203,6 +199,7 @@ AS_IF([test "${enable_coverage}" != "no"], [
 ], [
 	AC_MSG_RESULT(no)
 ])
+
 
 # Teredo client
 AC_MSG_CHECKING([whether to include Teredo client support])

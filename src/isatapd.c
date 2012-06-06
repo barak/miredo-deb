@@ -1,13 +1,14 @@
 /*
  * isatapd.c - basic ISATAP daemon implementation
- * $Id: isatapd.c 1984 2007-08-13 15:14:23Z remi $
+ * $Id: isatapd.c 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************
  *  Copyright © 2004-2007 Rémi Denis-Courmont.                         *
  *  This program is free software; you can redistribute and/or modify  *
  *  it under the terms of the GNU General Public License as published  *
- *  by the Free Software Foundation; version 2 of the license.         *
+ *  by the Free Software Foundation; version 2 of the license, or (at  *
+ *  your option) any later version.                                    *
  *                                                                     *
  *  This program is distributed in the hope that it will be useful,    *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of     *
@@ -291,7 +292,7 @@ static LIBTEREDO_NORETURN void *decap_thread (void *data)
 		ssize_t val = recv (conf.fd, &buf, sizeof (buf), 0);
 
 		if ((val < (ssize_t)sizeof (struct ip))
-		 || (ntohs (buf.ip4.ip_len) != val))
+		 || ((ssize_t)ntohs (buf.ip4.ip_len) != val))
 			continue;
 
 		val -= buf.ip4.ip_hl << 2;

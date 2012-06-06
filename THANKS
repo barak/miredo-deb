@@ -20,6 +20,6 @@ Marcus Rückert		OpenSUSE package
 Jari Korva		UMTS testing, bug report
 Robert B. Quattlebaum	Mac OSX package, patches, suggestions...
 Martin Uecker		ARM bug report
-Lutz Donnerhacke	Server filtering regression fix
+Lutz Donnerhacke	Server regression fix, debug messages patch
 
-$Id: THANKS 2038 2007-09-13 16:59:17Z remi $
+$Id: THANKS 2046 2007-09-20 16:39:35Z remi $
