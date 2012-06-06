@@ -1,6 +1,6 @@
 /*
  * clock_nanosleep.c - clock_nanosleep() replacement
- * $Id: clock_nanosleep.c 2052 2007-10-03 18:53:24Z remi $
+ * $Id: clock_nanosleep.c 2082 2008-01-05 12:08:33Z remi $
  */
 
 /***********************************************************************
@@ -30,6 +30,8 @@
 int clock_nanosleep (clockid_t id, int flags, const struct timespec *ts,
                      struct timespec *ots)
 {
+	int ret;
+
 	if (id != CLOCK_REALTIME)
 		return EINVAL;
 
@@ -57,9 +59,11 @@ int clock_nanosleep (clockid_t id, int flags, const struct timespec *ts,
 		mine.tv_sec = ts->tv_sec - mine.tv_sec;
 
 		/* With TIMER_ABSTIME, clock_nanosleep ignores <ots> */
-		return nanosleep (&mine, NULL) ? errno : 0;
+		ret = nanosleep (&mine, NULL);
 	}
+	else
+		ret = nanosleep (ts, ots);
 
-	return nanosleep (ts, ots) ? errno : 0;
+	return ret ? errno : 0;
 }
 

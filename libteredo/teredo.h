@@ -2,7 +2,7 @@
  * @file teredo.h
  * @brief Common Teredo protocol typedefs
  *
- * $Id: teredo.h 2057 2007-10-16 16:32:24Z remi $
+ * $Id: teredo.h 2091 2008-01-05 14:27:24Z remi $
  *
  * See "Teredo: Tunneling IPv6 over UDP through NATs"
  * for more information
@@ -73,42 +73,32 @@ union teredo_addr
 #define TEREDO_FLAG_RANDOM	0x4000
 #define TEREDO_RANDOM_MASK	0x3cff
 
-#define ip6_teredo( ip6 ) (((union teredo_addr *)ip6)->teredo)
+#define ip6_teredo( ip6 ) (&((const union teredo_addr *)(ip6))->teredo)
 
 /* NOTE: these macros expect 4-byte aligned addresses structs */
 #define IN6_IS_TEREDO_ADDR_CONE( ip6 ) \
-	(((const union teredo_addr *)(ip6))->teredo.flags \
-	& htons (TEREDO_FLAG_CONE))
+	(ip6_teredo (ip6)->flags & htons (TEREDO_FLAG_CONE))
 
 #define IN6_TEREDO_PREFIX( ip6 ) \
-	(((const union teredo_addr *)ip6)->teredo.prefix)
+	(ip6_teredo (ip6)->prefix)
 #define IN6_TEREDO_SERVER( ip6 ) \
-	(((const union teredo_addr *)ip6)->teredo.server_ip)
+	(ip6_teredo (ip6)->server_ip)
 #define IN6_TEREDO_IPV4( ip6 ) \
-	(((const union teredo_addr *)ip6)->teredo.client_ip ^ 0xffffffff)
+	(ip6_teredo (ip6)->client_ip ^ 0xffffffff)
 #define IN6_TEREDO_PORT( ip6 ) \
-	(((const union teredo_addr *)ip6)->teredo.client_port ^ 0xffff)
+	(ip6_teredo (ip6)->client_port ^ 0xffff)
+#define IN6_TEREDO_FLAGS( ip6 ) \
+	(ip6_teredo (ip6)->flags)
 
 #define IN6_MATCHES_TEREDO_CLIENT( ip6, ip4, port ) \
-	in6_matches_teredo_client ((const union teredo_addr *)ip6, ip4, port)
-
-#define IN6_MATCHES_TEREDO_SYMMETRIC( ip6, ip4, port ) \
-	in6_matches_teredo_symmetric ((const union teredo_addr *)ip6, ip4, port)
+	in6_matches_teredo_client (ip6, ip4, port)
 
 static inline int
-in6_matches_teredo_client (const union teredo_addr *ip6,
+in6_matches_teredo_client (const struct in6_addr *ip6,
                            uint32_t ip, uint16_t port)
 {
-	return (ip == IN6_TEREDO_IPV4 (ip6)) && (port == IN6_TEREDO_PORT (ip6));
-}
-
-static inline int
-in6_matches_teredo_symmetric (const union teredo_addr *ip6,
-                              uint32_t ip, uint16_t port)
-{
-	return (ip == IN6_TEREDO_IPV4 (ip6))
-	    && ((port == IN6_TEREDO_PORT (ip6)
-	     || (ip6->teredo.flags & TEREDO_RANDOM_MASK)));
+	return !((ip ^ IN6_TEREDO_IPV4 (ip6))
+	      || (port ^ IN6_TEREDO_PORT (ip6)));
 }
 
 /*
@@ -117,7 +107,7 @@ in6_matches_teredo_symmetric (const union teredo_addr *ip6,
  * except the multicast range (ff00::/8).
  */
 #define is_valid_teredo_prefix( prefix ) \
-	((prefix & 0xff000000) != 0xff000000)
+	(((prefix) & 0xff000000) != 0xff000000)
 
 /*
  * Teredo headers

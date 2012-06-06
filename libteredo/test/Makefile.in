@@ -52,7 +52,8 @@ build_triplet = @build@
 host_triplet = @host@
 check_PROGRAMS = libteredo-list$(EXEEXT) libteredo-stresslist$(EXEEXT) \
 	libteredo-test$(EXEEXT) libteredo-clock$(EXEEXT) \
-	libteredo-v4global$(EXEEXT) md5test$(EXEEXT) $(am__EXEEXT_1)
+	libteredo-v4global$(EXEEXT) libteredo-addrcmp$(EXEEXT) \
+	md5test$(EXEEXT) $(am__EXEEXT_1)
 @TEREDO_CLIENT_TRUE@am__append_1 = libteredo-hmac
 subdir = libteredo/test
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
@@ -71,6 +72,10 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 @TEREDO_CLIENT_TRUE@am__EXEEXT_1 = libteredo-hmac$(EXEEXT)
+am_libteredo_addrcmp_OBJECTS = addrcmp.$(OBJEXT)
+libteredo_addrcmp_OBJECTS = $(am_libteredo_addrcmp_OBJECTS)
+libteredo_addrcmp_LDADD = $(LDADD)
+libteredo_addrcmp_DEPENDENCIES = ../libteredo.la
 am_libteredo_clock_OBJECTS = clock.$(OBJEXT)
 libteredo_clock_OBJECTS = $(am_libteredo_clock_OBJECTS)
 libteredo_clock_LDADD = $(LDADD)
@@ -111,14 +116,14 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libteredo_clock_SOURCES) $(libteredo_hmac_SOURCES) \
-	$(libteredo_list_SOURCES) $(libteredo_stresslist_SOURCES) \
-	$(libteredo_test_SOURCES) $(libteredo_v4global_SOURCES) \
-	$(md5test_SOURCES)
-DIST_SOURCES = $(libteredo_clock_SOURCES) $(libteredo_hmac_SOURCES) \
-	$(libteredo_list_SOURCES) $(libteredo_stresslist_SOURCES) \
-	$(libteredo_test_SOURCES) $(libteredo_v4global_SOURCES) \
-	$(md5test_SOURCES)
+SOURCES = $(libteredo_addrcmp_SOURCES) $(libteredo_clock_SOURCES) \
+	$(libteredo_hmac_SOURCES) $(libteredo_list_SOURCES) \
+	$(libteredo_stresslist_SOURCES) $(libteredo_test_SOURCES) \
+	$(libteredo_v4global_SOURCES) $(md5test_SOURCES)
+DIST_SOURCES = $(libteredo_addrcmp_SOURCES) $(libteredo_clock_SOURCES) \
+	$(libteredo_hmac_SOURCES) $(libteredo_list_SOURCES) \
+	$(libteredo_stresslist_SOURCES) $(libteredo_test_SOURCES) \
+	$(libteredo_v4global_SOURCES) $(md5test_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -270,6 +275,9 @@ libteredo_clock_SOURCES = clock.c
 # libteredo-v4global
 libteredo_v4global_SOURCES = v4global.c
 
+# libteredo-addrcmp
+libteredo_addrcmp_SOURCES = addrcmp.c
+
 # md5main
 md5test_SOURCES = md5test.c
 all: all-am
@@ -312,6 +320,9 @@ clean-checkPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
+libteredo-addrcmp$(EXEEXT): $(libteredo_addrcmp_OBJECTS) $(libteredo_addrcmp_DEPENDENCIES) 
+	@rm -f libteredo-addrcmp$(EXEEXT)
+	$(LINK) $(libteredo_addrcmp_OBJECTS) $(libteredo_addrcmp_LDADD) $(LIBS)
 libteredo-clock$(EXEEXT): $(libteredo_clock_OBJECTS) $(libteredo_clock_DEPENDENCIES) 
 	@rm -f libteredo-clock$(EXEEXT)
 	$(LINK) $(libteredo_clock_OBJECTS) $(libteredo_clock_LDADD) $(LIBS)
@@ -340,6 +351,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/addrcmp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/clock.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hmac.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/list.Po@am__quote@

@@ -1,6 +1,6 @@
 /*
  * peerlist.c - Teredo relay internal peers list manipulation
- * $Id: peerlist.c 2052 2007-10-03 18:53:24Z remi $
+ * $Id: peerlist.c 2081 2008-01-05 09:34:51Z remi $
  */
 
 /***********************************************************************
@@ -305,7 +305,7 @@ void teredo_list_reset (teredo_peerlist *l, unsigned max)
 
 #ifdef HAVE_LIBJUDY
 	// destroy the old array that was detached before unlocking
-	Word_t Rc_word;
+	intptr_t Rc_word;
 	JHSFA (Rc_word, array);
 #endif
 }
@@ -362,12 +362,12 @@ teredo_peer *teredo_list_lookup (teredo_peerlist *restrict list,
 	p = NULL;
 
 	for (p = list->recent; p != NULL; p = p->next)
-		if (IN6_ARE_ADDR_EQUAL (&p->key, addr))
+		if (IN6_ARE_ADDR_EQUAL (&p->key.ip6, addr))
 			break;
 
 	if (p == NULL)
 		for (p = list->old; p != NULL; p = p->next)
-			if (IN6_ARE_ADDR_EQUAL (&p->key, addr))
+			if (IN6_ARE_ADDR_EQUAL (&p->key.ip6, addr))
 				break;
 #endif
 

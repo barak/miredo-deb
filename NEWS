@@ -1,7 +1,7 @@
 RELEASE NOTES for Miredo
-test release version 1.1.3
-===========================
-$Id: NEWS 2058 2007-10-16 16:32:43Z remi $
+stable release version 1.1.5
+=============================
+$Id: NEWS 2101 2008-01-16 17:08:34Z remi $
 
   This is a stable release. There are no known outstanding issues. We
 strongly encourage users from previous releases to upgrade, as some important
@@ -12,6 +12,18 @@ fixes are included.
 informations on this program, see README. For syntax details and
 changes, run “miredo -h” to get help. For detailled internal changes, see
 ChangeLog.
+
+===========================================================================
+STABLE RELEASE 1.1.5 : Minor bug fixes
+
+# Fix SIGHUP signal handling.
+# Fix compiling on MacOS X and/or without libJudy.
+
+===========================================================================
+STABLE RELEASE 1.1.4 : Minor bug fixes
+
+# Fix client-hook script problems with Fedora.
+# Fix unlikely race condition in Teredo maintenance procedure setup.
 
 ===========================================================================
 STABLE RELEASE 1.1.3 : Major bug fixes, minor feature enhancement

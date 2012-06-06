@@ -1,6 +1,6 @@
 /*
  * maintain.c - Teredo client qualification & maintenance
- * $Id: maintain.c 2052 2007-10-03 18:53:24Z remi $
+ * $Id: maintain.c 2098 2008-01-05 21:05:48Z remi $
  *
  * See "Teredo: Tunneling IPv6 over UDP through NATs"
  * for more information
@@ -163,21 +163,14 @@ maintenance_recv (const teredo_packet *restrict packet, uint32_t server_ip,
 static int wait_reply (teredo_maintenance *restrict m,
                        const struct timespec *restrict deadline)
 {
-	assert (m->incoming == NULL);
-
-	/* Ignore EINTR */
-	for (;;)
+	while (m->incoming == NULL)
 	{
-		int val = pthread_cond_timedwait (&m->received, &m->inner, deadline);
-
-		switch (val)
+		switch (pthread_cond_timedwait (&m->received, &m->inner, deadline))
 		{
 			case 0:
-				if (m->incoming == NULL) // spurious wakeup
-					continue;
-				/* fall through */
+				break;
 			case ETIMEDOUT:
-				return val;
+				return ETIMEDOUT;
 		}
 	}
 	return 0; // dead code
@@ -370,7 +363,7 @@ void maintenance_thread (teredo_maintenance *m)
 
 			/* 12-bits Teredo flags randomization */
 			newaddr.teredo.flags = c_state->addr.teredo.flags;
-			if (!IN6_ARE_ADDR_EQUAL (&c_state->addr, &newaddr))
+			if (!IN6_ARE_ADDR_EQUAL (&c_state->addr.ip6, &newaddr.ip6))
 			{
 				uint16_t f = teredo_get_flbits (deadline.tv_sec);
 				newaddr.teredo.flags =
@@ -378,7 +371,7 @@ void maintenance_thread (teredo_maintenance *m)
 			}
 
 			if ((!c_state->up)
-			 || !IN6_ARE_ADDR_EQUAL (&c_state->addr, &newaddr)
+			 || !IN6_ARE_ADDR_EQUAL (&c_state->addr.ip6, &newaddr.ip6)
 			 || (c_state->mtu != mtu))
 			{
 				c_state->addr = newaddr;

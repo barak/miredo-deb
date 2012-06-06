@@ -1,6 +1,6 @@
 /*
  * privproc.c - Privileged process and IPC for Miredo
- * $Id: privproc.c 2052 2007-10-03 18:53:24Z remi $
+ * $Id: privproc.c 2094 2008-01-05 14:43:28Z remi $
  */
 
 /***********************************************************************
@@ -75,8 +75,14 @@ static int run_script (void)
 			return -1;
 
 		case 0:
+		{
+			sigset_t emptyset;
+			sigemptyset (&emptyset);
+			pthread_sigmask (SIG_SETMASK, &emptyset, NULL);
+
 			execl (script_path, script_path, (char *)NULL);
 			exit (1);
+		}
 	}
 
 	int res;
