@@ -1,7 +1,8 @@
 Source: miredo
 Section: net
 Priority: optional
-Maintainer: Rémi Denis-Courmont <remi@remlab.net>
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+XSBC-Original-Maintainer: Rémi Denis-Courmont <remi@remlab.net>
 Build-Depends: dpkg-dev (>= 1.13.2), debhelper (>= 7), cdbs, autotools-dev,
                automake (>= 1.11), libtool, autopoint,
                libjudy-dev,

@@ -1,0 +1,31 @@
+Description: Fix FTBFS with automake >= 1.11.3:
+ * pkglib_PROGRAMS is incompatible with last version of automake, as a litte 
+   define a new variable will install files in the same place of pkglibdir.
+Author: Leo Iannacone <l3on@ubuntu.com>
+Bug-Ubuntu: https://bugs.launchpad.net/bugs/934950
+
+---
+ src/Makefile.am |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+--- miredo.orig/src/Makefile.am
++++ miredo/src/Makefile.am
+@@ -32,7 +32,8 @@ AM_CPPFLAGS = -I$(top_srcdir)/include -I
+ 	-DPKGLIBDIR=\"$(pkglibdir)\"
+ 
+ sbin_PROGRAMS = miredo miredo-server miredo-checkconf
+-pkglib_PROGRAMS =
++programfilesdir = $(pkglibdir)
++programfiles_PROGRAMS =
+ EXTRA_PROGRAMS = privproc
+ noinst_LTLIBRARIES = libmiredo.la
+ TESTS =
+@@ -59,7 +60,7 @@ miredo_LDADD = ../libtun6/libtun6.la ../
+ miredo_privproc_SOURCES = privproc.c privproc.h
+ miredo_privproc_LDADD = ../libteredo/libteredo.la $(LIBCAP)
+ if TEREDO_CLIENT
+-pkglib_PROGRAMS += miredo-privproc
++programfiles_PROGRAMS += miredo-privproc
+ TESTS += miredo-checkconf
+ endif
+ 

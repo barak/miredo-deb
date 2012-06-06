@@ -1,3 +1,9 @@
+miredo (1.2.3-1ubuntu1) precise; urgency=low
+
+  * Fix FTBFS with automake 1.11.3 (LP: #934950).
+
+ -- Leo Iannacone <l3on@ubuntu.com>  Sun, 19 Feb 2012 16:29:40 +0100
+
 miredo (1.2.3-1) unstable; urgency=low
 
   * New upstream version:
