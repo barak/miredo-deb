@@ -1,3 +1,60 @@
+commit 8ebf8114503b2c57bfab8361db735ebf013c4295
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Tue Jul 5 21:14:39 2011 +0300
+
+    Sync PO files
+
+commit 7ff9a10660d4fb5b02c87048a338023f448b9960
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Tue Jul 5 21:14:27 2011 +0300
+
+    Update gettext
+
+commit 4ae1f2dba3b10bd48174e12a09004758105553f9
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Tue Jul 5 21:10:24 2011 +0300
+
+    PO: add Language field
+
+commit 34a86ba89e4ba2692af92a0d98115f751eb39b24
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Tue Jul 5 21:08:08 2011 +0300
+
+    Bump version and news
+
+commit 4cb88419af33d61b2b9eda44860aba8078f0d3ae
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Tue Jul 5 21:06:04 2011 +0300
+
+    Require automake 1.11 for silent rules
+
+commit d1e7e73027a296656c247b157ab929713997d2db
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Tue Jul 5 20:52:47 2011 +0300
+
+    If Judy is missing, use POSIX tree functions instead of linked list
+    
+    On GNU/Linux (glibc) on my system, <search.h> is about 2.5x slower than
+    Judy. This is much much faster than a linked list.
+    
+    The good news is, Miredo is now reasonably fast even without Judy. The
+    not so good news is, Miredo requires a GNU extension, tdestroy(), if
+    Judy is disabled.
+
+commit 77bd554e22545fb4be433eb3932161a7f5ac6781
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Tue Jul 5 20:24:01 2011 +0300
+
+    Small code factorization
+
+commit c14095dfa6c5915f97badf75188d19f49947c112
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Tue Jul 5 19:50:54 2011 +0300
+
+    Remove autopackage support
+    
+    This does not really fit for a system daemon and was unmaintained.
+
 commit 5e4c7a8a48e2aa2fcc20ceefeb7a97f57e36a1de
 Author: Rémi Denis-Courmont <remi@remlab.net>
 Date:   Sat Apr 10 12:24:13 2010 +0300
