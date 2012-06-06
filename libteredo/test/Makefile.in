@@ -81,6 +81,9 @@ am_libteredo_addrcmp_OBJECTS = addrcmp.$(OBJEXT)
 libteredo_addrcmp_OBJECTS = $(am_libteredo_addrcmp_OBJECTS)
 libteredo_addrcmp_LDADD = $(LDADD)
 libteredo_addrcmp_DEPENDENCIES = ../libteredo.la
+AM_V_lt = $(am__v_lt_$(V))
+am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
+am__v_lt_0 = --silent
 am_libteredo_clock_OBJECTS = clock.$(OBJEXT)
 libteredo_clock_OBJECTS = $(am_libteredo_clock_OBJECTS)
 libteredo_clock_LDADD = $(LDADD)
@@ -115,13 +118,26 @@ am__depfiles_maybe = depfiles
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
-	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_$(V))
+am__v_CC_ = $(am__v_CC_$(AM_DEFAULT_VERBOSITY))
+am__v_CC_0 = @echo "  CC    " $@;
+AM_V_at = $(am__v_at_$(V))
+am__v_at_ = $(am__v_at_$(AM_DEFAULT_VERBOSITY))
+am__v_at_0 = @
 CCLD = $(CC)
-LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
-	$(LDFLAGS) -o $@
+LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_$(V))
+am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
+am__v_CCLD_0 = @echo "  CCLD  " $@;
+AM_V_GEN = $(am__v_GEN_$(V))
+am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
+am__v_GEN_0 = @echo "  GEN   " $@;
 SOURCES = $(libteredo_addrcmp_SOURCES) $(libteredo_clock_SOURCES) \
 	$(libteredo_hmac_SOURCES) $(libteredo_list_SOURCES) \
 	$(libteredo_stresslist_SOURCES) $(libteredo_test_SOURCES) \
@@ -137,6 +153,7 @@ red=; grn=; lgn=; blu=; std=
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
+AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 AR = @AR@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
@@ -344,28 +361,28 @@ clean-checkPROGRAMS:
 	rm -f $$list
 libteredo-addrcmp$(EXEEXT): $(libteredo_addrcmp_OBJECTS) $(libteredo_addrcmp_DEPENDENCIES) 
 	@rm -f libteredo-addrcmp$(EXEEXT)
-	$(LINK) $(libteredo_addrcmp_OBJECTS) $(libteredo_addrcmp_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(LINK) $(libteredo_addrcmp_OBJECTS) $(libteredo_addrcmp_LDADD) $(LIBS)
 libteredo-clock$(EXEEXT): $(libteredo_clock_OBJECTS) $(libteredo_clock_DEPENDENCIES) 
 	@rm -f libteredo-clock$(EXEEXT)
-	$(LINK) $(libteredo_clock_OBJECTS) $(libteredo_clock_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(LINK) $(libteredo_clock_OBJECTS) $(libteredo_clock_LDADD) $(LIBS)
 libteredo-hmac$(EXEEXT): $(libteredo_hmac_OBJECTS) $(libteredo_hmac_DEPENDENCIES) 
 	@rm -f libteredo-hmac$(EXEEXT)
-	$(LINK) $(libteredo_hmac_OBJECTS) $(libteredo_hmac_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(LINK) $(libteredo_hmac_OBJECTS) $(libteredo_hmac_LDADD) $(LIBS)
 libteredo-list$(EXEEXT): $(libteredo_list_OBJECTS) $(libteredo_list_DEPENDENCIES) 
 	@rm -f libteredo-list$(EXEEXT)
-	$(LINK) $(libteredo_list_OBJECTS) $(libteredo_list_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(LINK) $(libteredo_list_OBJECTS) $(libteredo_list_LDADD) $(LIBS)
 libteredo-stresslist$(EXEEXT): $(libteredo_stresslist_OBJECTS) $(libteredo_stresslist_DEPENDENCIES) 
 	@rm -f libteredo-stresslist$(EXEEXT)
-	$(LINK) $(libteredo_stresslist_OBJECTS) $(libteredo_stresslist_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(LINK) $(libteredo_stresslist_OBJECTS) $(libteredo_stresslist_LDADD) $(LIBS)
 libteredo-test$(EXEEXT): $(libteredo_test_OBJECTS) $(libteredo_test_DEPENDENCIES) 
 	@rm -f libteredo-test$(EXEEXT)
-	$(LINK) $(libteredo_test_OBJECTS) $(libteredo_test_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(LINK) $(libteredo_test_OBJECTS) $(libteredo_test_LDADD) $(LIBS)
 libteredo-v4global$(EXEEXT): $(libteredo_v4global_OBJECTS) $(libteredo_v4global_DEPENDENCIES) 
 	@rm -f libteredo-v4global$(EXEEXT)
-	$(LINK) $(libteredo_v4global_OBJECTS) $(libteredo_v4global_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(LINK) $(libteredo_v4global_OBJECTS) $(libteredo_v4global_LDADD) $(LIBS)
 md5test$(EXEEXT): $(md5test_OBJECTS) $(md5test_DEPENDENCIES) 
 	@rm -f md5test$(EXEEXT)
-	$(LINK) $(md5test_OBJECTS) $(md5test_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(LINK) $(md5test_OBJECTS) $(md5test_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -383,22 +400,25 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/v4global.Po@am__quote@
 
 .c.o:
-@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(COMPILE) -c $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
 
 .c.lo:
-@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<

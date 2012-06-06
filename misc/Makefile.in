@@ -97,12 +97,19 @@ am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
 am__installdirs = "$(DESTDIR)$(confdir)" "$(DESTDIR)$(examplesdir)"
 SCRIPTS = $(conf_SCRIPTS) $(dist_noinst_SCRIPTS)
+AM_V_GEN = $(am__v_GEN_$(V))
+am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
+am__v_GEN_0 = @echo "  GEN   " $@;
+AM_V_at = $(am__v_at_$(V))
+am__v_at_ = $(am__v_at_$(AM_DEFAULT_VERBOSITY))
+am__v_at_0 = @
 SOURCES =
 DIST_SOURCES =
 DATA = $(dist_noinst_DATA) $(examples_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
+AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 AR = @AR@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
@@ -239,6 +246,12 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 confdir = $(sysconfdir)/miredo
 MOSTLYCLEANFILES = $(examples_DATA) $(conf_SCRIPTS)
+sed_verbose = $(sed_verbose_$(V))
+sed_verbose_ = $(sed_verbose_$(AM_DEFAULT_VERBOSITY))
+sed_verbose_0 = @echo "  SED    $@";
+cat_verbose = $(cat_verbose_$(V))
+cat_verbose_ = $(cat_verbose_$(AM_DEFAULT_VERBOSITY))
+cat_verbose_0 = @echo "  CAT    $@";
 
 # Configuration files
 dist_noinst_DATA = miredo.conf-in miredo-server.conf-in
@@ -494,12 +507,13 @@ uninstall-am: uninstall-confSCRIPTS uninstall-examplesDATA
 
 
 .conf-in.conf:
-	rm -f -- $@
-	sed -e 's,@sbindir\@,$(sbindir),g' < $< > $@
+	$(AM_V_at)rm -f -- $@
+	$(sed_verbose)sed -e 's,@sbindir\@,$(sbindir),g' < $< > $@
 
 client-hook: client-hook.$(hook_suffix)
-	cat $(srcdir)/client-hook.$(hook_suffix) > client-hook.tmp
-	mv -f -- client-hook.tmp client-hook
+	$(cat_verbose)cat $(srcdir)/client-hook.$(hook_suffix) \
+		> client-hook.tmp
+	$(AM_V_at)mv -f -- client-hook.tmp client-hook
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

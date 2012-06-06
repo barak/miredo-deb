@@ -1,3 +1,57 @@
+commit 2cff05b0f30116e139d21d5a2d79634580e684d4
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Thu Nov 5 21:03:27 2009 +0200
+
+    Update version
+
+commit e45401d63506a88b38959bb7e8ddaa669811901c
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Thu Nov 5 21:00:32 2009 +0200
+
+    Handle spurious SIGCHLD correctly
+    
+    Miredo 1.2.1 would restart and immediately exit on SIGHUP due to the
+    pending SIGCHLD of the old child process.
+
+commit d6d9da08fee06166981446ee72c6f3cfef11f9ec
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Thu Nov 5 19:19:35 2009 +0200
+
+    Silent rules for misc directory
+
+commit 5f196f4bd42ac0363afeb271b1887ced78c8f4b7
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Thu Nov 5 19:15:45 2009 +0200
+
+    silent rules in doc
+
+commit 632fd210e6483c0ed5c52092d980bb5dd782e700
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Thu Nov 5 19:11:32 2009 +0200
+
+    Use automake silent rules if available
+
+commit db3bab39a658994af46bb2cdfdcf6db2b1e6114c
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Sat Oct 31 11:12:10 2009 +0200
+
+    Revert "GNU/kFreeBSD link fix"
+    
+    This reverts commit f3dc8d5e0bc5c848933f5c94c7cc6cb84094a9bf.
+    This is reportedly not needed anymore with eglibc 2.10.
+
+commit 6993e19811c2f2d577dde26dbdb5d8b6aed936f7
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Wed Oct 21 22:13:24 2009 +0300
+
+    Sync PO files for 1.2.1
+
+commit 40337f12cb74817a76acc7311427c2426f6c40ec
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Wed Oct 21 21:36:24 2009 +0300
+
+    NEWS for 1.2.1
+
 commit 61398dc81960bf05826e8b8b83bebaebb6c95c5c
 Author: Rémi Denis-Courmont <remi@remlab.net>
 Date:   Wed Oct 21 21:34:34 2009 +0300
