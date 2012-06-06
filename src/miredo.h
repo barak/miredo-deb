@@ -1,6 +1,6 @@
 /*
  * miredo.h - header for miredo.c
- * $Id: miredo.h 1483 2006-06-09 18:40:21Z remi $
+ * $Id: miredo.h 1809 2006-10-26 19:37:14Z remi $
  *
  * See "Teredo: Tunneling IPv6 over UDP through NATs"
  * for more information
@@ -24,6 +24,12 @@
 
 #ifndef MIREDO_MIREDO_H
 # define MIREDO_MIREDO_H
+
+# ifdef __GNUC__
+#  define LIBTEREDO_NORETURN __attribute__ ((noreturn))
+# else
+#  define LIBTEREDO_NORETURN
+# endif
 
 typedef struct miredo_conf miredo_conf;
 

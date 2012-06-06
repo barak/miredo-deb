@@ -1,6 +1,6 @@
 /*
- * server.c - Unix Teredo server implementation daemon
- * $Id: server.c 1726 2006-08-27 08:13:18Z remi $
+ * serverd.c - Teredo server implementation daemon
+ * $Id: serverd.c 1821 2006-12-05 10:45:13Z remi $
  */
 
 /***********************************************************************

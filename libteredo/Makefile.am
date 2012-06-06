@@ -40,14 +40,15 @@ libteredo_common_la_LDFLAGS = -no-undefined
 
 # libteredo.la
 libteredo_la_SOURCES =	init.c relay.c security.c security.h md5.c md5.h \
-			packets.c packets.h peerlist.c peerlist.h stub.c
+			packets.c packets.h peerlist.c peerlist.h \
+			clock.c clock.h stub.c
 if TEREDO_CLIENT
 libteredo_la_SOURCES += maintain.c maintain.h
 endif
 libteredo_la_DEPENDENCIES = libteredo.sym $(LIBADD)
 libteredo_la_LIBADD = @LIBJUDY@ @LIBRT@ $(LTLIBINTL) $(LIBADD)
 libteredo_la_LDFLAGS = -no-undefined -export-symbols $(srcdir)/libteredo.sym \
-	-version-info 3:2:0
+	-version-info 4:0:1
 
 # libteredo versions:
 # 0) First stable shared release (0.8.2)
@@ -55,6 +56,7 @@ libteredo_la_LDFLAGS = -no-undefined -export-symbols $(srcdir)/libteredo.sym \
 # 2) teredo_set_relay_mode() added, teredo_set_cone_*() deprecated (0.9.5)
 # -- backward compatibility break --
 # 3) remove teredo_register_readset() (1.0.0)
+# 4) added internal teredo_send_bubble, teredo_cksum (1.1.0)
 
 # libteredo-server.la
 libteredo_server_la_SOURCES = server.c server.h

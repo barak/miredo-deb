@@ -1,5 +1,5 @@
 .\" ***********************************************************************
-.\" *  Copyright © 2004-2005 Rémi Denis-Courmont.                         *
+.\" *  Copyright © 2004-2007 Rémi Denis-Courmont.                         *
 .\" *  This program is free software; you can redistribute and/or modify  *
 .\" *  it under the terms of the GNU General Public License as published  *
 .\" *  by the Free Software Foundation; version 2 of the license.         *
@@ -13,7 +13,7 @@
 .\" *  along with this program; if not, you can get it from:              *
 .\" *  http://www.gnu.org/copyleft/gpl.html                               *
 .\" ***********************************************************************
-.TH "MIREDO-SERVER" "8" "$Date: 2006-06-03 21:24:57 +0300 (sam, 03 jun 2006) $" "miredo" "System Manager's Manual"
+.TH "MIREDO-SERVER" "8" "$Date: 2007-02-22 22:55:28 +0200 (Thu, 22 Feb 2007) $" "miredo" "System Manager's Manual"
 .SH NAME
 miredo-server \- Teredo server for Unix
 .SH SYNOPSIS
@@ -36,7 +36,7 @@ clients and Teredo relays on UDP port 3544.
 .TP
 .BR "\-c config_file" " or " "\-\-config config_file"
 Specify an alternate configuration file for Miredo instead of the
-.RI "default, " "@sysconfdir@/miredo-server.conf" "."
+.RI "default, " "@confdir@/miredo-server.conf" "."
 
 .TP
 .BR "\-f" " or " "\-\-foreground"
@@ -78,7 +78,7 @@ versions.
 
 .SH FILES
 .TP
-.I @sysconfdir@/miredo-server.conf
+.I @confdir@/miredo-server.conf
 The default configuration file.
 
 .TP
@@ -91,7 +91,7 @@ miredo-server.conf(5), miredo(8), ipv6(7)
 .SH AUTHOR
 R\[char233]mi Denis-Courmont <rdenis at simphalempin.com>
 
-$Id: miredo-server.8-in 1466 2006-06-03 18:24:57Z remi $
+$Id: miredo-server.8-in 1938 2007-02-22 20:55:28Z remi $
 
-http://www.simphalempin.com/dev/miredo/
+http://www.remlab.net/miredo/
 

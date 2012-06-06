@@ -1,16 +1,1820 @@
 ------------------------------------------------------------------------
-r1792 | remi | 2006-10-08 13:08:12 +0300 (Sun, 08 Oct 2006) | 2 lines
+r2041 | remi | 2007-09-13 20:39:49 +0300 (Thu, 13 Sep 2007) | 2 lines
 Changed paths:
-   A /tags/1.0.4 (from /trunk:1791)
+   M /trunk/po/en.po
+   M /trunk/po/en_GB.po
+   M /trunk/po/fr.po
+   M /trunk/po/miredo.pot
 
-Tag release 1.0.4
+Sync PO files
 
 ------------------------------------------------------------------------
-r1791 | remi | 2006-10-08 13:07:42 +0300 (Sun, 08 Oct 2006) | 2 lines
+r2040 | remi | 2007-09-13 20:39:43 +0300 (Thu, 13 Sep 2007) | 2 lines
 Changed paths:
-   M /trunk/packages/debian/changelog
+   M /trunk/NEWS
 
-Fix Debian bug
+News for 1.1.2
+
+------------------------------------------------------------------------
+r2039 | remi | 2007-09-13 20:30:31 +0300 (Thu, 13 Sep 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Use TEREDO_RANDOM_MASK macro
+
+------------------------------------------------------------------------
+r2038 | remi | 2007-09-13 19:59:17 +0300 (Thu, 13 Sep 2007) | 3 lines
+Changed paths:
+   M /trunk/THANKS
+   M /trunk/libteredo/server.c
+
+Fix stupid typo that prevent 1.1.0-1.1.1 servers from forwarding bubbles.
+Credits to Lutz Donnerhacke for spotting the error.
+
+------------------------------------------------------------------------
+r2037 | remi | 2007-09-10 20:37:16 +0300 (Mon, 10 Sep 2007) | 2 lines
+Changed paths:
+   M /trunk/misc
+
+svn:ignore
+
+------------------------------------------------------------------------
+r2036 | remi | 2007-09-10 20:30:09 +0300 (Mon, 10 Sep 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/mire.c
+   M /trunk/libteredo/server.c
+
+Use IPPORT_TEREDO macro
+
+------------------------------------------------------------------------
+r2035 | remi | 2007-09-04 08:59:23 +0300 (Tue, 04 Sep 2007) | 2 lines
+Changed paths:
+   M /trunk/src/main.c
+
+Workaround gcc warning
+
+------------------------------------------------------------------------
+r2034 | remi | 2007-09-03 21:00:41 +0300 (Mon, 03 Sep 2007) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+Bump version
+
+------------------------------------------------------------------------
+r2032 | remi | 2007-09-02 22:53:30 +0300 (Sun, 02 Sep 2007) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+Fix NEWS version
+
+------------------------------------------------------------------------
+r2031 | remi | 2007-09-02 22:52:17 +0300 (Sun, 02 Sep 2007) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/libteredo/teredo.h
+
+Bump version number and update copyright
+
+------------------------------------------------------------------------
+r2030 | remi | 2007-09-02 22:39:13 +0300 (Sun, 02 Sep 2007) | 2 lines
+Changed paths:
+   M /trunk/po/en.po
+   M /trunk/po/en_GB.po
+   M /trunk/po/fr.po
+   M /trunk/po/miredo.pot
+
+Resync PO files
+
+------------------------------------------------------------------------
+r2029 | remi | 2007-09-02 22:38:41 +0300 (Sun, 02 Sep 2007) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/THANKS
+
+News for 1.1.1
+
+------------------------------------------------------------------------
+r2028 | remi | 2007-09-02 22:21:06 +0300 (Sun, 02 Sep 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/packets.c
+   M /trunk/libteredo/server.c
+   M /trunk/libteredo/teredo.h
+
+Fix reported padding problem on ARM
+
+------------------------------------------------------------------------
+r2026 | remi | 2007-08-19 14:40:15 +0300 (Sun, 19 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+Mention NAT determination removal
+
+------------------------------------------------------------------------
+r2025 | remi | 2007-08-19 14:38:18 +0300 (Sun, 19 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/po/en.po
+   M /trunk/po/en_GB.po
+   M /trunk/po/fr.po
+   M /trunk/po/miredo.pot
+
+Resync po files
+
+------------------------------------------------------------------------
+r2024 | remi | 2007-08-19 14:35:40 +0300 (Sun, 19 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+Mark this a test release
+
+------------------------------------------------------------------------
+r2023 | remi | 2007-08-19 13:47:47 +0300 (Sun, 19 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/clock.c
+
+Handle timer_create() error gracefully
+
+------------------------------------------------------------------------
+r2022 | remi | 2007-08-19 11:07:31 +0300 (Sun, 19 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/clock.c
+
+Teredo clock: use system timer instead of re-implementing our own
+
+------------------------------------------------------------------------
+r2021 | remi | 2007-08-18 19:54:12 +0300 (Sat, 18 Aug 2007) | 3 lines
+Changed paths:
+   M /trunk/libteredo/teredo-udp.h
+   M /trunk/libteredo/teredo.c
+
+Cleanup the alignment fix memmove.
+I hate the authentication header.
+
+------------------------------------------------------------------------
+r2020 | remi | 2007-08-18 19:27:30 +0300 (Sat, 18 Aug 2007) | 3 lines
+Changed paths:
+   M /trunk/libteredo/libteredo.sym
+   M /trunk/libteredo/maintain.c
+   M /trunk/libteredo/mire.c
+   M /trunk/libteredo/teredo-udp.h
+   M /trunk/libteredo/teredo.c
+
+- Rework authentication data in teredo_packet
+- Make teredo_close a real function
+
+------------------------------------------------------------------------
+r2019 | remi | 2007-08-18 18:54:08 +0300 (Sat, 18 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/teredo-udp.h
+   M /trunk/libteredo/teredo.c
+
+Use size_t for Teredo packet length
+
+------------------------------------------------------------------------
+r2018 | remi | 2007-08-18 14:31:24 +0300 (Sat, 18 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/relay.c
+
+Use direction assignment when possible
+
+------------------------------------------------------------------------
+r2017 | remi | 2007-08-18 14:28:52 +0300 (Sat, 18 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/server.c
+
+Cleanup
+
+------------------------------------------------------------------------
+r2016 | remi | 2007-08-18 14:21:32 +0300 (Sat, 18 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/mire.c
+
+Use direct assignment when possible
+
+------------------------------------------------------------------------
+r2015 | remi | 2007-08-18 14:17:35 +0300 (Sat, 18 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/packets.c
+
+Fix comment
+
+------------------------------------------------------------------------
+r2014 | remi | 2007-08-18 14:15:45 +0300 (Sat, 18 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/packets.c
+
+Avoid memc(py|mp) too
+
+------------------------------------------------------------------------
+r2013 | remi | 2007-08-18 13:58:54 +0300 (Sat, 18 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Avoid memcpy/memcmp when possible
+
+------------------------------------------------------------------------
+r2012 | remi | 2007-08-18 13:55:17 +0300 (Sat, 18 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/peerlist.c
+
+No need for memcpy
+
+------------------------------------------------------------------------
+r2011 | remi | 2007-08-18 13:54:33 +0300 (Sat, 18 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/peerlist.c
+
+Use macros
+
+------------------------------------------------------------------------
+r2010 | remi | 2007-08-18 11:41:47 +0300 (Sat, 18 Aug 2007) | 3 lines
+Changed paths:
+   M /trunk/src/miredo.c
+
+- Wait one second between crashes to avoid crashes busy loops
+- Some simplifications
+
+------------------------------------------------------------------------
+r2009 | remi | 2007-08-18 11:00:41 +0300 (Sat, 18 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/packets.h
+   M /trunk/libteredo/relay.c
+   M /trunk/libteredo/server.c
+
+Code factorization
+
+------------------------------------------------------------------------
+r2008 | remi | 2007-08-17 18:36:23 +0300 (Fri, 17 Aug 2007) | 3 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/libteredo/teredo.c
+
+Dequeue ICMP errors more properly on Linux.
+On BSD, we have BSD semantics, i.e. no ICMP on unconnected sockets anyway.
+
+------------------------------------------------------------------------
+r2007 | remi | 2007-08-17 18:06:38 +0300 (Fri, 17 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/TODO
+   M /trunk/libteredo/teredo.c
+
+Our socket port is not reusable.
+
+------------------------------------------------------------------------
+r2006 | remi | 2007-08-14 22:55:03 +0300 (Tue, 14 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+Expand 1.1.0 news
+
+------------------------------------------------------------------------
+r2005 | remi | 2007-08-14 22:54:36 +0300 (Tue, 14 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/test/clock.c
+
+Update clock test case
+
+------------------------------------------------------------------------
+r2004 | remi | 2007-08-14 22:53:15 +0300 (Tue, 14 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/clock.c
+   M /trunk/libteredo/clock.h
+   M /trunk/libteredo/init.c
+
+Remove dummy clock init/deinit functions
+
+------------------------------------------------------------------------
+r2003 | remi | 2007-08-14 22:50:53 +0300 (Tue, 14 Aug 2007) | 5 lines
+Changed paths:
+   M /trunk/libteredo/clock.c
+
+Rewrite clock subsystem to only poll when busy, rather than all the time.
+This is basically a (pretty good) tradeoff between power savings
+and performance. The latter was the reason for bringing this clock polling
+subsystem in the first place.
+
+------------------------------------------------------------------------
+r2002 | remi | 2007-08-14 20:20:04 +0300 (Tue, 14 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/po/en.po
+   M /trunk/po/en_GB.po
+   M /trunk/po/fr.po
+   M /trunk/po/miredo.pot
+
+Updating translations
+
+------------------------------------------------------------------------
+r2001 | remi | 2007-08-14 20:06:21 +0300 (Tue, 14 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/doc/miredo.conf.5
+
+Update documentation
+
+------------------------------------------------------------------------
+r2000 | remi | 2007-08-13 21:44:32 +0300 (Mon, 13 Aug 2007) | 3 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/libteredo/maintain.c
+   M /trunk/libteredo/security.c
+   M /trunk/libteredo/security.h
+
+Add Teredo address randomization as per
+draft-ietf-v6ops-teredo-security-concerns-00
+
+------------------------------------------------------------------------
+r1999 | remi | 2007-08-13 20:43:03 +0300 (Mon, 13 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+   M /trunk/libtun6/diag.c
+
+Add tun6 diagnose help for FreeBSD
+
+------------------------------------------------------------------------
+r1998 | remi | 2007-08-13 20:28:44 +0300 (Mon, 13 Aug 2007) | 4 lines
+Changed paths:
+   M /trunk/libtun6/tun6.c
+   M /trunk/src/main.c
+
+Sometimes the PID file is screwed.
+Print the "other instance running" error hint for TUNSETIFF EBUSY error too,
+as that is the most typical error that occurs in this case.
+
+------------------------------------------------------------------------
+r1997 | remi | 2007-08-13 20:24:39 +0300 (Mon, 13 Aug 2007) | 3 lines
+Changed paths:
+   M /trunk/libtun6/diag.c
+
+Most people are using udev nowadays.
+Update Linux tun troubleshooting error message accordingly.
+
+------------------------------------------------------------------------
+r1996 | remi | 2007-08-13 20:22:44 +0300 (Mon, 13 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/src/main.c
+   M /trunk/src/miredo.c
+
+Improve some error messages
+
+------------------------------------------------------------------------
+r1995 | remi | 2007-08-13 20:16:00 +0300 (Mon, 13 Aug 2007) | 4 lines
+Changed paths:
+   M /trunk/src/main.c
+
+Remove ugly and pretty useless thread hack.
+Remove long UID error message; it was useful when the default user was miredo,
+and that has not been the case for ages
+
+------------------------------------------------------------------------
+r1994 | remi | 2007-08-13 19:52:16 +0300 (Mon, 13 Aug 2007) | 3 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Fix useless DNS resolution
+(thanks assert for catching it)
+
+------------------------------------------------------------------------
+r1993 | remi | 2007-08-13 19:46:57 +0300 (Mon, 13 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/packets.c
+
+Fix RA parsing
+
+------------------------------------------------------------------------
+r1992 | remi | 2007-08-13 19:46:45 +0300 (Mon, 13 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/relay.c
+
+Add some debug
+
+------------------------------------------------------------------------
+r1991 | remi | 2007-08-13 19:31:48 +0300 (Mon, 13 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/teredo.c
+
+Partial fix
+
+------------------------------------------------------------------------
+r1990 | remi | 2007-08-13 19:25:31 +0300 (Mon, 13 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/misc/client-hook.iproute
+
+Fix iproute detection
+
+------------------------------------------------------------------------
+r1989 | remi | 2007-08-13 19:23:23 +0300 (Mon, 13 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/misc/client-hook.iproute
+
+Cosmetic fix
+
+------------------------------------------------------------------------
+r1988 | remi | 2007-08-13 19:17:42 +0300 (Mon, 13 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/relay.c
+
+Build debug code without NDEBUG
+
+------------------------------------------------------------------------
+r1987 | remi | 2007-08-13 19:04:39 +0300 (Mon, 13 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+news
+
+------------------------------------------------------------------------
+r1986 | remi | 2007-08-13 19:04:00 +0300 (Mon, 13 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/packets.c
+   M /trunk/libteredo/packets.h
+   M /trunk/libteredo/relay.c
+
+More align fixes
+
+------------------------------------------------------------------------
+r1985 | remi | 2007-08-13 18:56:05 +0300 (Mon, 13 Aug 2007) | 4 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+   M /trunk/libteredo/mire.c
+   M /trunk/libteredo/packets.c
+   M /trunk/libteredo/packets.h
+   M /trunk/libteredo/relay.c
+   M /trunk/libteredo/server.c
+   M /trunk/libteredo/teredo-udp.h
+   M /trunk/libteredo/teredo.c
+
+Force proper alignment of processed packets.
+While expensive, it only applies to packets with auth header.
+Too bad for Teredo servers though.
+
+------------------------------------------------------------------------
+r1984 | remi | 2007-08-13 18:14:23 +0300 (Mon, 13 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/src/isatapd.c
+
+Fix buffer size
+
+------------------------------------------------------------------------
+r1983 | remi | 2007-08-13 18:13:36 +0300 (Mon, 13 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/src/isatapd.c
+   M /trunk/src/relayd.c
+
+use struct rather than union
+
+------------------------------------------------------------------------
+r1982 | remi | 2007-08-13 18:11:06 +0300 (Mon, 13 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libtun6/tun6.h
+
+Remove useless forward declaration
+
+------------------------------------------------------------------------
+r1981 | remi | 2007-08-13 18:09:22 +0300 (Mon, 13 Aug 2007) | 2 lines
+Changed paths:
+   M /trunk/libtun6/tun6.c
+
+Remove useless #include
+
+------------------------------------------------------------------------
+r1980 | remi | 2007-07-08 18:48:03 +0300 (Sun, 08 Jul 2007) | 4 lines
+Changed paths:
+   M /trunk/misc/client-hook.iproute
+
+Some distribution install iproute to /usr/sbin instead (which is pretty
+silly as network configuration stuff should be out of /usr), so do not
+hardcode the path to it
+
+------------------------------------------------------------------------
+r1979 | remi | 2007-07-08 18:45:10 +0300 (Sun, 08 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/misc/Makefile.am
+
+Fix dist
+
+------------------------------------------------------------------------
+r1978 | remi | 2007-07-08 18:41:45 +0300 (Sun, 08 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/m4
+   M /trunk/m4/Makefile.am
+
+M4 fixes
+
+------------------------------------------------------------------------
+r1977 | remi | 2007-07-08 18:35:43 +0300 (Sun, 08 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/admin
+   M /trunk/configure.ac
+   M /trunk/po/ChangeLog
+
+Update gettext
+
+------------------------------------------------------------------------
+r1976 | remi | 2007-07-08 18:26:34 +0300 (Sun, 08 Jul 2007) | 5 lines
+Changed paths:
+   M /trunk/misc/client-hook.iproute
+
+Try to use IPv6 source routing if supported
+
+However, it currently relies on a "teredo" routing table being defined
+in /etc/iproute2/rt_tables
+
+------------------------------------------------------------------------
+r1975 | remi | 2007-07-08 18:25:10 +0300 (Sun, 08 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/Makefile.am
+   M /trunk/configure.ac
+
+Add automake -Wall and move options to Makefile.am
+
+------------------------------------------------------------------------
+r1974 | remi | 2007-07-08 18:22:16 +0300 (Sun, 08 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+Determine which client hook script must be installed
+
+------------------------------------------------------------------------
+r1973 | remi | 2007-07-08 18:21:42 +0300 (Sun, 08 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/misc/Makefile.am
+
+Install client hook script automatically
+
+------------------------------------------------------------------------
+r1972 | remi | 2007-07-08 18:11:07 +0300 (Sun, 08 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/misc/Makefile.am
+
+clean up
+
+------------------------------------------------------------------------
+r1971 | remi | 2007-07-05 22:36:08 +0300 (Thu, 05 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/Makefile.am
+
+s/sample/example/
+
+------------------------------------------------------------------------
+r1970 | remi | 2007-07-05 22:13:20 +0300 (Thu, 05 Jul 2007) | 2 lines
+Changed paths:
+   M /trunk/TODO
+
+We have interface statistics. No need for more really.
+
+------------------------------------------------------------------------
+r1969 | remi | 2007-06-09 12:51:55 +0300 (Sat, 09 Jun 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Fix warning
+
+------------------------------------------------------------------------
+r1968 | remi | 2007-06-09 12:51:20 +0300 (Sat, 09 Jun 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Do not remember secondary server name
+
+------------------------------------------------------------------------
+r1967 | remi | 2007-06-09 12:36:50 +0300 (Sat, 09 Jun 2007) | 3 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+- Do not resolve secondary server address as we do not use it anymore
+- Refuse to run if server has a non-global address
+
+------------------------------------------------------------------------
+r1966 | remi | 2007-06-09 12:28:32 +0300 (Sat, 09 Jun 2007) | 4 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Remove controversial symmetric probing.
+We are quite far apart from RFC4380... and quite dependant on RFC3480 for
+proper operation.
+
+------------------------------------------------------------------------
+r1965 | remi | 2007-06-08 23:04:42 +0300 (Fri, 08 Jun 2007) | 2 lines
+Changed paths:
+   M /trunk/TODO
+
+Remove OSX packaging task since Robert Quattlebaum has been doing it
+
+------------------------------------------------------------------------
+r1964 | remi | 2007-06-08 22:25:52 +0300 (Fri, 08 Jun 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/clock.c
+
+Note for later
+
+------------------------------------------------------------------------
+r1963 | remi | 2007-06-08 22:24:18 +0300 (Fri, 08 Jun 2007) | 3 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Revert [1770].
+NAT behavioral analysis is bad, lets not do it beyond what the standard requires. Besides, Miredo is not responsible for Netfilter bugs, and for lack of RFC3484 support.
+
+------------------------------------------------------------------------
+r1962 | remi | 2007-06-08 22:16:02 +0300 (Fri, 08 Jun 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Comment edits
+
+------------------------------------------------------------------------
+r1961 | remi | 2007-06-01 18:25:36 +0300 (Fri, 01 Jun 2007) | 2 lines
+Changed paths:
+   M /trunk/TODO
+
+Remember CVE-2006-6264. Pretty minor issue.
+
+------------------------------------------------------------------------
+r1960 | remi | 2007-05-30 18:42:36 +0300 (Wed, 30 May 2007) | 2 lines
+Changed paths:
+   M /trunk/Makefile.am
+
+minor coverage fixes
+
+------------------------------------------------------------------------
+r1959 | remi | 2007-05-12 18:22:03 +0300 (Sat, 12 May 2007) | 2 lines
+Changed paths:
+   M /trunk/compat/Makefile.am
+   A /trunk/compat/test-closefrom.c
+
+Test closefrom()
+
+------------------------------------------------------------------------
+r1958 | remi | 2007-05-12 18:14:48 +0300 (Sat, 12 May 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/test/teredo.c
+
+Add one more API
+
+------------------------------------------------------------------------
+r1957 | remi | 2007-05-12 18:12:41 +0300 (Sat, 12 May 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/test/teredo.c
+
+Increase public API coverage
+
+------------------------------------------------------------------------
+r1956 | remi | 2007-05-12 17:56:25 +0300 (Sat, 12 May 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/test/Makefile.am
+   M /trunk/libteredo/test/hmac.c
+   A /trunk/libteredo/test/v4global.c
+
+Test for v4global
+
+------------------------------------------------------------------------
+r1955 | remi | 2007-05-12 17:43:07 +0300 (Sat, 12 May 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/test/Makefile.am
+   A /trunk/libteredo/test/clock.c
+   M /trunk/libteredo/test/hmac.c
+
+Add tests for nonce and clock
+
+------------------------------------------------------------------------
+r1954 | remi | 2007-05-12 17:08:59 +0300 (Sat, 12 May 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/checksum.h
+   M /trunk/libteredo/clock.c
+   M /trunk/libteredo/maintain.h
+   M /trunk/libteredo/packets.c
+   M /trunk/libteredo/packets.h
+   M /trunk/libteredo/peerlist.c
+   M /trunk/libteredo/peerlist.h
+   M /trunk/libteredo/server.c
+   M /trunk/libteredo/server.h
+   M /trunk/libteredo/teredo-udp.h
+   M /trunk/libteredo/teredo.c
+   M /trunk/libteredo/teredo.h
+   M /trunk/libteredo/tunnel.h
+   M /trunk/libteredo/v4global.c
+   M /trunk/libteredo/v4global.h
+
+Improve documentation
+
+------------------------------------------------------------------------
+r1953 | remi | 2007-05-10 20:12:38 +0300 (Thu, 10 May 2007) | 2 lines
+Changed paths:
+   M /trunk
+   M /trunk/configure.ac
+
+Generate Doxyfile
+
+------------------------------------------------------------------------
+r1952 | remi | 2007-05-10 20:12:16 +0300 (Thu, 10 May 2007) | 2 lines
+Changed paths:
+   M /trunk/Doxyfile.in
+
+Only document .h files
+
+------------------------------------------------------------------------
+r1951 | remi | 2007-05-10 20:11:55 +0300 (Thu, 10 May 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/clock.c
+   M /trunk/libteredo/clock.h
+   M /trunk/libteredo/init.c
+   M /trunk/libteredo/relay.c
+   M /trunk/libteredo/stub.c
+   M /trunk/libteredo/tunnel.h
+
+Fix libteredo documentation
+
+------------------------------------------------------------------------
+r1950 | remi | 2007-05-10 19:22:17 +0300 (Thu, 10 May 2007) | 2 lines
+Changed paths:
+   A /trunk/Doxyfile.in
+   M /trunk/Makefile.am
+
+Rule to build source code documentation
+
+------------------------------------------------------------------------
+r1949 | remi | 2007-05-09 23:06:14 +0300 (Wed, 09 May 2007) | 3 lines
+Changed paths:
+   M /trunk/libteredo/test/Makefile.am
+   A /trunk/libteredo/test/teredo.c (from /trunk/libteredo/test/hmac.c:1948)
+
+Basic test for libteredo
+(this is very much an excuse to get the full libteredo into lcov)
+
+------------------------------------------------------------------------
+r1948 | remi | 2007-05-09 22:39:51 +0300 (Wed, 09 May 2007) | 2 lines
+Changed paths:
+   M /trunk/Makefile.am
+   M /trunk/configure.ac
+
+Partial helper for test coverage
+
+------------------------------------------------------------------------
+r1947 | remi | 2007-04-12 18:26:58 +0300 (Thu, 12 Apr 2007) | 2 lines
+Changed paths:
+   M /trunk/autogen.sh
+
+Use autoreconf
+
+------------------------------------------------------------------------
+r1946 | remi | 2007-04-10 22:23:59 +0300 (Tue, 10 Apr 2007) | 3 lines
+Changed paths:
+   M /trunk/libteredo/teredo.c
+
+- Include <sys/poll.h> on MacOSX
+- Fix description of teredo_recv
+
+------------------------------------------------------------------------
+r1945 | remi | 2007-03-31 13:20:12 +0300 (Sat, 31 Mar 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/teredo.c
+
+Fix unclear comment
+
+------------------------------------------------------------------------
+r1944 | remi | 2007-03-29 23:26:09 +0300 (Thu, 29 Mar 2007) | 6 lines
+Changed paths:
+   M /trunk/README
+   M /trunk/THANKS
+   M /trunk/configure.ac
+
+- Pull frameworks used by Miredo-OSX on Darwin
+- Add note regarding Miredo OSX
+
+Note that miredo trunk as it stands does not use these frameworks,
+since relevant parts of Miredo-OSX haven't been merged yet.
+
+------------------------------------------------------------------------
+r1943 | remi | 2007-03-29 20:52:50 +0300 (Thu, 29 Mar 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Minor code cleanup
+
+------------------------------------------------------------------------
+r1942 | remi | 2007-03-29 20:18:25 +0300 (Thu, 29 Mar 2007) | 4 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Do not call res_init().
+It does not work as expected, and we should not try to be more intelligent
+that libc.
+
+------------------------------------------------------------------------
+r1941 | remi | 2007-03-29 20:15:23 +0300 (Thu, 29 Mar 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Reorder two error messages
+
+------------------------------------------------------------------------
+r1940 | remi | 2007-03-04 19:46:01 +0200 (Sun, 04 Mar 2007) | 3 lines
+Changed paths:
+   M /trunk/README
+
+- Update FreeBSD requirements
+- Add requirement for addrsel on Linux
+
+------------------------------------------------------------------------
+r1939 | remi | 2007-03-04 19:41:36 +0200 (Sun, 04 Mar 2007) | 3 lines
+Changed paths:
+   M /trunk/TODO
+   M /trunk/libtun6/tun6.c
+
+FreeBSD PR kern/100080 has been fixed (MAIN and RELENG_6),
+Update error message accordingly.
+
+------------------------------------------------------------------------
+r1938 | remi | 2007-02-22 22:55:28 +0200 (Thu, 22 Feb 2007) | 2 lines
+Changed paths:
+   M /trunk/README
+   M /trunk/autopackage/default.apspec.in
+   M /trunk/doc/isatapd.8-in
+   M /trunk/doc/isatapd.conf.5
+   M /trunk/doc/miredo-checkconf.8-in
+   M /trunk/doc/miredo-server.8-in
+   M /trunk/doc/miredo-server.conf.5
+   M /trunk/doc/miredo.8-in
+   M /trunk/doc/teredo-mire.1
+   M /trunk/libteredo/checksum.h
+   M /trunk/libteredo/maintain.c
+   M /trunk/libteredo/mire.c
+   M /trunk/libteredo/packets.c
+   M /trunk/libteredo/packets.h
+   M /trunk/libteredo/relay.c
+   M /trunk/libteredo/server.c
+   M /trunk/libteredo/teredo-udp.h
+   M /trunk/libteredo/teredo.c
+   M /trunk/libtun6/tun6.c
+   M /trunk/src/checkconf.c
+   M /trunk/src/isatapd.c
+   M /trunk/src/main.c
+   M /trunk/src/miredo.c
+   M /trunk/src/relayd.c
+
+Update copyright to 2007 where appropriate
+
+------------------------------------------------------------------------
+r1937 | remi | 2007-02-22 22:13:52 +0200 (Thu, 22 Feb 2007) | 2 lines
+Changed paths:
+   M /trunk/misc/client-hook.bsd
+   M /trunk/misc/client-hook.iproute
+
+svn:keywords
+
+------------------------------------------------------------------------
+r1936 | remi | 2007-02-22 22:11:21 +0200 (Thu, 22 Feb 2007) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+Update news
+
+------------------------------------------------------------------------
+r1935 | remi | 2007-02-22 22:09:18 +0200 (Thu, 22 Feb 2007) | 3 lines
+Changed paths:
+   M /trunk/misc/Makefile.am
+   A /trunk/misc/client-hook.bsd
+   A /trunk/misc/client-hook.iproute
+
+Add initial client hook scripts
+More work is needed
+
+------------------------------------------------------------------------
+r1934 | remi | 2007-02-22 20:57:00 +0200 (Thu, 22 Feb 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Cosmetic fix
+
+------------------------------------------------------------------------
+r1933 | remi | 2007-02-22 19:52:11 +0200 (Thu, 22 Feb 2007) | 3 lines
+Changed paths:
+   M /trunk/src/miredo.c
+
+Do not print the "reloading..." message with SIGCHLD
+since we are really exiting rather than reloading
+
+------------------------------------------------------------------------
+r1932 | remi | 2007-02-22 19:50:04 +0200 (Thu, 22 Feb 2007) | 2 lines
+Changed paths:
+   M /trunk/src/miredo.c
+
+Use sigwait() instead of signal handlers
+
+------------------------------------------------------------------------
+r1931 | remi | 2007-02-22 19:29:42 +0200 (Thu, 22 Feb 2007) | 2 lines
+Changed paths:
+   M /trunk/compat/Makefile.am
+   D /trunk/compat/pselect.c
+   D /trunk/compat/pselect.h
+   M /trunk/configure.ac
+   M /trunk/src/isatapd.c
+
+Remove useless pselect() replacement
+
+------------------------------------------------------------------------
+r1930 | remi | 2007-02-22 19:27:06 +0200 (Thu, 22 Feb 2007) | 2 lines
+Changed paths:
+   M /trunk/doc/miredo.conf.5
+   M /trunk/src/Makefile.am
+   D /trunk/src/addrwatch.c
+   D /trunk/src/addrwatch.h
+   M /trunk/src/relayd.c
+
+Remove addrwatch completely until we get a better implementation
+
+------------------------------------------------------------------------
+r1929 | remi | 2007-02-22 19:23:38 +0200 (Thu, 22 Feb 2007) | 3 lines
+Changed paths:
+   M /trunk/src/relayd.c
+
+Remove "Exclusive" client mode.
+The implementation was really bad, and of little use.
+
+------------------------------------------------------------------------
+r1928 | remi | 2007-02-22 18:33:36 +0200 (Thu, 22 Feb 2007) | 2 lines
+Changed paths:
+   M /trunk/src/miredo.c
+
+Merge two switches
+
+------------------------------------------------------------------------
+r1927 | remi | 2007-02-22 18:30:22 +0200 (Thu, 22 Feb 2007) | 3 lines
+Changed paths:
+   M /trunk/src/main.c
+
+- Run diagnostics after ensuring privileges
+- Move locale settings to their own function
+
+------------------------------------------------------------------------
+r1926 | remi | 2007-02-22 18:22:50 +0200 (Thu, 22 Feb 2007) | 3 lines
+Changed paths:
+   M /trunk/src/main.c
+
+- Init groups before capabilities to avoid requiring SETGID.
+- Put threading hacks in a function of their own
+
+------------------------------------------------------------------------
+r1925 | remi | 2007-02-04 22:09:24 +0200 (Sun, 04 Feb 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/mire.c
+
+Fix Teredo mire
+
+------------------------------------------------------------------------
+r1924 | remi | 2007-02-04 21:43:06 +0200 (Sun, 04 Feb 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/mire.c
+
+Use new API in teredo-mire
+
+------------------------------------------------------------------------
+r1923 | remi | 2007-02-04 21:39:24 +0200 (Sun, 04 Feb 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/server.c
+
+Server compile fix
+
+------------------------------------------------------------------------
+r1922 | remi | 2007-02-04 21:38:38 +0200 (Sun, 04 Feb 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/checksum.h
+
+Make the legacy checksumming interface a stub for the new one
+
+------------------------------------------------------------------------
+r1921 | remi | 2007-02-04 21:37:23 +0200 (Sun, 04 Feb 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/teredo.c
+
+Fix typo
+
+------------------------------------------------------------------------
+r1920 | remi | 2007-02-04 21:36:19 +0200 (Sun, 04 Feb 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/Makefile.am
+   M /trunk/libteredo/libteredo.sym
+
+Export teredo_cksum
+
+------------------------------------------------------------------------
+r1919 | remi | 2007-02-04 21:36:09 +0200 (Sun, 04 Feb 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/teredo-udp.h
+   M /trunk/libteredo/teredo.c
+
+Add iovec-based non-aligned checksumming functions
+
+------------------------------------------------------------------------
+r1918 | remi | 2007-02-03 10:56:40 +0200 (Sat, 03 Feb 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/mire.c
+
+Fix teredo-mire parameter problem packets
+
+------------------------------------------------------------------------
+r1917 | remi | 2007-01-31 19:45:07 +0200 (Wed, 31 Jan 2007) | 4 lines
+Changed paths:
+   M /trunk/src/main.c
+
+Hacks to ease chroot setups:
+- preinitialize libc resolver (does not work with glibc 2.5 though :( )
+- test pthread_create and pthread_cancel at startup
+
+------------------------------------------------------------------------
+r1916 | remi | 2007-01-31 19:19:57 +0200 (Wed, 31 Jan 2007) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+   M /trunk/libtun6/tun6.c
+
+GNU/kFreeBSD link fix
+
+------------------------------------------------------------------------
+r1914 | remi | 2007-01-31 18:57:44 +0200 (Wed, 31 Jan 2007) | 2 lines
+Changed paths:
+   M /trunk/doc/teredo-mire.1
+
+Update teredo-mired doc
+
+------------------------------------------------------------------------
+r1913 | remi | 2007-01-31 18:57:07 +0200 (Wed, 31 Jan 2007) | 3 lines
+Changed paths:
+   M /trunk/libteredo/mire.c
+
+Rewrite teredo-mire to have a separate server and client port
+so that we can cleanly differenciate direct and indirect bubbles
+
+------------------------------------------------------------------------
+r1912 | remi | 2007-01-31 18:56:22 +0200 (Wed, 31 Jan 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/Makefile.am
+   M /trunk/libteredo/libteredo.sym
+
+Export teredo_send_bubble
+
+------------------------------------------------------------------------
+r1911 | remi | 2007-01-31 18:32:37 +0200 (Wed, 31 Jan 2007) | 2 lines
+Changed paths:
+   M /trunk/libteredo/packets.c
+   M /trunk/libteredo/packets.h
+   M /trunk/libteredo/relay.c
+
+Merge teredo-mire bubble sending into libteredo
+
+------------------------------------------------------------------------
+r1910 | remi | 2007-01-21 21:13:48 +0200 (Sun, 21 Jan 2007) | 3 lines
+Changed paths:
+   M /trunk/src/privproc.c
+
+Add some rudimentary sanity checks in privproc
+when getting data from the non-priv process.
+
+------------------------------------------------------------------------
+r1908 | remi | 2007-01-14 20:05:30 +0200 (Sun, 14 Jan 2007) | 2 lines
+Changed paths:
+   M /trunk/TODO
+
+Add some ToDo ideas
+
+------------------------------------------------------------------------
+r1907 | remi | 2007-01-14 19:35:05 +0200 (Sun, 14 Jan 2007) | 5 lines
+Changed paths:
+   M /trunk/src/privproc.c
+   M /trunk/src/privproc.h
+   M /trunk/src/relayd.c
+
+Use a kinda ugly callback system to clean up unused resources from the
+privileged process after forking it.
+This allows removing of the tunnel device from the privileged process
+table.
+
+------------------------------------------------------------------------
+r1906 | remi | 2007-01-14 19:30:02 +0200 (Sun, 14 Jan 2007) | 3 lines
+Changed paths:
+   M /trunk/src/privproc.c
+   M /trunk/src/privproc.h
+   M /trunk/src/relayd.c
+
+Execute a hook script instead of statically coding the interface
+configuration rules into the privileged process
+
+------------------------------------------------------------------------
+r1905 | remi | 2007-01-14 19:22:34 +0200 (Sun, 14 Jan 2007) | 2 lines
+Changed paths:
+   M /trunk/src/checkconf.c
+   M /trunk/src/main.c
+
+Update the default configuration file path in accordance with previous commit
+
+------------------------------------------------------------------------
+r1904 | remi | 2007-01-14 19:19:58 +0200 (Sun, 14 Jan 2007) | 2 lines
+Changed paths:
+   M /trunk/Makefile.am
+   M /trunk/doc/Makefile.am
+   M /trunk/doc/isatapd.8-in
+   M /trunk/doc/miredo-checkconf.8-in
+   M /trunk/doc/miredo-server.8-in
+   M /trunk/doc/miredo.8-in
+
+Install config files to $(sysconfdir)/miredo instead of $(sysconfdir)
+
+------------------------------------------------------------------------
+r1903 | remi | 2007-01-14 17:56:48 +0200 (Sun, 14 Jan 2007) | 3 lines
+Changed paths:
+   M /trunk/src/privproc.c
+
+Use sequenced (reliable) datagram and fallback to (reliable) datagram
+for IPC with privileged process (more logical than stream here)
+
+------------------------------------------------------------------------
+r1902 | remi | 2007-01-14 17:43:52 +0200 (Sun, 14 Jan 2007) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+Sort out news after forked 1.0.6 branch
+
+------------------------------------------------------------------------
+r1901 | remi | 2007-01-14 13:53:38 +0200 (Sun, 14 Jan 2007) | 2 lines
+Changed paths:
+   M /trunk/autopackage/default.apspec.in
+
+Forgot this file in previous commit
+
+------------------------------------------------------------------------
+r1900 | remi | 2007-01-14 13:53:18 +0200 (Sun, 14 Jan 2007) | 2 lines
+Changed paths:
+   M /trunk/README
+   M /trunk/doc/isatapd.8-in
+   M /trunk/doc/isatapd.conf.5
+   M /trunk/doc/miredo-checkconf.8-in
+   M /trunk/doc/miredo-server.8-in
+   M /trunk/doc/miredo-server.conf.5
+   M /trunk/doc/miredo.8-in
+   M /trunk/doc/miredo.conf.5
+   M /trunk/doc/teredo-mire.1
+
+Update official website URL
+
+------------------------------------------------------------------------
+r1896 | remi | 2006-12-31 13:17:35 +0200 (Sun, 31 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+Bugfix branch took 1.0.6 number. Switch to 1.1.0
+
+------------------------------------------------------------------------
+r1886 | remi | 2006-12-31 12:16:35 +0200 (Sun, 31 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/po/en.po
+   M /trunk/po/en_GB.po
+   M /trunk/po/fr.po
+   M /trunk/po/miredo.pot
+
+Sync PO files for release 1.0.6
+
+------------------------------------------------------------------------
+r1885 | remi | 2006-12-30 23:44:23 +0200 (Sat, 30 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+News for 1.0.6
+
+------------------------------------------------------------------------
+r1884 | remi | 2006-12-30 23:40:26 +0200 (Sat, 30 Dec 2006) | 3 lines
+Changed paths:
+   M /trunk/libteredo/relay.c
+
+Fix non-standard symmetric fallback check.
+Looks like we have yet another stupid spoofing vulnerability here.
+
+------------------------------------------------------------------------
+r1883 | remi | 2006-12-30 22:58:42 +0200 (Sat, 30 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/relay.c
+
+Fix libteredo_set_cone_flag
+
+------------------------------------------------------------------------
+r1882 | remi | 2006-12-29 11:40:21 +0200 (Fri, 29 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libtun6/tun6.c
+
+s/#warn/#warning/
+
+------------------------------------------------------------------------
+r1881 | remi | 2006-12-26 15:46:45 +0200 (Tue, 26 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/relay.c
+
+Fix teredo_set_cone_flag description
+
+------------------------------------------------------------------------
+r1880 | remi | 2006-12-26 15:36:43 +0200 (Tue, 26 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+   M /trunk/libteredo/maintain.h
+   M /trunk/libteredo/relay.c
+
+Internal libteredo support for customizing maintenance procedure timers
+
+------------------------------------------------------------------------
+r1877 | remi | 2006-12-26 12:57:18 +0200 (Tue, 26 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+Some news
+
+------------------------------------------------------------------------
+r1876 | remi | 2006-12-26 12:50:58 +0200 (Tue, 26 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/doc/Makefile.am
+
+Fix previous distcheck-hook
+
+------------------------------------------------------------------------
+r1875 | remi | 2006-12-26 12:13:19 +0200 (Tue, 26 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/Makefile.am
+   M /trunk/doc/Makefile.am
+
+Add distcheck hook to ensure manual pages are ASCII-clean
+
+------------------------------------------------------------------------
+r1874 | remi | 2006-12-26 11:41:51 +0200 (Tue, 26 Dec 2006) | 4 lines
+Changed paths:
+   M /trunk/libteredo/Makefile.am
+
+Link teredo-mire with libteredo-common rather than full libteredo.
+As a consequence, this anecdotal utility can be shipped on its own, so
+put it in miredo-server in the Debian package.
+
+------------------------------------------------------------------------
+r1873 | remi | 2006-12-26 00:19:24 +0200 (Tue, 26 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/mire.c
+
+Teredo Mire explicitly ignores packets with Routing Header
+
+------------------------------------------------------------------------
+r1872 | remi | 2006-12-26 00:18:48 +0200 (Tue, 26 Dec 2006) | 2 lines
+Changed paths:
+   A /trunk/compat/fdatasync.c (from /trunk/compat/clearenv.c:1870)
+   M /trunk/configure.ac
+
+fdatasync replacement (needed on OSX)
+
+------------------------------------------------------------------------
+r1871 | remi | 2006-12-25 22:07:29 +0200 (Mon, 25 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/server.c
+
+Various Teredo server conformance fixes (to be tested heavily)
+
+------------------------------------------------------------------------
+r1870 | remi | 2006-12-25 21:38:09 +0200 (Mon, 25 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+This has been development trunk for 1.0.6 for some time
+
+------------------------------------------------------------------------
+r1869 | remi | 2006-12-25 12:42:45 +0200 (Mon, 25 Dec 2006) | 4 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Do not retransmit "restricted" probe when "symmetric" probes times out.
+This also looks more like the specification, and avoids emitting some
+useless packets in case of packet loss.
+
+------------------------------------------------------------------------
+r1868 | remi | 2006-12-25 12:39:42 +0200 (Mon, 25 Dec 2006) | 4 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Send probe to server primary address and then to secondary address.
+This matches the specification more closely,
+and really helps symmetric NAT detection counter-measure from v1.0.3
+
+------------------------------------------------------------------------
+r1867 | remi | 2006-12-25 12:37:29 +0200 (Mon, 25 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/doc/miredo.conf.5
+   M /trunk/src/relayd.c
+
+Document cone relay ressurrection and restricted relay danger
+
+------------------------------------------------------------------------
+r1866 | remi | 2006-12-24 13:48:34 +0200 (Sun, 24 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/src/relayd.c
+
+Re-distinguish cone RelayType from restricted RelayType
+
+------------------------------------------------------------------------
+r1865 | remi | 2006-12-24 13:48:00 +0200 (Sun, 24 Dec 2006) | 3 lines
+Changed paths:
+   M /trunk/libteredo/Makefile.am
+   M /trunk/libteredo/tunnel.h
+
+Remove the deprecation flag upon libteredo_set_cone_flag
+and bump libteredo revision
+
+------------------------------------------------------------------------
+r1864 | remi | 2006-12-24 13:47:29 +0200 (Sun, 24 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/stub.c
+
+Fix symbol duplication in previous commit
+
+------------------------------------------------------------------------
+r1863 | remi | 2006-12-24 13:47:00 +0200 (Sun, 24 Dec 2006) | 3 lines
+Changed paths:
+   M /trunk/libteredo/relay.c
+
+Restore libteredo_set_cone_flag (was a deprecated no-op)
+as demanded by Sam Hartman
+
+------------------------------------------------------------------------
+r1862 | remi | 2006-12-24 13:36:52 +0200 (Sun, 24 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/maintain.h
+
+Cosmetic fix
+
+------------------------------------------------------------------------
+r1861 | remi | 2006-12-17 20:10:08 +0200 (Sun, 17 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/misc
+
+Fix svn:ignore
+
+------------------------------------------------------------------------
+r1860 | remi | 2006-12-16 16:38:13 +0200 (Sat, 16 Dec 2006) | 3 lines
+Changed paths:
+   M /trunk/THANKS
+
+Big shame on me for forgetting to add Jari Korva
+before releasing version 1.0.5
+
+------------------------------------------------------------------------
+r1858 | remi | 2006-12-16 16:25:53 +0200 (Sat, 16 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/po/en.po
+   M /trunk/po/en_GB.po
+   M /trunk/po/fr.po
+   M /trunk/po/miredo.pot
+
+Sync PO files for real-this-time release 1.0.5
+
+------------------------------------------------------------------------
+r1857 | remi | 2006-12-16 16:19:37 +0200 (Sat, 16 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/relay.c
+   M /trunk/src/relayd.c
+
+Pass properly aligned IPv6 destination to the ICMPv6 callback
+
+------------------------------------------------------------------------
+r1856 | remi | 2006-12-16 13:45:05 +0200 (Sat, 16 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/src/main.c
+
+Sync PID file after writing to it
+
+------------------------------------------------------------------------
+r1855 | remi | 2006-12-16 13:35:39 +0200 (Sat, 16 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/src/main.c
+
+Minor cleanup and factorization
+
+------------------------------------------------------------------------
+r1853 | remi | 2006-12-15 19:49:53 +0200 (Fri, 15 Dec 2006) | 4 lines
+Changed paths:
+   M /trunk/libteredo/clock.c
+
+Use the monotonic clock instead of the real-time for packet timings
+(this was already done a long time ago for maintenance procedure,
+ and is pending for garbage collection)
+
+------------------------------------------------------------------------
+r1852 | remi | 2006-12-15 18:42:20 +0200 (Fri, 15 Dec 2006) | 3 lines
+Changed paths:
+   M /trunk/libteredo/clock.c
+   M /trunk/libteredo/peerlist.c
+
+Use clock_nanosleep instead of pthread_cond_timedwait
+as the condition involved was never signaled anymore
+
+------------------------------------------------------------------------
+r1851 | remi | 2006-12-15 18:25:42 +0200 (Fri, 15 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+
+Unduplicate function definition wrt #ifdef
+
+------------------------------------------------------------------------
+r1850 | remi | 2006-12-15 18:19:22 +0200 (Fri, 15 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/po/en.po
+   M /trunk/po/en_GB.po
+   M /trunk/po/fr.po
+   M /trunk/po/miredo.pot
+
+Sync translation files for 1.0.5 release
+
+------------------------------------------------------------------------
+r1849 | remi | 2006-12-15 18:17:05 +0200 (Fri, 15 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/doc/isatapd.8-in
+
+Document known issues and bugs of isatapd
+
+------------------------------------------------------------------------
+r1848 | remi | 2006-12-14 20:44:13 +0200 (Thu, 14 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/src/addrwatch.c
+
+Use char instead of bool (bool are sometimes more than one char)
+
+------------------------------------------------------------------------
+r1847 | remi | 2006-12-14 20:41:41 +0200 (Thu, 14 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/test/stresslist.c
+
+Ensure progress dot are printed (sync)
+
+------------------------------------------------------------------------
+r1846 | remi | 2006-12-14 20:23:57 +0200 (Thu, 14 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/src/main.c
+
+Check for (unlikely) errors
+
+------------------------------------------------------------------------
+r1845 | remi | 2006-12-14 20:21:48 +0200 (Thu, 14 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libtun6/tun6.c
+
+Fix compiler warnings
+
+------------------------------------------------------------------------
+r1844 | remi | 2006-12-13 18:13:53 +0200 (Wed, 13 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+More news for 1.0.5
+
+------------------------------------------------------------------------
+r1843 | remi | 2006-12-13 13:13:22 +0200 (Wed, 13 Dec 2006) | 3 lines
+Changed paths:
+   M /trunk/src/isatapd.c
+
+- Fix regressions in ISATAP daemon
+- Use ssize_t in isatapd
+
+------------------------------------------------------------------------
+r1842 | remi | 2006-12-13 12:05:27 +0200 (Wed, 13 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/misc/isatapd.conf-in
+
+Cosmetic fix
+
+------------------------------------------------------------------------
+r1841 | remi | 2006-12-12 21:56:53 +0200 (Tue, 12 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/src/isatapd.c
+
+Fix error message
+
+------------------------------------------------------------------------
+r1840 | remi | 2006-12-12 21:49:48 +0200 (Tue, 12 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/src/isatapd.c
+
+Inexpensive check for invalid multicast address before expensive get_bind_ipv4
+
+------------------------------------------------------------------------
+r1839 | remi | 2006-12-12 20:06:38 +0200 (Tue, 12 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/src/isatapd.c
+
+Client-less compilation fix
+
+------------------------------------------------------------------------
+r1838 | remi | 2006-12-12 20:03:20 +0200 (Tue, 12 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/test/list.c
+
+Make list unit test less likely to fail because of timing issues
+
+------------------------------------------------------------------------
+r1837 | remi | 2006-12-12 19:59:04 +0200 (Tue, 12 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/peerlist.c
+
+Fix Judy-less lookup
+
+------------------------------------------------------------------------
+r1836 | remi | 2006-12-12 19:45:13 +0200 (Tue, 12 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/test/list.c
+
+Make list unit test more verbose
+
+------------------------------------------------------------------------
+r1835 | remi | 2006-12-12 19:38:50 +0200 (Tue, 12 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/relay.c
+
+Fix compiler warning
+
+------------------------------------------------------------------------
+r1834 | remi | 2006-12-12 19:28:54 +0200 (Tue, 12 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/peerlist.c
+   M /trunk/libteredo/peerlist.h
+   M /trunk/libteredo/relay.c
+   M /trunk/libteredo/test/list.c
+   M /trunk/libteredo/test/stresslist.c
+
+Use teredo_clock_t instead of time_t where appropriate
+
+------------------------------------------------------------------------
+r1833 | remi | 2006-12-12 19:10:36 +0200 (Tue, 12 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/NEWS
+
+Add news for release 1.0.5
+
+------------------------------------------------------------------------
+r1832 | remi | 2006-12-12 19:08:14 +0200 (Tue, 12 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/relay.c
+
+Use the new clock
+
+------------------------------------------------------------------------
+r1831 | remi | 2006-12-12 19:06:40 +0200 (Tue, 12 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/init.c
+
+Initialize the clock
+
+------------------------------------------------------------------------
+r1830 | remi | 2006-12-12 19:06:17 +0200 (Tue, 12 Dec 2006) | 3 lines
+Changed paths:
+   M /trunk/libteredo/Makefile.am
+   A /trunk/libteredo/clock.c
+   A /trunk/libteredo/clock.h
+
+Add much safer (and slower, but still probably faster than plain time())
+low frequency clock.
+
+------------------------------------------------------------------------
+r1829 | remi | 2006-12-12 18:05:20 +0200 (Tue, 12 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/peerlist.c
+   M /trunk/libteredo/peerlist.h
+   M /trunk/libteredo/relay.c
+   M /trunk/libteredo/test/list.c
+   M /trunk/libteredo/test/stresslist.c
+
+Remove unused parameter from list lookup
+
+------------------------------------------------------------------------
+r1828 | remi | 2006-12-12 15:30:59 +0200 (Tue, 12 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/security.c
+
+Increase HMAC secret key size up to the hash size (128 bits)
+
+------------------------------------------------------------------------
+r1827 | remi | 2006-12-12 15:17:48 +0200 (Tue, 12 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/Makefile.am
+
+Increment libteredo revision
+
+------------------------------------------------------------------------
+r1826 | remi | 2006-12-12 15:11:44 +0200 (Tue, 12 Dec 2006) | 7 lines
+Changed paths:
+   M /trunk/libteredo/peerlist.c
+
+Suppress access time (time_t) from peers:
+ - save 4 or 8 bytes per peer,
+ - make GC clock independant from tunnel clock.
+-- Cette ligne, et les suivantes ci-dessous, seront ignor?\195?\169es--
+
+M    peerlist.c
+
+------------------------------------------------------------------------
+r1825 | remi | 2006-12-12 15:08:31 +0200 (Tue, 12 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/test/list.c
+
+Fix list test (0 expiration delay are invalid)
+
+------------------------------------------------------------------------
+r1824 | remi | 2006-12-12 13:11:12 +0200 (Tue, 12 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/test/list.c
+
+Factorize and improve peers list unit test
+
+------------------------------------------------------------------------
+r1823 | remi | 2006-12-11 23:31:11 +0200 (Mon, 11 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/test/list.c
+
+Run peer list tests twice to check reinsertion issues
+
+------------------------------------------------------------------------
+r1822 | remi | 2006-12-11 22:48:34 +0200 (Mon, 11 Dec 2006) | 4 lines
+Changed paths:
+   M /trunk/libteredo/packets.c
+
+Use 128 instead of 21 as hop limit for ping test.
+21 turned to be too small. I should have expected this, instead of
+trusting Windows into picking a decent value.
+
+------------------------------------------------------------------------
+r1821 | remi | 2006-12-05 12:45:13 +0200 (Tue, 05 Dec 2006) | 3 lines
+Changed paths:
+   M /trunk/po/POTFILES.in
+   M /trunk/src/Makefile.am
+   D /trunk/src/isatap.c
+   A /trunk/src/isatapd.c (from /trunk/src/isatap.c:1820)
+   D /trunk/src/relay.c
+   A /trunk/src/relayd.c (from /trunk/src/relay.c:1820)
+   D /trunk/src/server.c
+   A /trunk/src/serverd.c (from /trunk/src/server.c:1820)
+
+Rename some src/ source files to duplication with libteredo/
+and ease debugging by external people
+
+------------------------------------------------------------------------
+r1820 | remi | 2006-12-02 12:37:02 +0200 (Sat, 02 Dec 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/peerlist.c
+
+Minor code factorization for peer creation/destruction
+
+------------------------------------------------------------------------
+r1819 | remi | 2006-11-21 15:55:26 +0200 (Tue, 21 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/Makefile.am
+
+Update comment about conf file packaging
+
+------------------------------------------------------------------------
+r1817 | remi | 2006-11-18 18:50:01 +0200 (Sat, 18 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/src/isatap.c
+
+Use threads in isatapd
+
+------------------------------------------------------------------------
+r1816 | remi | 2006-11-13 22:20:13 +0200 (Mon, 13 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/test/list.c
+
+Use MALLOC_CHECK_ in teredo list unit test
+
+------------------------------------------------------------------------
+r1815 | remi | 2006-11-13 18:55:24 +0200 (Mon, 13 Nov 2006) | 3 lines
+Changed paths:
+   M /trunk/doc/miredo-server.conf.5
+
+Try hader to convince users that using Prefix and InterfaceMTU
+is not such a good idea.
+
+------------------------------------------------------------------------
+r1813 | remi | 2006-11-04 19:10:12 +0200 (Sat, 04 Nov 2006) | 2 lines
+Changed paths:
+   M /trunk/libtun6/tun6.c
+
+Remove extraneous \n
+
+------------------------------------------------------------------------
+r1812 | remi | 2006-10-28 21:18:56 +0300 (Sat, 28 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/m4/Makefile.am
+
+Missing dist file
+
+------------------------------------------------------------------------
+r1811 | remi | 2006-10-26 22:50:48 +0300 (Thu, 26 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+Add -Wmissing-noreturn
+
+------------------------------------------------------------------------
+r1810 | remi | 2006-10-26 22:49:51 +0300 (Thu, 26 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/src/conf.c
+
+Fix printf format __attribute__
+
+------------------------------------------------------------------------
+r1809 | remi | 2006-10-26 22:37:14 +0300 (Thu, 26 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/src/addrwatch.c
+   M /trunk/src/miredo.h
+   M /trunk/src/relay.c
+
+Add noreturns in src/
+
+------------------------------------------------------------------------
+r1808 | remi | 2006-10-26 22:34:40 +0300 (Thu, 26 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/debug.h
+   M /trunk/libteredo/maintain.c
+   M /trunk/libteredo/peerlist.c
+   M /trunk/libteredo/relay.c
+   M /trunk/libteredo/server.c
+
+Mark a bunch of libteredo function as noreturn
+
+------------------------------------------------------------------------
+r1807 | remi | 2006-10-26 22:23:13 +0300 (Thu, 26 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+   A /trunk/m4/flags.m4
+
+Adds warning check flags by default
+
+------------------------------------------------------------------------
+r1806 | remi | 2006-10-26 22:22:45 +0300 (Thu, 26 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/src/miredo.c
+
+Remove superfluous declaration
+
+------------------------------------------------------------------------
+r1805 | remi | 2006-10-26 21:58:33 +0300 (Thu, 26 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/doc/miredo.conf.5
+
+Fix typo
+
+------------------------------------------------------------------------
+r1804 | remi | 2006-10-21 17:49:17 +0300 (Sat, 21 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/relay.c
+
+Missing static qualifier
+
+------------------------------------------------------------------------
+r1803 | remi | 2006-10-21 17:44:58 +0300 (Sat, 21 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/mire.c
+
+More const/iovec problems
+
+------------------------------------------------------------------------
+r1802 | remi | 2006-10-21 17:41:40 +0300 (Sat, 21 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/src/relay.c
+
+Fix a shadowing warning
+
+------------------------------------------------------------------------
+r1801 | remi | 2006-10-21 17:38:10 +0300 (Sat, 21 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/maintain.c
+   M /trunk/libteredo/server.c
+
+Fix a few more warnings
+
+------------------------------------------------------------------------
+r1800 | remi | 2006-10-21 17:26:58 +0300 (Sat, 21 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/checksum.h
+   M /trunk/libteredo/packets.c
+   M /trunk/libteredo/security.c
+
+Some const qualifier fixes
+
+------------------------------------------------------------------------
+r1799 | remi | 2006-10-21 17:23:59 +0300 (Sat, 21 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/relay.c
+
+Fix a bunch of warnings
+
+------------------------------------------------------------------------
+r1798 | remi | 2006-10-17 23:34:53 +0300 (Tue, 17 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/configure.ac
+
+This is development trunk for version 1.0.5
+
+------------------------------------------------------------------------
+r1797 | remi | 2006-10-17 23:34:24 +0300 (Tue, 17 Oct 2006) | 2 lines
+Changed paths:
+   M /trunk/libteredo/peerlist.c
+
+Don't abuse the "long" type when using libJudy.
 
 ------------------------------------------------------------------------
 r1790 | remi | 2006-10-08 13:02:50 +0300 (Sun, 08 Oct 2006) | 2 lines
@@ -37,34 +1841,6 @@ Changed paths:
 
 Fix probe packets storm behind symmetric NATs
 (this should be Debian #391611)
-
-------------------------------------------------------------------------
-r1787 | remi | 2006-10-06 18:03:08 +0300 (Fri, 06 Oct 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/changelog
-
-Fix bug number
-
-------------------------------------------------------------------------
-r1786 | remi | 2006-10-06 17:52:21 +0300 (Fri, 06 Oct 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/changelog
-
-Document last commit
-
-------------------------------------------------------------------------
-r1785 | remi | 2006-10-06 17:47:41 +0300 (Fri, 06 Oct 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/control
-
-Oups, s/freebsd/kfreebsd
-
-------------------------------------------------------------------------
-r1783 | remi | 2006-10-05 19:40:27 +0300 (Thu, 05 Oct 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/changelog
-
-Another Debian bug closed
 
 ------------------------------------------------------------------------
 r1782 | remi | 2006-10-05 19:36:36 +0300 (Thu, 05 Oct 2006) | 2 lines
@@ -114,31 +1890,6 @@ Changed paths:
 - Rerun the whole qualification procedure when the external mapping
   changes since the NAT device/access network might have changed.
 - Some maintenance state machine code factorization.
-
-------------------------------------------------------------------------
-r1776 | remi | 2006-10-05 18:09:15 +0300 (Thu, 05 Oct 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/miredo.default
-
-Fix comment
-
-------------------------------------------------------------------------
-r1775 | remi | 2006-10-05 18:04:18 +0300 (Thu, 05 Oct 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/changelog
-   M /trunk/packages/debian/miredo.default
-   M /trunk/packages/debian/miredo.init
-
-Debian starts miredo by default again
-
-------------------------------------------------------------------------
-r1774 | remi | 2006-10-04 23:13:43 +0300 (Wed, 04 Oct 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/changelog
-   M /trunk/packages/debian/control
-   M /trunk/packages/debian/miredo.postinst
-
-Create /dev/net/tun
 
 ------------------------------------------------------------------------
 r1773 | remi | 2006-10-04 22:15:48 +0300 (Wed, 04 Oct 2006) | 2 lines
@@ -224,13 +1975,6 @@ Changed paths:
 - Replace overkill "packet processed" barrier with a condition
 
 ------------------------------------------------------------------------
-r1762 | remi | 2006-09-18 18:49:16 +0300 (Mon, 18 Sep 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/copyright
-
-Wrap the copyright file properly
-
-------------------------------------------------------------------------
 r1760 | remi | 2006-09-18 18:38:12 +0300 (Mon, 18 Sep 2006) | 2 lines
 Changed paths:
    M /trunk/po/en.po
@@ -241,79 +1985,11 @@ Changed paths:
 Sync PO files for release 1.0.2
 
 ------------------------------------------------------------------------
-r1759 | remi | 2006-09-18 18:33:53 +0300 (Mon, 18 Sep 2006) | 2 lines
-Changed paths:
-   A /trunk/packages/debian/miredo-server.postrm (from /trunk/packages/debian/miredo.postrm:1758)
-
-Similarly, suppress miredo-server upon purge
-
-------------------------------------------------------------------------
-r1758 | remi | 2006-09-18 18:31:02 +0300 (Mon, 18 Sep 2006) | 2 lines
-Changed paths:
-   A /trunk/packages/debian/miredo.postrm (from /trunk/packages/debian/miredo.postinst:1757)
-
-Delete useless miredo user upon purge
-
-------------------------------------------------------------------------
-r1757 | remi | 2006-09-18 18:22:06 +0300 (Mon, 18 Sep 2006) | 3 lines
-Changed paths:
-   M /trunk/packages/debian/miredo.default
-
-Because of the poor job of handling /dev/net/tun within the udev framework,
-we cannot start miredo automatically after install.
-
-------------------------------------------------------------------------
 r1756 | remi | 2006-09-18 18:21:28 +0300 (Mon, 18 Sep 2006) | 2 lines
 Changed paths:
    M /trunk/NEWS
 
 News (so far) for 1.0.2
-
-------------------------------------------------------------------------
-r1755 | remi | 2006-09-18 17:32:28 +0300 (Mon, 18 Sep 2006) | 3 lines
-Changed paths:
-   M /trunk/packages/debian/control
-
-Revert to old-style "not architecture" style dependency for libcap
-since not the whole infrastructure support "linux-any" yet.
-
-------------------------------------------------------------------------
-r1754 | remi | 2006-09-18 17:25:04 +0300 (Mon, 18 Sep 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/miredo-server.init
-   M /trunk/packages/debian/miredo.init
-
-Fix chmod invocation (ahem, shame on me)
-
-------------------------------------------------------------------------
-r1753 | remi | 2006-09-17 20:51:32 +0300 (Sun, 17 Sep 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/control
-
-Add versioned depency on dpkg-dev because of "linux-any"
-
-------------------------------------------------------------------------
-r1752 | remi | 2006-09-17 20:43:37 +0300 (Sun, 17 Sep 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/miredo-server.init
-   M /trunk/packages/debian/miredo.init
-
-(Partial?) fix LSB initscript fix
-
-------------------------------------------------------------------------
-r1751 | remi | 2006-09-17 20:41:12 +0300 (Sun, 17 Sep 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/control
-
-Fix debhelper dependency
-
-------------------------------------------------------------------------
-r1750 | remi | 2006-09-17 09:51:30 +0300 (Sun, 17 Sep 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/miredo-server.init
-   M /trunk/packages/debian/miredo.init
-
-Fix initscripts when /var/run is tmpfs
 
 ------------------------------------------------------------------------
 r1749 | remi | 2006-09-16 19:46:35 +0300 (Sat, 16 Sep 2006) | 2 lines
@@ -346,13 +2022,6 @@ Don't redefine pthread_barrier_*; use compat_pthread_barrier_* instead.
 Might fix FreeBSD-6-latest sparc64 problem.
 
 ------------------------------------------------------------------------
-r1745 | remi | 2006-09-12 18:59:42 +0300 (Tue, 12 Sep 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/miredo.init
-
-Fix configuration checking with restart and reload in Debian initscript
-
-------------------------------------------------------------------------
 r1744 | remi | 2006-09-03 22:22:35 +0300 (Sun, 03 Sep 2006) | 4 lines
 Changed paths:
    M /trunk/compat/clock_nanosleep.c
@@ -360,15 +2029,6 @@ Changed paths:
 Fix clock_nanosleep return value:
 clock_nanosleep shall return an error code (like pthread_*),
 rather than return -1 and set errno, in case of error.
-
-------------------------------------------------------------------------
-r1743 | remi | 2006-09-03 19:23:52 +0300 (Sun, 03 Sep 2006) | 4 lines
-Changed paths:
-   M /trunk/packages/debian/rules
-
-Debian cross-compilation fixes:
- - forcefully disable binreloc whose checks explode
- - do not run the testsuite when cross-compiling
 
 ------------------------------------------------------------------------
 r1742 | remi | 2006-09-03 19:22:45 +0300 (Sun, 03 Sep 2006) | 2 lines
@@ -433,21 +2093,6 @@ Changed paths:
 Fix one barrier leak in maintainance procedure.
 
 ------------------------------------------------------------------------
-r1734 | remi | 2006-09-02 19:48:56 +0300 (Sat, 02 Sep 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/changelog
-
-Bump version number here as well
-
-------------------------------------------------------------------------
-r1733 | remi | 2006-09-02 19:47:22 +0300 (Sat, 02 Sep 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/compat
-   M /trunk/packages/debian/control
-
-No -dbg package anymore. We can switch back to DH compat level 4.
-
-------------------------------------------------------------------------
 r1732 | remi | 2006-09-02 18:49:30 +0300 (Sat, 02 Sep 2006) | 2 lines
 Changed paths:
    D /trunk/compat/barrier.c
@@ -470,21 +2115,6 @@ Changed paths:
    M /trunk/NEWS
 
 News for release 1.0.1
-
-------------------------------------------------------------------------
-r1728 | remi | 2006-09-02 17:36:20 +0300 (Sat, 02 Sep 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/rules
-
-Minor tweaks
-
-------------------------------------------------------------------------
-r1727 | remi | 2006-09-01 20:46:59 +0300 (Fri, 01 Sep 2006) | 3 lines
-Changed paths:
-   M /trunk/packages/debian/control
-
-Build depend on libcap-dev on linux-any rather than !hurd-i386 !kfreebsd-i386
-This might possibly fix support for kfreebsd-amd64 and any future arch
 
 ------------------------------------------------------------------------
 r1726 | remi | 2006-08-27 11:13:18 +0300 (Sun, 27 Aug 2006) | 2 lines
@@ -519,27 +2149,6 @@ Changed paths:
 All fixes for $(CC) -Wundef (basically s/#if /#ifdef/ where appropriate)
 
 ------------------------------------------------------------------------
-r1725 | remi | 2006-08-25 18:25:38 +0300 (Fri, 25 Aug 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/rules
-
-Don't update ChangeLog from SVN while building Debian package
-
-------------------------------------------------------------------------
-r1724 | remi | 2006-08-25 18:23:44 +0300 (Fri, 25 Aug 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/control
-
-Add homepage reference in the Debian description
-
-------------------------------------------------------------------------
-r1723 | remi | 2006-08-25 18:15:33 +0300 (Fri, 25 Aug 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/rules
-
-Comment out useless rule.
-
-------------------------------------------------------------------------
 r1722 | remi | 2006-08-25 18:14:52 +0300 (Fri, 25 Aug 2006) | 2 lines
 Changed paths:
    M /trunk/libteredo/maintain.c
@@ -550,22 +2159,6 @@ Revert extraneous commited file
 r1721 | remi | 2006-08-25 18:13:52 +0300 (Fri, 25 Aug 2006) | 2 lines
 Changed paths:
    M /trunk/libteredo/maintain.c
-   M /trunk/packages/debian/changelog
-   M /trunk/packages/debian/control
-   D /trunk/packages/debian/isatapd.default
-   D /trunk/packages/debian/isatapd.dirs
-   D /trunk/packages/debian/isatapd.init
-   D /trunk/packages/debian/isatapd.install
-   D /trunk/packages/debian/isatapd.postinst
-   D /trunk/packages/debian/libteredo-dev.install
-   D /trunk/packages/debian/libteredo3.install
-   D /trunk/packages/debian/libtun6-0.install
-   D /trunk/packages/debian/libtun6-dev.install
-   M /trunk/packages/debian/miredo-server.dirs
-   M /trunk/packages/debian/miredo-server.install
-   A /trunk/packages/debian/miredo.conf
-   M /trunk/packages/debian/miredo.install
-   M /trunk/packages/debian/rules
 
 Simplify Debian packaging
 
@@ -653,27 +2246,6 @@ Changed paths:
    M /trunk/configure.ac
 
 Begin development of version 1.0.1
-
-------------------------------------------------------------------------
-r1711 | remi | 2006-08-22 18:17:58 +0300 (Tue, 22 Aug 2006) | 2 lines
-Changed paths:
-   A /trunk/packages/debian/libteredo-dev.install (from /trunk/packages/debian/libteredo0-dev.install:1710)
-   D /trunk/packages/debian/libteredo0-dev.install
-   D /trunk/packages/debian/libteredo0.install
-   A /trunk/packages/debian/libteredo3.install (from /trunk/packages/debian/libteredo0.install:1710)
-   D /trunk/packages/debian/libtun6-0-dev.install
-   A /trunk/packages/debian/libtun6-dev.install (from /trunk/packages/debian/libtun6-0-dev.install:1710)
-
-Fix previous commit
-
-------------------------------------------------------------------------
-r1710 | remi | 2006-08-22 18:12:03 +0300 (Tue, 22 Aug 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/changelog
-   M /trunk/packages/debian/control
-   M /trunk/packages/debian/rules
-
-Debian package for 1.0.0
 
 ------------------------------------------------------------------------
 r1708 | remi | 2006-08-21 23:13:52 +0300 (Mon, 21 Aug 2006) | 2 lines
@@ -866,13 +2438,6 @@ Changed paths:
    M /trunk/libteredo/relay.c
 
 Define and future-proof teredo_set_prefix().
-
-------------------------------------------------------------------------
-r1685 | remi | 2006-08-14 21:39:07 +0300 (Mon, 14 Aug 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/control
-
-Lower priority of -dev and -dbg packages
 
 ------------------------------------------------------------------------
 r1684 | remi | 2006-08-14 21:14:51 +0300 (Mon, 14 Aug 2006) | 2 lines
@@ -1188,19 +2753,6 @@ Changed paths:
 Note that the impersonation bug does not affect stable branch :)
 
 ------------------------------------------------------------------------
-r1644 | remi | 2006-08-07 22:26:40 +0300 (Mon, 07 Aug 2006) | 3 lines
-Changed paths:
-   M /trunk/packages/debian
-   M /trunk/packages/debian/control
-   A /trunk/packages/debian/libteredo0.install (from /trunk/packages/debian/miredo.install:1631)
-   A /trunk/packages/debian/libtun6-0.install (from /trunk/packages/debian/miredo.install:1631)
-   M /trunk/packages/debian/miredo.install
-   M /trunk/packages/debian/rules
-
-Split package into more chunks.
-Lintian and Linda clean now.
-
-------------------------------------------------------------------------
 r1643 | remi | 2006-08-07 21:50:35 +0300 (Mon, 07 Aug 2006) | 2 lines
 Changed paths:
    M /trunk/NEWS
@@ -1309,21 +2861,6 @@ Changed paths:
 Mark the clock as volatile just in case.
 
 ------------------------------------------------------------------------
-r1629 | remi | 2006-08-04 19:21:54 +0300 (Fri, 04 Aug 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/libteredo0-dev.install
-   M /trunk/packages/debian/miredo.install
-
-Install miredo.conf into the right package
-
-------------------------------------------------------------------------
-r1628 | remi | 2006-08-04 19:17:42 +0300 (Fri, 04 Aug 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/changelog
-
-Fix changelog
-
-------------------------------------------------------------------------
 r1627 | remi | 2006-08-04 19:17:30 +0300 (Fri, 04 Aug 2006) | 2 lines
 Changed paths:
    M /trunk/libteredo/security.c
@@ -1365,15 +2902,6 @@ Changed paths:
 Typo
 
 ------------------------------------------------------------------------
-r1622 | remi | 2006-08-02 22:27:05 +0300 (Wed, 02 Aug 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/changelog
-   M /trunk/packages/debian/miredo.default
-   M /trunk/packages/debian/miredo.init
-
-Leverage miredo-checkconf change
-
-------------------------------------------------------------------------
 r1621 | remi | 2006-08-02 22:15:00 +0300 (Wed, 02 Aug 2006) | 3 lines
 Changed paths:
    M /trunk/src/checkconf.c
@@ -1403,15 +2931,6 @@ Changed paths:
    M /trunk/configure.ac
 
 Bump version number
-
-------------------------------------------------------------------------
-r1617 | remi | 2006-07-30 22:12:41 +0300 (Sun, 30 Jul 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/isatapd.dirs
-   M /trunk/packages/debian/miredo-server.dirs
-   M /trunk/packages/debian/miredo.dirs
-
-Remove redundant entries in *.dirs
 
 ------------------------------------------------------------------------
 r1616 | remi | 2006-07-30 22:12:05 +0300 (Sun, 30 Jul 2006) | 2 lines
@@ -1472,17 +2991,6 @@ Changed paths:
 Fix a few compiler warnings
 
 ------------------------------------------------------------------------
-r1608 | remi | 2006-07-30 17:52:57 +0300 (Sun, 30 Jul 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/changelog
-   M /trunk/packages/debian/isatapd.install
-   M /trunk/packages/debian/libteredo0-dev.install
-   M /trunk/packages/debian/miredo-server.install
-   M /trunk/packages/debian/rules
-
-Debian packaging: Leverage --enable-erase-conf
-
-------------------------------------------------------------------------
 r1607 | remi | 2006-07-30 17:45:40 +0300 (Sun, 30 Jul 2006) | 2 lines
 Changed paths:
    M /trunk/Makefile.am
@@ -1526,14 +3034,6 @@ Add --enable-erase-conf option to erase configuration files
 upon make install. This is mostly useful when building packages.
 
 ------------------------------------------------------------------------
-r1602 | remi | 2006-07-15 13:28:31 +0300 (Sat, 15 Jul 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/changelog
-   M /trunk/packages/debian/watch
-
-Update watch file
-
-------------------------------------------------------------------------
 r1600 | remi | 2006-07-13 17:41:41 +0300 (Thu, 13 Jul 2006) | 2 lines
 Changed paths:
    M /trunk/po/en.po
@@ -1550,13 +3050,6 @@ Changed paths:
    M /trunk/TODO
 
 Changes documentation for release 0.9.6
-
-------------------------------------------------------------------------
-r1598 | remi | 2006-07-12 20:18:40 +0300 (Wed, 12 Jul 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/control
-
-Don't depend on libcap-dev on non-Linux architectures
 
 ------------------------------------------------------------------------
 r1597 | remi | 2006-07-12 20:13:45 +0300 (Wed, 12 Jul 2006) | 2 lines
@@ -1738,22 +3231,6 @@ Changed paths:
 Include teredo-mire.1 in source tarball
 
 ------------------------------------------------------------------------
-r1573 | remi | 2006-07-08 10:07:12 +0300 (Sat, 08 Jul 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian
-
-Ignore cdbs-*
-
-------------------------------------------------------------------------
-r1572 | remi | 2006-07-08 10:06:37 +0300 (Sat, 08 Jul 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/control
-   M /trunk/packages/debian/miredo.install
-   M /trunk/packages/debian/rules
-
-Use list-missing, install teredo-mire
-
-------------------------------------------------------------------------
 r1571 | remi | 2006-07-08 09:32:17 +0300 (Sat, 08 Jul 2006) | 3 lines
 Changed paths:
    M /trunk/doc/Makefile.am
@@ -1797,13 +3274,6 @@ Changed paths:
 Sync translation files
 
 ------------------------------------------------------------------------
-r1565 | remi | 2006-07-07 20:21:31 +0300 (Fri, 07 Jul 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/rules
-
-Run check suite while building a Debian package
-
-------------------------------------------------------------------------
 r1564 | remi | 2006-07-07 20:20:45 +0300 (Fri, 07 Jul 2006) | 2 lines
 Changed paths:
    M /trunk/NEWS
@@ -1820,21 +3290,6 @@ Changed paths:
 Remove IgnoreConeBit from sample configuration
 
 ------------------------------------------------------------------------
-r1562 | remi | 2006-07-07 19:22:51 +0300 (Fri, 07 Jul 2006) | 3 lines
-Changed paths:
-   M /trunk/packages/debian/miredo.init
-
-Check configuration at restart only rather than start.
-This might avoid very nasty breakage in the postinst script.
-
-------------------------------------------------------------------------
-r1561 | remi | 2006-07-07 19:21:25 +0300 (Fri, 07 Jul 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/rules
-
-Fixes
-
-------------------------------------------------------------------------
 r1560 | remi | 2006-07-07 19:13:35 +0300 (Fri, 07 Jul 2006) | 2 lines
 Changed paths:
    M /trunk/src/checkconf.c
@@ -1842,52 +3297,11 @@ Changed paths:
 Print explicitly that the configuration is broken when miredo-checkconf fails
 
 ------------------------------------------------------------------------
-r1559 | remi | 2006-07-07 19:09:40 +0300 (Fri, 07 Jul 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian
-   M /trunk/packages/debian/changelog
-   M /trunk/packages/debian/control
-   D /trunk/packages/debian/docs
-   M /trunk/packages/debian/rules
-
-Switch to CDBS
-
-------------------------------------------------------------------------
 r1558 | remi | 2006-07-07 18:15:30 +0300 (Fri, 07 Jul 2006) | 2 lines
 Changed paths:
    M /trunk/src/checkconf.c
 
 Cosmetic change
-
-------------------------------------------------------------------------
-r1557 | remi | 2006-07-06 18:19:19 +0300 (Thu, 06 Jul 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/control
-
-Add build-dep on gettext
-
-------------------------------------------------------------------------
-r1556 | remi | 2006-07-06 18:19:06 +0300 (Thu, 06 Jul 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/rules
-
-Don't duplicate documentation in -dbg and -dev packages
-
-------------------------------------------------------------------------
-r1555 | remi | 2006-07-05 21:57:17 +0300 (Wed, 05 Jul 2006) | 3 lines
-Changed paths:
-   M /trunk/packages/debian/miredo.init
-
-Give the user a clue (and return an error code) when the configuration
-file is incorrect while trying to (re)start miredo from /etc/init.d
-
-------------------------------------------------------------------------
-r1554 | remi | 2006-07-05 21:56:33 +0300 (Wed, 05 Jul 2006) | 3 lines
-Changed paths:
-   M /trunk/packages/debian/rules
-
-- Run ldconfig before invoke-rc.d from postinst
-- Don't call superfluous dh_link
 
 ------------------------------------------------------------------------
 r1553 | remi | 2006-07-05 21:25:44 +0300 (Wed, 05 Jul 2006) | 2 lines
@@ -2159,14 +3573,6 @@ Changed paths:
 Bump version number
 
 ------------------------------------------------------------------------
-r1520 | remi | 2006-06-18 19:28:26 +0300 (Sun, 18 Jun 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian
-   M /trunk/packages/debian/changelog
-
-Fix svn:ignore
-
-------------------------------------------------------------------------
 r1519 | remi | 2006-06-18 19:27:38 +0300 (Sun, 18 Jun 2006) | 3 lines
 Changed paths:
    M /trunk/libteredo/server.c
@@ -2182,14 +3588,6 @@ Changed paths:
 Cosmetic fix
 
 ------------------------------------------------------------------------
-r1517 | remi | 2006-06-17 11:00:40 +0300 (Sat, 17 Jun 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/control
-   M /trunk/packages/debian/rules
-
-Provide a debug package (hey! these are currently beta releases)
-
-------------------------------------------------------------------------
 r1515 | remi | 2006-06-16 22:15:22 +0300 (Fri, 16 Jun 2006) | 2 lines
 Changed paths:
    M /trunk/NEWS
@@ -2199,34 +3597,6 @@ Changed paths:
    M /trunk/po/miredo.pot
 
 Prepare release 0.9.4
-
-------------------------------------------------------------------------
-r1514 | remi | 2006-06-16 22:14:30 +0300 (Fri, 16 Jun 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/control
-
-Fix libc-dev dependency
-
-------------------------------------------------------------------------
-r1513 | remi | 2006-06-16 20:54:40 +0300 (Fri, 16 Jun 2006) | 2 lines
-Changed paths:
-   A /trunk/packages/debian/changelog (from /trunk/packages/debian/changelog.in:1511)
-   D /trunk/packages/debian/changelog.in
-
-The changelog should really not depend on config.status
-
-------------------------------------------------------------------------
-r1512 | remi | 2006-06-16 20:52:20 +0300 (Fri, 16 Jun 2006) | 3 lines
-Changed paths:
-   A /trunk/packages/debian/isatapd.init (from /trunk/packages/debian/isatapd.init.in:1511)
-   D /trunk/packages/debian/isatapd.init.in
-   A /trunk/packages/debian/miredo-server.init (from /trunk/packages/debian/miredo-server.init.in:1511)
-   D /trunk/packages/debian/miredo-server.init.in
-   A /trunk/packages/debian/miredo.init (from /trunk/packages/debian/miredo.init.in:1511)
-   D /trunk/packages/debian/miredo.init.in
-
-Code file paths statically to match the standard Debian ones
-(which are pretty much the standard on any mainstream Linux distribution).
 
 ------------------------------------------------------------------------
 r1511 | remi | 2006-06-16 19:12:53 +0300 (Fri, 16 Jun 2006) | 2 lines
@@ -2257,20 +3627,6 @@ Changed paths:
    M /trunk/TODO
 
 Review TODO list
-
-------------------------------------------------------------------------
-r1507 | remi | 2006-06-16 18:18:32 +0300 (Fri, 16 Jun 2006) | 2 lines
-Changed paths:
-   D /trunk/packages/debian/shlibs.local
-
-libjudydebian1 was fixed; no need for the shlibs kludge anymore
-
-------------------------------------------------------------------------
-r1506 | remi | 2006-06-15 17:01:18 +0300 (Thu, 15 Jun 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/control
-
-Add missing dependency on libc-dev
 
 ------------------------------------------------------------------------
 r1505 | remi | 2006-06-14 22:36:47 +0300 (Wed, 14 Jun 2006) | 4 lines
@@ -2330,67 +3686,11 @@ Changed paths:
 Prepare release 0.9.3
 
 ------------------------------------------------------------------------
-r1497 | remi | 2006-06-10 17:14:30 +0300 (Sat, 10 Jun 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/isatapd.init.in
-   M /trunk/packages/debian/rules
-
-Improve Debian initscripts handling
-
-------------------------------------------------------------------------
 r1496 | remi | 2006-06-10 17:13:44 +0300 (Sat, 10 Jun 2006) | 2 lines
 Changed paths:
    D /trunk/misc/miredo
 
 Remove broken useless obsolete file
-
-------------------------------------------------------------------------
-r1495 | remi | 2006-06-10 14:20:51 +0300 (Sat, 10 Jun 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/control
-   M /trunk/packages/debian/rules
-   A /trunk/packages/debian/shlibs.local
-
-Work-around libjudy breakage. Fixes.
-
-------------------------------------------------------------------------
-r1494 | remi | 2006-06-10 13:39:09 +0300 (Sat, 10 Jun 2006) | 2 lines
-Changed paths:
-   A /trunk/packages/debian/isatapd.postinst (from /trunk/packages/debian/miredo.postinst:1493)
-   A /trunk/packages/debian/miredo-server.postinst (from /trunk/packages/debian/miredo.postinst:1493)
-
-Create system users (2/2)
-
-------------------------------------------------------------------------
-r1493 | remi | 2006-06-10 12:56:41 +0300 (Sat, 10 Jun 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/isatapd.dirs
-   M /trunk/packages/debian/miredo-server.dirs
-   M /trunk/packages/debian/miredo.dirs
-   A /trunk/packages/debian/miredo.postinst
-
-Create miredo user properly (1/2)
-
-------------------------------------------------------------------------
-r1492 | remi | 2006-06-10 11:59:50 +0300 (Sat, 10 Jun 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/control
-
-Remove libjudy-dev from build-depends until it is fixed
-
-------------------------------------------------------------------------
-r1491 | remi | 2006-06-10 11:25:48 +0300 (Sat, 10 Jun 2006) | 4 lines
-Changed paths:
-   M /trunk/packages/debian/control
-   A /trunk/packages/debian/isatapd.default (from /trunk/packages/debian/miredo.default:1489)
-   A /trunk/packages/debian/isatapd.init.in (from /trunk/packages/debian/miredo.init.in:1489)
-   M /trunk/packages/debian/libteredo0-dev.install
-   M /trunk/packages/debian/miredo-server.default
-   M /trunk/packages/debian/miredo.install
-
-- Do not package libmiredo.
-- Add iniscript for isatapd.
-- Fix defaults for miredo and miredo-server.
 
 ------------------------------------------------------------------------
 r1490 | remi | 2006-06-10 11:25:06 +0300 (Sat, 10 Jun 2006) | 3 lines
@@ -2415,49 +3715,12 @@ Dismantle misc/ directory.
 The only significant operations there were Debian-specific.
 
 ------------------------------------------------------------------------
-r1488 | remi | 2006-06-10 10:42:49 +0300 (Sat, 10 Jun 2006) | 2 lines
-Changed paths:
-   M /trunk/packages/debian/control
-   M /trunk/packages/debian/miredo-server.default
-   M /trunk/packages/debian/miredo.default
-   M /trunk/packages/debian/rules
-
-Debian package fixes
-
-------------------------------------------------------------------------
 r1487 | remi | 2006-06-10 10:40:15 +0300 (Sat, 10 Jun 2006) | 3 lines
 Changed paths:
    M /trunk/compat/Makefile.am
 
 Make libcompat.la a genuine convenience library
 (It is incorrect to use a static library within a shared one with libtool).
-
-------------------------------------------------------------------------
-r1486 | remi | 2006-06-10 00:01:30 +0300 (Sat, 10 Jun 2006) | 2 lines
-Changed paths:
-   A /trunk/packages
-   A /trunk/packages/debian
-   A /trunk/packages/debian/changelog.in
-   A /trunk/packages/debian/compat
-   A /trunk/packages/debian/control
-   A /trunk/packages/debian/copyright
-   A /trunk/packages/debian/docs
-   A /trunk/packages/debian/isatapd.dirs
-   A /trunk/packages/debian/isatapd.install
-   A /trunk/packages/debian/libteredo0-dev.install
-   A /trunk/packages/debian/libtun6-0-dev.install
-   A /trunk/packages/debian/miredo-server.default
-   A /trunk/packages/debian/miredo-server.dirs
-   A /trunk/packages/debian/miredo-server.init.in (from /trunk/misc/miredo-server.in:1482)
-   A /trunk/packages/debian/miredo-server.install
-   A /trunk/packages/debian/miredo.default
-   A /trunk/packages/debian/miredo.dirs
-   A /trunk/packages/debian/miredo.init.in (from /trunk/misc/miredo.in:1482)
-   A /trunk/packages/debian/miredo.install
-   A /trunk/packages/debian/rules
-   A /trunk/packages/debian/watch
-
-Preliminary ?\226?\128?\156upstream?\226?\128?\157-made Debian packaging.
 
 ------------------------------------------------------------------------
 r1485 | remi | 2006-06-09 21:58:59 +0300 (Fri, 09 Jun 2006) | 2 lines

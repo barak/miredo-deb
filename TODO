@@ -1,6 +1,6 @@
 ToDo list:
 ===========
-$Id: TODO 1684 2006-08-14 18:14:51Z remi $
+$Id: TODO 2007 2007-08-17 15:06:38Z remi $
 
 This task list is only indicative; in particular priorities are typically
 not quite respected and often modified. It might not be fully comprehensive.
@@ -20,9 +20,9 @@ Important features & fixes:
 
 Not so important features:
 ---------------------------
-(*) some statistics
 (H) other localizations
 ( ) support for UPnP IGD to open an UDP port on supporting NATs
+( ) support for (Apple) NAT-PMP
 (?) “automatic sunset” / “exit strategy”
 
 Conformance:
@@ -33,6 +33,8 @@ Conformance:
 Security:
 ----------
 (?) full secure qualification support with user ID
+(H) code review
+(?) fix for CVE-2006-6264
 
 Extension:
 -----------
@@ -46,11 +48,9 @@ Portability:
 (H) byte alignement tests on problematic platforms (not i386)
 (H) Solaris: libtun6 support
 (H) Solaris: tests & fixes
-(H) FreeBSD kernel support fix (PR: kern/100080)
-(H) NetBSD 4 kernel support fix (same problem as FreeBSD)
-(H) DragonFly kernel support fix
+(H) NetBSD 4 kernel tunnel routes fix
+(H) DragonFly kernel tunnel routes fix
 (H) OpenBSD kernel support correctness check
-(*) BSD: setsockopt SO_REUSEPORT if/where appropriate
 
 Documentation & support:
 -------------------------

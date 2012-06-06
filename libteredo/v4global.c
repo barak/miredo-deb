@@ -1,6 +1,6 @@
 /*
  * v4global.c - Check whether an IPv4 address is global
- * $Id: v4global.c 1726 2006-08-27 08:13:18Z remi $
+ * $Id: v4global.c 1954 2007-05-12 14:08:59Z remi $
  */
 
 /***********************************************************************
@@ -29,10 +29,6 @@
 
 #include "v4global.h"
 
-/*
- * Checks that ip is a global unicast IPv4 address
- * (Values shoud maybe not be hardcoded that way).
- */
 int
 is_ipv4_global_unicast (uint32_t ip)
 {

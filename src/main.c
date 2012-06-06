@@ -1,11 +1,11 @@
 /*
  * main.c - Unix Teredo server & relay implementation
  *          command line handling and core functions
- * $Id: main.c 1726 2006-08-27 08:13:18Z remi $
+ * $Id: main.c 2035 2007-09-04 05:59:23Z remi $
  */
 
 /***********************************************************************
- *  Copyright © 2004-2006 Rémi Denis-Courmont.                         *
+ *  Copyright © 2004-2007 Rémi Denis-Courmont.                         *
  *  This program is free software; you can redistribute and/or modify  *
  *  it under the terms of the GNU General Public License as published  *
  *  by the Free Software Foundation; version 2 of the license.         *
@@ -137,6 +137,14 @@ error_extra (const char *extra)
 }
 
 
+static int
+error_errno (const char *str)
+{
+	fprintf (stderr, _("Error (%s): %s\n"), str, strerror (errno));
+	return -1;
+}
+
+
 /**
  * Creates a Process-ID file.
  */
@@ -161,10 +169,10 @@ open_pidfile (const char *path)
 		 && (lockf (fd, F_TEST, 0) == 0))
 			return fd;
 
-		close (fd);
-
 		if (errno == 0) /* !S_ISREG */
 			errno = EACCES;
+
+		(void)close (fd);
 	}
 	return -1;
 }
@@ -183,16 +191,22 @@ write_pid (int fd)
 	buf[sizeof (buf) - 1] = '\0';
 	size_t len = strlen (buf);
 
-	ftruncate (fd, 0);
-	return write (fd, buf, len) == (int)len ? 0 : -1;
+	if (ftruncate (fd, 0)
+	 || (write (fd, buf, len) != (ssize_t)len)
+	 || fdatasync (fd))
+		return -1;
+	return 0;
 }
 
 
-static void
+static int
 close_pidfile (int fd)
 {
-	(void)lockf (fd, F_ULOCK, 0);
-	(void)close (fd);
+	if (lockf (fd, F_ULOCK, 0))
+		return -1;
+	if (close (fd))
+		return -1;
+	return 0;
 }
 
 
@@ -212,10 +226,9 @@ setuid_notice (void)
  * Initialize daemon context.
  */
 static int
-init_daemon (const char *username, const char *pidfile, int nodetach)
+init_security (const char *username)
 {
-	/* Clears environment */
-	(void)clearenv ();
+	int val;
 
 	/* Sets sensible umask */
 	(void)umask (022);
@@ -234,10 +247,13 @@ init_daemon (const char *username, const char *pidfile, int nodetach)
 	/*
 	 * Make sure 0, 1 and 2 are open.
 	 */
-	int fd = dup (2);
-	if (fd < 3)
+	val = dup (2);
+	if (val < 3)
 		return -1;
-	close (fd);
+	close (val);
+
+	/* Clears environment */
+	(void)clearenv ();
 
 #ifdef MIREDO_DEFAULT_USERNAME
 	/* Determines unpriviledged user */
@@ -245,18 +261,8 @@ init_daemon (const char *username, const char *pidfile, int nodetach)
 	struct passwd *pw = getpwnam (username);
 	if (pw == NULL)
 	{
-		fprintf (stderr, _("User \"%s\": %s\n"),
-				username, errno ? strerror (errno)
-					: _("User not found"));
-		fprintf (stderr,
-			_("Error: This program was asked to run in the\n"
-			"security context of system user \"%s\", but it\n"
-			"does not seem to exist on your system.\n"
-			"\n"
-			"Use command line option \"-u <username>\" to run\n"
-			"this program in the security context of another\n"
-			"user.\n"
-			), username);
+		fprintf (stderr, _("User \"%s\": %s\n"), username,
+		         errno ? strerror (errno) : _("User not found"));
 		return -1;
 	}
 
@@ -278,22 +284,24 @@ init_daemon (const char *username, const char *pidfile, int nodetach)
 		return -1;
 	}
 
-# ifdef HAVE_LIBCAP
+	/* Unpriviledged group */
+	(void)setgid (pw->pw_gid);
+	(void)initgroups (username, pw->pw_gid);
+#else
+	(void)username;
+#endif /* MIREDO_DEFAULT_USERNAME */
+
+
+#ifdef HAVE_LIBCAP
 	/* POSIX.1e capabilities support */
 	cap_t s = cap_init ();
 	if (s == NULL)
-	{
-		/* Unlikely */
-		fprintf (stderr, _("Error (%s): %s\n"), "cap_init",
-		         strerror (errno));
-		return -1;
-	}
+		return error_errno ("cap_init"); // unlikely
 
 	static cap_value_t caps[] =
 	{
 		CAP_KILL, // required by the signal handler
-		CAP_SETUID,
-		CAP_SETGID
+		CAP_SETUID
 	};
 	cap_set_flag (s, CAP_PERMITTED, 3, caps, CAP_SET);
 	cap_set_flag (s, CAP_EFFECTIVE, 3, caps, CAP_SET);
@@ -310,60 +318,29 @@ init_daemon (const char *username, const char *pidfile, int nodetach)
 	cap_set_flag (s, CAP_EFFECTIVE, miredo_capc,
 	              (cap_value_t *)miredo_capv, CAP_SET);
 
-	if (cap_set_proc (s))
+	val = cap_set_proc (s);
+	cap_free (s);
+
+	if (val)
 	{
-		fprintf (stderr, _("Error (%s): %s\n"), "cap_set_proc",
-		         strerror (errno));
-		cap_free (s);
+		error_errno ("cap_set_proc");
 		setuid_notice ();
 		return -1;
 	}
-# endif
+#endif
 
-	/* Unpriviledged group */
-	(void)setgid (pw->pw_gid);
-	(void)initgroups (username, pw->pw_gid);
+	return 0;
+}
 
-# ifdef HAVE_LIBCAP
-	static cap_value_t setgid_cap[] = { CAP_SETGID };
-	cap_set_flag (s, CAP_EFFECTIVE, 1, setgid_cap, CAP_CLEAR);
-	cap_set_flag (s, CAP_PERMITTED, 1, setgid_cap, CAP_CLEAR);
-	cap_set_proc (s);
-	cap_free (s);
-# endif
-#else
-	(void)username;
-#endif /* MIREDO_DEFAULT_USERNAME */
 
-	/* Opens pidfile */
-	fd = open_pidfile (pidfile);
-	if (fd == -1)
-	{
-		fprintf (stderr, _("Cannot create PID file %s:\n %s\n"),
-		         pidfile, strerror (errno));
-		if (errno == EAGAIN)
-			fprintf (stderr, "%s\n",
-			         _("Make sure another instance of the program is not "
-			           "already running."));
-		return -1;
-	}
-
-	/*
-	 * Detaches. While not security-related, it fits well here.
-	 */
-	if (!nodetach && daemon (0, 0))
-	{
-		fprintf (stderr, _("Error (%s): %s\n"), "daemon", strerror (errno));
-		return -1;
-	}
-
-	if (write_pid (fd))
-	{
-		close (fd);
-		return -1;
-	}
-
-	return fd;
+static void init_locale (void)
+{
+	(void)br_init (NULL);
+	(void)setlocale (LC_ALL, "");
+	char *path = br_find_locale_dir (LOCALEDIR);
+	(void)bindtextdomain (PACKAGE, path);
+	free (path);
+	(void)textdomain (PACKAGE);
 }
 
 
@@ -391,12 +368,7 @@ int miredo_main (int argc, char *argv[])
 		{ NULL,         no_argument,       NULL, '\0'}
 	};
 
-	(void)br_init (NULL);
-	(void)setlocale (LC_ALL, "");
-	char *path = br_find_locale_dir (LOCALEDIR);
-	(void)bindtextdomain (PACKAGE, path);
-	free (path);
-	(void)textdomain (PACKAGE);
+	init_locale ();
 
 #define ONETIME_SETTING( setting ) \
 	if (setting != NULL) \
@@ -456,19 +428,20 @@ int miredo_main (int argc, char *argv[])
 		return error_extra (username);
 #endif
 
-	size_t str_len;
+	size_t str_len = 0;
+	char *path = NULL;
 	if (conffile == NULL)
 	{
 		path = br_find_etc_dir (SYSCONFDIR);
-		str_len = strlen (path) + strlen (miredo_name) + 7;
+		str_len = strlen (path) + strlen (miredo_name)
+		                        + sizeof ("/miredo/.conf");
 	}
-	else
-		str_len = 0;
 
 	char conffile_buf[str_len];
 	if (conffile == NULL)
 	{
-		snprintf (conffile_buf, str_len, "%s/%s.conf", path, miredo_name);
+		snprintf (conffile_buf, str_len, "%s/miredo/%s.conf", path,
+		          miredo_name);
 		free (path);
 		conffile = conffile_buf;
 	}
@@ -492,8 +465,7 @@ int miredo_main (int argc, char *argv[])
 			if (errno == 0)
 				errno = ENOTDIR;
 
-			fprintf (stderr, _("Error (%s): %s\n"),
-			         chrootdir, strerror (errno));
+			error_errno (chrootdir);
 			return 1;
 		}
 	}
@@ -512,12 +484,37 @@ int miredo_main (int argc, char *argv[])
 		pidfile = pidfile_buf;
 	}
 
+	if (init_security (username))
+		return 1;
+
 	if (miredo_diagnose ())
 		return 1;
 
-	int fd = init_daemon (username, pidfile, flags.foreground);
+	/* Opens pidfile */
+	int fd = open_pidfile (pidfile);
 	if (fd == -1)
-		return 1;
+	{
+		fprintf (stderr, _("Cannot create PID file %s:\n %s\n"),
+		         pidfile, strerror (errno));
+		if ((errno == EAGAIN) || (errno == EACCES))
+			fprintf (stderr, "%s\n",
+			         _("Please make sure another instance of the program is "
+				   "not already running."));
+		return -1;
+	}
+
+	/* Detaches */
+	if (!flags.foreground && daemon (0, 0))
+	{
+		fprintf (stderr, _("Error (%s): %s\n"), "daemon", strerror (errno));
+		return -1;
+	}
+
+	if (write_pid (fd))
+	{
+		close (fd);
+		return -1;
+	}
 
 	/*
 	 * Run

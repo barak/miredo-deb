@@ -1,5 +1,5 @@
 .\" ***********************************************************************
-.\" *  Copyright © 2006 Rémi Denis-Courmont.                              *
+.\" *  Copyright © 2006-2007 Rémi Denis-Courmont.                         *
 .\" *  This program is free software; you can redistribute and/or modify  *
 .\" *  it under the terms of the GNU General Public License as published  *
 .\" *  by the Free Software Foundation; version 2 of the license.         *
@@ -13,7 +13,7 @@
 .\" *  along with this program; if not, you can get it from:              *
 .\" *  http://www.gnu.org/copyleft/gpl.html                               *
 .\" ***********************************************************************
-.TH "MIREDO-CHECKCONF" "8" "$Date: 2006-06-03 21:24:57 +0300 (sam, 03 jun 2006) $" "miredo" "System Manager's Manual"
+.TH "MIREDO-CHECKCONF" "8" "$Date: 2007-02-22 22:55:28 +0200 (Thu, 22 Feb 2007) $" "miredo" "System Manager's Manual"
 .SH NAME
 miredo-checkconf \- Miredo configuration file syntax checking tool
 .SH SYNOPSIS
@@ -38,7 +38,7 @@ Display program version and exit.
 .TP
 .BR "config_file"
 This optional argument specifies the path to the configuration file to
-be checked. If not given, the default @sysconfdir@/miredo.conf will be
+be checked. If not given, the default @confdir@/miredo.conf will be
 assumed.
 
 .\".SH DIAGNOSTICS
@@ -48,7 +48,7 @@ miredo-server.
 
 .SH FILES
 .TP
-.I @sysconfdir@/miredo.conf
+.I @confdir@/miredo.conf
 The default configuration file.
 
 .SH "SEE ALSO"
@@ -57,7 +57,7 @@ miredo.conf(5), miredo(8)
 .SH AUTHOR
 R\[char233]mi Denis-Courmont <rdenis at simphalempin.com>
 
-$Id: miredo-checkconf.8-in 1466 2006-06-03 18:24:57Z remi $
+$Id: miredo-checkconf.8-in 1938 2007-02-22 20:55:28Z remi $
 
-http://www.simphalempin.com/dev/miredo/
+http://www.remlab.net/miredo/
 

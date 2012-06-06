@@ -1,17 +1,71 @@
 RELEASE NOTES for Miredo
-stable release version 1.0.4
-=============================
-$Id: NEWS 1789 2006-10-08 10:00:24Z remi $
+test release version 1.1.2
+===========================
+$Id: NEWS 2040 2007-09-13 17:39:43Z remi $
 
   This is a stable release. There are no known outstanding issues. We
-strongly encourage users from previous releases to upgrade. There are a
-lot of bug fixes and improvements compared with branch 0.8.x.
+strongly encourage users from previous releases to upgrade, as some important
+fixes are included.
   Please report any problem by email to miredo-devel (at) remlab (dot) net
 
   You can find major changes since version 0.1.0 below. For more general
 informations on this program, see README. For syntax details and
 changes, run “miredo -h” to get help. For detailled internal changes, see
 ChangeLog.
+
+===========================================================================
+TEST RELEASE 1.1.2 : Minor bug fixes
+
+# Fix filtering error within miredo-server (regression from 1.1.0).
+
+===========================================================================
+TEST RELEASE 1.1.1 : Minor bug fixes
+
+# Fix fatal padding mistake on old ABI ARM achitecture.
+
+===========================================================================
+TEST RELEASE 1.1.0 : Major features enhancement
+
+# Remove NAT type determination:
+  Miredo now runs behind any type of NAT. However, connectivity might
+  be severely degraded behind the worst devices, such as symmetric NATs.
+
+# Add 12 bits of randomness to Teredo client address:
+  Teredo addresses are less predictible, which should enhance host
+  protection against network scanning.
+
+# Remove brittle and battery-unfriendly "autoclient" mode:
+  Proper default IPv6 source address selection (RFC3484) implementation
+  would address most of the use cases for this, as well as other issues.
+  If that is not sufficient, an external connection management system
+  is anyway needed to start/stop Miredo when appropriate.
+
+# Restore "cone" RelayType:
+  All relays should use it, as it improves support for some kinds of
+  (pretty broken but nevertheless deployed) NAT devices.
+
+# Minor specification conformance fixes to miredo-server.
+# Use a hook shell script for client interface configuration.
+# Add a bunch of debug messages to debug builds.
+# Rewrite clock subsystem to avoid polling when idle (battery savings).
+# Some minor bug fixes.
+
+===========================================================================
+STABLE RELEASE 1.0.6 : Minor features enhancement
+
+# Fix support for Teredo peers behind symmetric NATs (bug from 0.9.8).
+  This could probably be used to spoof a Teredo clients.
+# MacOS X compilation fix.
+
+===========================================================================
+STABLE RELEASE 1.0.5 : Major bug fixes
+
+# Fix issues with timer and compiler optimizations (bug from 0.9.4).
+# Increase ping test hop limit:
+  Some IPv6 native nodes could not be reached otherwise.
+# Increase HMAC secret size from 64 to 128 bits.
+# Fix filtering of packets with link-local source address (bug from 0.4.0).
+# Various fixes to the experimental ISATAP daemon.
 
 ============================================================================
 STABLE RELEASE 1.0.4 : Major bug fix

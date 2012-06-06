@@ -1,6 +1,6 @@
 /*
  * debug.h - libteredo transparent threading debugging
- * $Id: debug.h 1243 2006-04-14 16:12:29Z remi $
+ * $Id: debug.h 1808 2006-10-26 19:34:40Z remi $
  */
 
 /***********************************************************************
@@ -21,6 +21,12 @@
 
 #ifndef LIBTEREDO_COMMON_H
 # define LIBTEREDO_COMMON_H
+
+# ifdef __GNUC__
+#  define LIBTEREDO_NORETURN __attribute__ ((noreturn))
+# else
+#  define LIBTEREDO_NORETURN
+# endif
 
 # if defined (__linux__) && !defined NDEBUG
 #  include <errno.h>

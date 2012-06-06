@@ -1,6 +1,6 @@
 /*
  * diag.c - IPv6 tunnel diagnostic functions
- * $Id: diag.c 1726 2006-08-27 08:13:18Z remi $
+ * $Id: diag.c 1999 2007-08-13 17:43:03Z remi $
  */
 
 /***********************************************************************
@@ -85,14 +85,17 @@ int tun6_driver_diagnose (char *errbuf)
 		const char *specific;
 
 #if defined (__linux__)
-		specific = N_("You should run these commands to create it:\n"
-			"# mkdir -p /dev/net\n"
-			"# mknod /dev/net/tun c 10 200\n"
+		specific = N_("You might try to run this command to load it:\n"
+			"$ modprobe tun\n"
 			"(you must be root to do that).\n");
 #elif defined (__APPLE__)
 		specific = N_("You can obtain a tunnel driver for the "
 			"Darwin kernel (Mac OS X) from:\n"
 			"http://www-user.rhrk.uni-kl.de/~nissler/tuntap/\n");
+#elif defined (__FreeBSD__) || defined (__FreeBSD_kernel__)
+		specific = N_("You might try to run this command to load it:\n"
+			"$ kldload if_tun\n"
+			"(you must be root to do that).\n");
 #else
 		specific = NULL;
 #endif

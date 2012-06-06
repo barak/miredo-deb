@@ -1,10 +1,10 @@
 /*
  * privproc.h - Privileged process for Miredo
- * $Id: privproc.h 1103 2006-04-01 18:52:35Z remi $
+ * $Id: privproc.h 1907 2007-01-14 17:35:05Z remi $
  */
 
 /***********************************************************************
- *  Copyright © 2004-2005 Rémi Denis-Courmont.                         *
+ *  Copyright © 2004-2007 Rémi Denis-Courmont.                         *
  *  This program is free software; you can redistribute and/or modify  *
  *  it under the terms of the GNU General Public License as published  *
  *  by the Free Software Foundation; version 2 of the license.         *
@@ -30,7 +30,7 @@ extern "C" {
 # endif
 
 int
-miredo_privileged_process (struct tun6 *tunnel);
+miredo_privileged_process (unsigned ifindex, void (*) (void *), void *);
 
 int
 miredo_configure_tunnel (int fd, const struct in6_addr *addr, unsigned mtu);

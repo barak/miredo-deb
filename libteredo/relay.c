@@ -1,13 +1,13 @@
 /*
  * relay.c - Teredo relay core
- * $Id: relay.c 1747 2006-09-16 16:34:46Z remi $
+ * $Id: relay.c 2018 2007-08-18 11:31:24Z remi $
  *
  * See "Teredo: Tunneling IPv6 over UDP through NATs"
  * for more information
  */
 
 /***********************************************************************
- *  Copyright © 2004-2006 Rémi Denis-Courmont.                         *
+ *  Copyright © 2004-2007 Rémi Denis-Courmont.                         *
  *  This program is free software; you can redistribute and/or modify  *
  *  it under the terms of the GNU General Public License as published  *
  *  by the Free Software Foundation; version 2 of the license.         *
@@ -29,7 +29,6 @@
 #include <gettext.h>
 
 #include <stdbool.h>
-#include <string.h>
 #include <time.h>
 #include <stdlib.h> // malloc()
 #include <assert.h>
@@ -49,6 +48,7 @@
 #include "packets.h"
 #include "tunnel.h"
 #include "maintain.h"
+#include "clock.h"
 #include "peerlist.h"
 #ifdef MIREDO_TEREDO_CLIENT
 # include "security.h"
@@ -76,7 +76,7 @@ struct teredo_tunnel
 	{
 		pthread_mutex_t lock;
 		int count;
-		time_t last;
+		teredo_clock_t last;
 	} ratelimit;
 
 	// Asynchronous packet reception
@@ -87,8 +87,6 @@ struct teredo_tunnel
 	} recv;
 
 	int fd;
-	volatile time_t now;
-	pthread_t clock;
 };
 
 #ifdef HAVE_LIBJUDY
@@ -97,6 +95,21 @@ struct teredo_tunnel
 # define MAX_PEERS 1024
 #endif
 #define ICMP_RATE_LIMIT_MS 100
+
+#ifndef NDEBUG
+# include <syslog.h>
+# include <stdarg.h>
+
+static inline void debug (const char *str, ...)
+{
+	va_list ap;
+	va_start (ap, str);
+	vsyslog (LOG_DEBUG, str, ap);
+	va_end (ap);
+}
+#else
+#define debug( ... ) (void)0
+#endif
 
 #if 0
 static unsigned QualificationRetries; // maintain.c
@@ -118,19 +131,20 @@ static unsigned IcmpRateLimitMs;      // here
  */
 static void
 teredo_send_unreach (teredo_tunnel *restrict tunnel, uint8_t code,
-                     const void *restrict in, size_t len)
+                     const struct ip6_hdr *restrict in, size_t len)
 {
 	struct
 	{
 		struct icmp6_hdr hdr;
 		char fill[1280 - sizeof (struct ip6_hdr) - sizeof (struct icmp6_hdr)];
 	} buf;
+	teredo_clock_t now = teredo_clock ();
 
 	/* ICMPv6 rate limit */
 	pthread_mutex_lock (&tunnel->ratelimit.lock);
-	if (tunnel->now != tunnel->ratelimit.last)
+	if (now != tunnel->ratelimit.last)
 	{
-		tunnel->ratelimit.last = tunnel->now;
+		tunnel->ratelimit.last = now;
 		tunnel->ratelimit.count =
 			ICMP_RATE_LIMIT_MS ? (int)(1000 / ICMP_RATE_LIMIT_MS) : -1;
 	}
@@ -146,8 +160,7 @@ teredo_send_unreach (teredo_tunnel *restrict tunnel, uint8_t code,
 	pthread_mutex_unlock (&tunnel->ratelimit.lock);
 
 	len = BuildICMPv6Error (&buf.hdr, ICMP6_DST_UNREACH, code, in, len);
-	tunnel->icmpv6_cb (tunnel->opaque, &buf.hdr, len,
-	                   &((const struct ip6_hdr *)in)->ip6_src);
+	tunnel->icmpv6_cb (tunnel->opaque, &buf.hdr, len, &in->ip6_src);
 }
 
 #if 0
@@ -179,7 +192,7 @@ teredo_state_change (const teredo_state *state, void *self)
 
 	pthread_rwlock_wrlock (&tunnel->state_lock);
 	bool previously_up = tunnel->state.up;
-	memcpy (&tunnel->state, state, sizeof (tunnel->state));
+	tunnel->state = *state;
 
 	if (tunnel->state.up)
 	{
@@ -209,7 +222,7 @@ teredo_state_change (const teredo_state *state, void *self)
  * @return 0 if a ping may be sent. 1 if one was sent recently
  * -1 if the peer seems unreachable.
  */
-static int CountPing (teredo_peer *peer, time_t now)
+static int CountPing (teredo_peer *peer, teredo_clock_t now)
 {
 	int res;
 
@@ -243,20 +256,10 @@ static inline bool IsClient (const teredo_tunnel *tunnel)
 
 
 /*
- * Returs true if the packet whose header is passed as a parameter looks
- * like a Teredo bubble.
- */
-inline bool IsBubble (const struct ip6_hdr *hdr)
-{
-	return (hdr->ip6_plen == 0) && (hdr->ip6_nxt == IPPROTO_NONE);
-}
-
-
-/*
  * Returns 0 if a bubble may be sent, -1 if no more bubble may be sent,
  * 1 if a bubble may be sent later.
  */
-static int CountBubble (teredo_peer *peer, time_t now)
+static int CountBubble (teredo_peer *peer, teredo_clock_t now)
 {
 	/* § 5.2.6 - sending bubbles */
 	int res;
@@ -311,41 +314,25 @@ static inline void SetMappingFromPacket (teredo_peer *peer,
  */
 static
 int teredo_encap (teredo_tunnel *restrict tunnel, teredo_peer *restrict peer,
-                  const void *restrict data, size_t len)
+                  const void *restrict data, size_t len, teredo_clock_t now)
 {
 	uint32_t ipv4 = peer->mapped_addr;
 	uint16_t port = peer->mapped_port;
-	TouchTransmit (peer, tunnel->now);
+	TouchTransmit (peer, now);
 	teredo_list_release (tunnel->list);
 
 	return (teredo_send (tunnel->fd,
 	                     data, len, ipv4, port) == (int)len) ? 0 : -1;
 }
 
-/**
- * Transmits a packet coming from the IPv6 Internet, toward a Teredo node
- * (as specified per paragraph 5.4.1). That's what the specification calls
- * “Packet transmission”.
- *
- * It is assumed that the IPv6 packet is valid (if not, it will be dropped by
- * the receiving Teredo peer). It is furthermore assumed that the packet is at
- * least 40 bytes long (room for the IPv6 header and that it is properly
- * aligned.
- *
- * The packet size should not exceed the MTU (1280 bytes by default).
- * In any case, sending will fail if the packets size exceeds 65507 bytes
- * (maximum size for a UDP packet's payload).
- *
- * Thread-safety: This function is thread-safe.
- *
- * @return 0 on success, -1 on error.
- */
+
 int teredo_transmit (teredo_tunnel *restrict tunnel,
                      const struct ip6_hdr *restrict packet, size_t length)
 {
 	assert (tunnel != NULL);
 
-	const union teredo_addr *dst = (union teredo_addr *)&packet->ip6_dst;
+	const union teredo_addr *dst =
+		(const union teredo_addr *)&packet->ip6_dst;
 
 	/* Drops multicast destination, we cannot handle these */
 	if (dst->ip6.s6_addr[0] == 0xff)
@@ -353,7 +340,7 @@ int teredo_transmit (teredo_tunnel *restrict tunnel,
 
 	teredo_state s;
 	pthread_rwlock_rdlock (&tunnel->state_lock);
-	memcpy (&s, &tunnel->state, sizeof (s));
+	s = tunnel->state;
 	/*
 	 * We can afford to use a slightly outdated state, but we cannot afford to
 	 * use an inconsistent state, hence this lock.
@@ -376,7 +363,7 @@ int teredo_transmit (teredo_tunnel *restrict tunnel,
 		if (IsClient (tunnel))
 		{
 			const union teredo_addr *src =
-				(union teredo_addr *)&packet->ip6_src;
+				(const union teredo_addr *)&packet->ip6_src;
 
 			if (src->teredo.prefix != s.addr.teredo.prefix)
 			{
@@ -420,29 +407,29 @@ int teredo_transmit (teredo_tunnel *restrict tunnel,
 	}
 
 	bool created;
-	time_t now = tunnel->now;
+	teredo_clock_t now = teredo_clock ();
 	struct teredo_peerlist *list = tunnel->list;
 
-//	syslog (LOG_DEBUG, "packet to be sent");
-	teredo_peer *p = teredo_list_lookup (list, now, &dst->ip6, &created);
+	debug ("packet to be sent");
+	teredo_peer *p = teredo_list_lookup (list, &dst->ip6, &created);
 	if (p == NULL)
 		return -1; /* error */
 
 	if (!created)
 	{
-//		syslog (LOG_DEBUG, " peer is %strusted", p->trusted ? "" : "NOT ");
-//		syslog (LOG_DEBUG, " peer is %svalid", IsValid (p, now) ? "" : "NOT ");
-//		syslog (LOG_DEBUG, " pings = %u, bubbles = %u", p->pings, p->bubbles);
+		debug (" peer is %strusted", p->trusted ? "" : "NOT ");
+		debug (" peer is %svalid", IsValid (p, now) ? "" : "NOT ");
+		debug (" pings = %u, bubbles = %u", p->pings, p->bubbles);
 
 		/* Case 1 (paragraphs 5.2.4 & 5.4.1): trusted peer */
 		if (p->trusted && IsValid (p, now))
 			/* Already known -valid- peer */
-			return teredo_encap (tunnel, p, packet, length);
+			return teredo_encap (tunnel, p, packet, length, now);
 	}
  	else
 	{
  		p->trusted = p->bubbles = p->pings = 0;
-//		syslog (LOG_DEBUG, " peer unknown and created");
+		debug (" peer unknown, created");
 	}
 
 	// Unknown, untrusted, or too old peer
@@ -475,7 +462,7 @@ int teredo_transmit (teredo_tunnel *restrict tunnel,
 			teredo_send_unreach (tunnel, ICMP6_DST_UNREACH_ADDR,
 			                     packet, length);
 
-//		syslog (LOG_DEBUG, " ping peer returned %d", res);
+		debug (" peer: ping returned %d", res);
 		return 0;
 	}
 #endif
@@ -511,8 +498,8 @@ int teredo_transmit (teredo_tunnel *restrict tunnel,
 			 * Open the return path if we are behind a
 			 * restricted NAT.
 			 */
-			if (/* (!s.cone) && */
-			    SendBubbleFromDst (tunnel->fd, &dst->ip6, false))
+			if (!(s.addr.teredo.flags & htons (TEREDO_FLAG_CONE))
+			 && SendBubbleFromDst (tunnel->fd, &dst->ip6, false))
 				return -1;
 
 			return SendBubbleFromDst (tunnel->fd, &dst->ip6, true);
@@ -530,9 +517,9 @@ int teredo_transmit (teredo_tunnel *restrict tunnel,
 
 static
 void teredo_predecap (teredo_tunnel *restrict tunnel,
-                      teredo_peer *restrict peer)
+                      teredo_peer *restrict peer, teredo_clock_t now)
 {
-	TouchReceive (peer, tunnel->now);
+	TouchReceive (peer, now);
 	peer->bubbles = peer->pings = 0;
 	teredo_queue *q = teredo_peer_queue_yield (peer);
 	teredo_list_release (tunnel->list);
@@ -560,22 +547,21 @@ teredo_run_inner (teredo_tunnel *restrict tunnel,
 	assert (tunnel != NULL);
 	assert (packet != NULL);
 
-	const uint8_t *buf = packet->ip6;
 	size_t length = packet->ip6_len;
-	struct ip6_hdr ip6;
+	struct ip6_hdr *ip6 = packet->ip6;
 
 	// Checks packet
-	if ((length < sizeof (ip6)) || (length > 65507))
+	if ((length < sizeof (*ip6)) || (length > 65507))
 		return; // invalid packet
 
-	memcpy (&ip6, buf, sizeof (ip6));
-	if (((ip6.ip6_vfc >> 4) != 6)
-	 || ((ntohs (ip6.ip6_plen) + sizeof (ip6)) != length))
+	if (((ip6->ip6_vfc >> 4) != 6)
+	 || ((ntohs (ip6->ip6_plen) + sizeof (*ip6)) != length))
 		return; // malformatted IPv6 packet
+	debug ("packet received (%u bytes)", (unsigned)length);
 
 	teredo_state s;
 	pthread_rwlock_rdlock (&tunnel->state_lock);
-	memcpy (&s, &tunnel->state, sizeof (s));
+	s = tunnel->state;
 	/*
 	 * We can afford to use a slightly outdated state, but we cannot afford to
 	 * use an inconsistent state, hence this lock. Also, we cannot call
@@ -589,37 +575,42 @@ teredo_run_inner (teredo_tunnel *restrict tunnel,
 	if (IsClient (tunnel))
 	{
 		if (teredo_maintenance_process (tunnel->maintenance, packet) == 0)
+		{
+			debug (" packet passed to maintenance procedure");
 			return;
+		}
 
 		if (!s.up)
+		{
+			debug (" packet dropped because tunnel down");
 			return; /* Not qualified -> do not accept incoming packets */
+		}
 
 		if ((packet->source_ipv4 == s.addr.teredo.server_ip)
 		 && (packet->source_port == htons (IPPORT_TEREDO)))
 		{
-			if (packet->orig_ipv4)
-			{
-				/* TODO: record sending of bubble, create a peer, etc ? */
-				ReplyBubble (tunnel->fd, packet->orig_ipv4, packet->orig_port,
-				             &ip6.ip6_dst, &ip6.ip6_src);
+			uint32_t ipv4 = packet->orig_ipv4;
+			uint16_t port = packet->orig_port;
 
-				if (IsBubble (&ip6))
-					return; // don't pass bubble to kernel
-			}
-			else
-			if (IsBubble (&ip6)
-			 && (IN6_TEREDO_PREFIX (&ip6.ip6_src) == s.addr.teredo.prefix))
+			if ((ipv4 == 0) && IsBubble (ip6)
+			 && (IN6_TEREDO_PREFIX (&ip6->ip6_src) == s.addr.teredo.prefix))
 			{
 				/*
 				 * Some servers do not insert an origin indication.
 				 * When the source IPv6 address is a Teredo address,
 				 * we can guess the mapping. Otherwise, we're stuck.
 				 */
+				ipv4 = IN6_TEREDO_IPV4 (&ip6->ip6_src);
+				port = IN6_TEREDO_PORT (&ip6->ip6_src);
+			}
+
+			if (ipv4)
+			{
 				/* TODO: record sending of bubble, create a peer, etc ? */
-				ReplyBubble (tunnel->fd, IN6_TEREDO_IPV4 (&ip6.ip6_src),
-				             IN6_TEREDO_PORT (&ip6.ip6_src), &ip6.ip6_dst,
-				             &ip6.ip6_src);
-				return; // don't pass bubble to kernel
+				teredo_reply_bubble (tunnel->fd, ipv4, port, ip6);
+				debug (" bubble sent");
+				if (IsBubble (ip6))
+					return; // don't pass bubble to kernel
 			}
 		}
 
@@ -648,13 +639,13 @@ teredo_run_inner (teredo_tunnel *restrict tunnel,
 		 *
 		 * Only Linux defines s6_addr16, so we don't use it.
 		 */
-		if ((((uint16_t *)ip6.ip6_src.s6_addr)[0] & 0xffc0) == 0xfe80)
+		if (ntohs ((*(uint16_t *)ip6->ip6_src.s6_addr) & 0xffc0) == 0xfe80)
 			return;
 	}
 	else
 #endif /* MIREDO_TEREDO_CLIENT */
 	/* Relays only accept packets from Teredo clients */
-	if (IN6_TEREDO_PREFIX (&ip6.ip6_src) != s.addr.teredo.prefix)
+	if (IN6_TEREDO_PREFIX (&ip6->ip6_src) != s.addr.teredo.prefix)
 		return;
 
 	/*
@@ -677,29 +668,30 @@ teredo_run_inner (teredo_tunnel *restrict tunnel,
 	 * and update last reception date regardless of the destination.
 	 *
 	 */
-	if (ip6.ip6_dst.s6_addr[0] == 0xff)
+	if (ip6->ip6_dst.s6_addr[0] == 0xff)
 		return;
 
+	debug (" packet to be decapsulated");
 	/* Actual packet reception, either as a relay or a client */
 
-	time_t now = tunnel->now;
+	teredo_clock_t now = teredo_clock ();
 
 	// Checks source IPv6 address / looks up peer in the list:
 	struct teredo_peerlist *list = tunnel->list;
-	teredo_peer *p = teredo_list_lookup (list, now, &ip6.ip6_src, NULL);
+	teredo_peer *p = teredo_list_lookup (list, &ip6->ip6_src, NULL);
 
 	if (p != NULL)
 	{
-//		syslog (LOG_DEBUG, " peer is %strusted", p->trusted ? "" : "NOT ");
-//		syslog (LOG_DEBUG, " pings = %u, bubbles = %u", p->pings, p->bubbles);
+		debug (" peer is %strusted", p->trusted ? "" : "NOT ");
+		debug (" pings = %u, bubbles = %u", p->pings, p->bubbles);
 
 		// Client case 1 (trusted node or (trusted) Teredo client):
 		if (p->trusted
 		 && (packet->source_ipv4 == p->mapped_addr)
 		 && (packet->source_port == p->mapped_port))
 		{
-			teredo_predecap (tunnel, p);
-			tunnel->recv_cb (tunnel->opaque, buf, length);
+			teredo_predecap (tunnel, p, now);
+			tunnel->recv_cb (tunnel->opaque, ip6, length);
 			return;
 		}
 
@@ -714,30 +706,29 @@ teredo_run_inner (teredo_tunnel *restrict tunnel,
 			p->trusted = 1;
 			SetMappingFromPacket (p, packet);
 
-			teredo_predecap (tunnel, p);
+			teredo_predecap (tunnel, p, now);
 			return; /* don't pass ping to kernel */
 		}
 #endif /* ifdef MIREDO_TEREDO_CLIENT */
 	}
-//	else
-//		syslog (LOG_DEBUG, " unknown peer");
+	else
+		debug (" peer unknown");
 
 	/*
 	 * At this point, we have either a trusted mapping mismatch,
 	 * an unlisted peer, or an un-trusted client peer.
 	 */
-	if (IN6_TEREDO_PREFIX (&ip6.ip6_src) == s.addr.teredo.prefix)
+	if (IN6_TEREDO_PREFIX (&ip6->ip6_src) == s.addr.teredo.prefix)
 	{
 		// Client case 3 (unknown or untrusted matching Teredo client):
-		if (IN6_MATCHES_TEREDO_CLIENT (&ip6.ip6_src, packet->source_ipv4,
+		if (IN6_MATCHES_TEREDO_CLIENT (&ip6->ip6_src, packet->source_ipv4,
 		                               packet->source_port)
 		// Extension: allow mismatch (i.e. clients behind symmetric NATs)
-		 || (IsBubble (&ip6) && CheckBubble (packet)))
+		 || (IsBubble (ip6) && (CheckBubble (packet) == 0)))
 		{
 #ifdef MIREDO_TEREDO_CLIENT
 			if (IsClient (tunnel) && (p == NULL))
-				p = teredo_list_lookup (list, now, &ip6.ip6_src,
-				                        &(bool){ false });
+				p = teredo_list_lookup (list, &ip6->ip6_src, &(bool){ false });
 #endif
 			/*
 			 * Relays are explicitly allowed to drop packets from
@@ -751,10 +742,10 @@ teredo_run_inner (teredo_tunnel *restrict tunnel,
 
 			SetMappingFromPacket (p, packet);
 			p->trusted = 1;
-			teredo_predecap (tunnel, p);
+			teredo_predecap (tunnel, p, now);
 
-			if (!IsBubble (&ip6)) // discard Teredo bubble
-				tunnel->recv_cb (tunnel->opaque, buf, length);
+			if (!IsBubble (ip6)) // discard Teredo bubble
+				tunnel->recv_cb (tunnel->opaque, ip6, length);
 			return;
 		}
 
@@ -763,7 +754,7 @@ teredo_run_inner (teredo_tunnel *restrict tunnel,
 #ifdef MIREDO_TEREDO_CLIENT
 	else
 	{
-		assert (IN6_TEREDO_PREFIX (&ip6.ip6_src) != s.addr.teredo.prefix);
+		assert (IN6_TEREDO_PREFIX (&ip6->ip6_src) != s.addr.teredo.prefix);
 		assert (IsClient (tunnel));
 
 		// TODO: implement client cases 4 & 5 for local Teredo
@@ -781,7 +772,7 @@ teredo_run_inner (teredo_tunnel *restrict tunnel,
 		if (p == NULL)
 		{
 			bool create;
-			p = teredo_list_lookup (list, now, &ip6.ip6_src, &create);
+			p = teredo_list_lookup (list, &ip6->ip6_src, &create);
 			if (p == NULL)
 				return; // memory error
 
@@ -797,11 +788,11 @@ teredo_run_inner (teredo_tunnel *restrict tunnel,
 				p->mapped_addr = 0;
 				p->trusted = p->bubbles = p->pings = 0;
 			}
-//			syslog (LOG_DEBUG, " peer created");
+			debug (" peer created");
 		}
 
-//		syslog (LOG_DEBUG, " packet queued pending Echo Reply");
-		teredo_enqueue_in (p, buf, length,
+		debug (" packet queued (pending Echo Reply)");
+		teredo_enqueue_in (p, ip6, length,
 		                   packet->source_ipv4, packet->source_port);
 		TouchReceive (p, now);
 
@@ -809,9 +800,9 @@ teredo_run_inner (teredo_tunnel *restrict tunnel,
 		teredo_list_release (list);
 
 		if (res == 0)
-			SendPing (tunnel->fd, &s.addr, &ip6.ip6_src);
+			SendPing (tunnel->fd, &s.addr, &ip6->ip6_src);
 
-// 		syslog (LOG_DEBUG, " ping peer returned %d", res);
+ 		debug (" peer: ping returned %d", res);
 		return;
 	}
 #endif /* ifdef MIREDO_TEREDO_CLIENT */
@@ -858,55 +849,6 @@ static void teredo_dummy_state_down_cb (void *o)
 #endif
 
 
-/**
- * Userland low-precision (1 Hz) clock
- *
- * This is way faster than calling time() for every packet transmitted or
- * received. The first implementation was using POSIX timers, but it might
- * be a bit overkill to spawn a thread every second to simply increment an
- * integer. Also, POSIX timers with thread event delivery has a terrible
- * portable at the time of writing (June 2006). Basically, recent
- * GNU/Linux have it, and that's about it... no uClibc support, only in
- * -current for FreeBSD...
- *
- * TODO:
- * - use monotonic clock if available (GC will need fixing)
- */
-static void *teredo_clock (void *val)
-{
-	volatile time_t *clock = (time_t *)val;
-
-	for (;;)
-	{
-		struct timespec now;
-		clock_gettime (CLOCK_REALTIME, &now);
-
-		*clock = now.tv_sec;
-		now.tv_sec++;
-		now.tv_nsec = 0;
-
-		clock_nanosleep (CLOCK_REALTIME, TIMER_ABSTIME, &now, NULL);
-	}
-}
-
-
-/**
- * Creates a teredo_tunnel instance. teredo_preinit() must have been
- * called first.
- *
- * Thread-safety: This function is thread-safe.
- *
- * @param ipv4 IPv4 (network byte order) to bind to, or 0 if unspecified.
- * @param port UDP/IPv4 port number (network byte order) or 0 if unspecified.
- * Note that some campus firewall drop certain UDP ports (typically those used
- * by some P2P application); in that case, you should use a fixed port so that
- * the kernel does not select a possibly blocked port. Also note that some
- * severely broken NAT devices might fail if multiple NAT-ed computers use the
- * same source UDP port number at the same time, so avoid you should
- * paradoxically avoid querying a fixed port.
- *
- * @return NULL in case of failure.
- */
 teredo_tunnel *teredo_create (uint32_t ipv4, uint16_t port)
 {
 	teredo_tunnel *tunnel = (teredo_tunnel *)malloc (sizeof (*tunnel));
@@ -935,23 +877,15 @@ teredo_tunnel *teredo_create (uint32_t ipv4, uint16_t port)
 	tunnel->down_cb = teredo_dummy_state_down_cb;
 #endif
 
-	tunnel->now = time (NULL);
-
-	if (pthread_create (&tunnel->clock, NULL, teredo_clock,
-	                    (void *)&tunnel->now) == 0)
+	if ((tunnel->fd = teredo_socket (ipv4, port)) != -1)
 	{
-		if ((tunnel->fd = teredo_socket (ipv4, port)) != -1)
+		if ((tunnel->list = teredo_list_create (MAX_PEERS, 30)) != NULL)
 		{
-			if ((tunnel->list = teredo_list_create (MAX_PEERS, 30)) != NULL)
-			{
-				(void)pthread_rwlock_init (&tunnel->state_lock, NULL);
-				(void)pthread_mutex_init (&tunnel->ratelimit.lock, NULL);
-				return tunnel;
-			}
-			teredo_close (tunnel->fd);
+			(void)pthread_rwlock_init (&tunnel->state_lock, NULL);
+			(void)pthread_mutex_init (&tunnel->ratelimit.lock, NULL);
+			return tunnel;
 		}
-		pthread_cancel (tunnel->clock);
-		pthread_join (tunnel->clock, NULL);
+		teredo_close (tunnel->fd);
 	}
 
 	free (tunnel);
@@ -959,18 +893,6 @@ teredo_tunnel *teredo_create (uint32_t ipv4, uint16_t port)
 }
 
 
-/**
- * Releases all resources (sockets, memory chunks...) and terminates all
- * threads associated with a teredo_tunnel instance.
- *
- * Thread-safety: This function is thread-safe. However, you must obviously
- * not call it if any other thread (including the calling one) is still using
- * the specified tunnel in some way.
- *
- * @param t tunnel to be destroyed. No longer useable thereafter.
- *
- * @return nothing (always succeeds).
- */
 void teredo_destroy (teredo_tunnel *t)
 {
 	assert (t != NULL);
@@ -996,13 +918,11 @@ void teredo_destroy (teredo_tunnel *t)
 	pthread_rwlock_destroy (&t->state_lock);
 	pthread_mutex_destroy (&t->ratelimit.lock);
 	teredo_close (t->fd);
-	pthread_cancel (t->clock);
-	pthread_join (t->clock, NULL);
 	free (t);
 }
 
 
-static void *teredo_recv_thread (void *t)
+static LIBTEREDO_NORETURN void *teredo_recv_thread (void *t)
 {
 	teredo_tunnel *tunnel = (teredo_tunnel *)t;
 
@@ -1019,20 +939,7 @@ static void *teredo_recv_thread (void *t)
 	}
 }
 
-/**
- * Spawns a new thread to perform Teredo packet reception in the background.
- * The thread will be automatically terminated when the tunnel is destroyed.
- *
- * It is safe to call teredo_run_async multiple times for the same tunnel,
- * however all call will fail (safe) after the first succesful one.
- *
- * Thread-safety: teredo_run_async() is not re-entrant. Calling it from
- * multiple threads with the same teredo_tunnel objet simultanously is
- * undefined. It is safe to call teredo_run_async() from different threads
- * each with a different teredo_tunnel object.
- *
- * @return 0 on success, -1 on error.
- */
+
 int teredo_run_async (teredo_tunnel *t)
 {
 	assert (t != NULL);
@@ -1049,18 +956,6 @@ int teredo_run_async (teredo_tunnel *t)
 }
 
 
-/**
- * Receives one pending packet coming from the Teredo tunnel. If you
- * don't use teredo_run_async(), you have to call this function as
- * often as possible. It is up to you to find the correct tradeoff
- * between busy waiting on this function for better response time of
- * the Teredo tunnel, and a long delay to not waste too much CPU
- * cycles. You should really consider using teredo_run_async() instead!
- * libteredo will spawn some threads even if you don't call
- * teredo_run_async() anyway...
- *
- * Thread-safety: This function is thread-safe.
- */
 void teredo_run (teredo_tunnel *tunnel)
 {
 	assert (tunnel != NULL);
@@ -1074,18 +969,6 @@ void teredo_run (teredo_tunnel *tunnel)
 }
 
 
-/**
- * Overrides the Teredo prefix of a Teredo relay.
- * Currently ignored for Teredo client (but might later restrict accepted
- * Teredo prefix to the specified one).
- *
- * Thread-safety: This function is thread-safe.
- *
- * @param prefix Teredo 32-bits (network byte order) prefix.
- *
- * @return 0 on success, -1 if the prefix is invalid (in which case the
- * teredo_tunnel instance is not modified).
- */
 int teredo_set_prefix (teredo_tunnel *t, uint32_t prefix)
 {
 	assert (t != NULL);
@@ -1108,13 +991,30 @@ int teredo_set_prefix (teredo_tunnel *t, uint32_t prefix)
 }
 
 
-/**
- * Enables Teredo relay mode (this is the default).
- *
- * Thread-safety: This function is thread-safe.
- *
- * @return 0 on success, -1 on error.
- */
+int teredo_set_cone_flag (teredo_tunnel *t, bool cone)
+{
+	assert (t != NULL);
+
+	int retval = 0;
+
+	pthread_rwlock_wrlock (&t->state_lock);
+
+#ifdef MIREDO_TEREDO_CLIENT
+	if (t->maintenance != NULL)
+		retval = -1;
+	else
+#endif
+	if (cone)
+		t->state.addr.teredo.flags |= htons (TEREDO_FLAG_CONE);
+	else
+		t->state.addr.teredo.flags &= ~htons (TEREDO_FLAG_CONE);
+
+	pthread_rwlock_unlock (&t->state_lock);
+
+	return retval;
+}
+
+
 int teredo_set_relay_mode (teredo_tunnel *t)
 {
 	int retval;
@@ -1124,6 +1024,7 @@ int teredo_set_relay_mode (teredo_tunnel *t)
 	retval = (t->maintenance != NULL) ? -1 : 0;
 	pthread_rwlock_unlock (&t->state_lock);
 #else
+	(void)t;
 	retval = 0;
 #endif
 
@@ -1131,23 +1032,6 @@ int teredo_set_relay_mode (teredo_tunnel *t)
 }
 
 
-/**
- * Enables Teredo client mode for a teredo_tunnel and starts the Teredo
- * client maintenance procedure in a separate thread.
- *
- * NOTE: calling teredo_set_client_mode() multiple times on the same tunnel
- * is currently not supported, and will safely return an error. Future
- * versions might support this.
- *
- * Thread-safety: This function is thread-safe.
- *
- * @param s Teredo server's host name or “dotted quad” primary IPv4 address.
- * @param s2 Teredo server's secondary address (or host name), or NULL to
- * infer it from <s>.
- *
- * @return 0 on success, -1 in case of error.
- * In case of error, the teredo_tunnel instance is not modifed.
- */
 int teredo_set_client_mode (teredo_tunnel *restrict t,
                             const char *s, const char *s2)
 {
@@ -1162,7 +1046,8 @@ int teredo_set_client_mode (teredo_tunnel *restrict t,
 	}
 
 	struct teredo_maintenance *m;
-	m = teredo_maintenance_start (t->fd, teredo_state_change, t, s, s2);
+	m = teredo_maintenance_start (t->fd, teredo_state_change, t, s, s2,
+	                              0, 0, 0, 0);
 	t->maintenance = m;
 	pthread_rwlock_unlock (&t->state_lock);
 
@@ -1177,9 +1062,6 @@ int teredo_set_client_mode (teredo_tunnel *restrict t,
 }
 
 
-/**
- * Thread-safety: FIXME.
- */
 void *teredo_set_privdata (teredo_tunnel *t, void *opaque)
 {
 	assert (t != NULL);
@@ -1222,19 +1104,6 @@ void teredo_set_icmpv6_callback (teredo_tunnel *restrict t,
 }
 
 
-/**
- * Registers callbacks to be called when the Teredo client maintenance
- * procedure detects that the tunnel becomes usable (or has got a new IPv6
- * address, or a new MTU), or unusable respectively.
- * These callbacks are ignored for a Teredo relay tunnel.
- *
- * Any packet sent when the relay/client is down will be ignored.
- * The callbacks function might be called from a separate thread.
- *
- * Thread-safety: This function is thread-safe.
- *
- * If a callback is set to NULL, it is ignored.
- */
 void teredo_set_state_cb (teredo_tunnel *restrict t, teredo_state_up_cb u,
                           teredo_state_down_cb d)
 {
