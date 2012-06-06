@@ -1,6 +1,5 @@
 /*
  * relay.c - Teredo relay core
- * $Id: relay.c 1699 2006-08-16 18:51:08Z remi $
  *
  * See "Teredo: Tunneling IPv6 over UDP through NATs"
  * for more information
@@ -32,11 +31,3 @@
 
 #include <inttypes.h>
 #include "tunnel.h"
-
-
-void teredo_set_cone_ignore (teredo_tunnel *t, bool ignore)
-{
-	assert (t != NULL);
-	(void)t;
-	(void)ignore;
-}

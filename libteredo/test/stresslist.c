@@ -1,6 +1,5 @@
 /*
  * stresslist.c - Libteredo peer list stress tests
- * $Id: stresslist.c 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************

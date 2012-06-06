@@ -1,8 +1,6 @@
 /**
  * @file peerlist.h
  * @brief Teredo relay internal peers list declaration
- *
- * $Id: peerlist.h 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************

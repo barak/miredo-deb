@@ -1,6 +1,5 @@
 /*
  * maintain.c - Teredo client qualification & maintenance
- * $Id: maintain.c 2098 2008-01-05 21:05:48Z remi $
  *
  * See "Teredo: Tunneling IPv6 over UDP through NATs"
  * for more information
@@ -38,6 +37,7 @@
 
 #include <sys/types.h>
 #include <unistd.h> /* sysconf() */
+#include <sys/socket.h> /* AF_INET */
 #include <netinet/in.h> /* struct in6_addr */
 #include <netinet/ip6.h> /* struct ip6_hdr */
 #include <netdb.h> /* getaddrinfo(), gai_strerror() */
@@ -131,8 +131,7 @@ static int getipv4byname (const char *restrict name, uint32_t *restrict ipv4)
 static int
 maintenance_recv (const teredo_packet *restrict packet, uint32_t server_ip,
                   const uint8_t *restrict nonce, bool cone,
-                  uint16_t *restrict mtu,
-                  union teredo_addr *restrict newaddr)
+                  teredo_state *restrict state)
 {
 	assert (packet->auth_present);
 
@@ -146,12 +145,13 @@ maintenance_recv (const teredo_packet *restrict packet, uint32_t server_ip,
 		return EACCES;
 	}
 
-	if (teredo_parse_ra (packet, newaddr, cone, mtu)
+	if (teredo_parse_ra (packet, &state->addr, cone, &state->mtu)
 	/* TODO: try to work-around incorrect server IP */
-	 || (newaddr->teredo.server_ip != server_ip))
+	 || (state->addr.teredo.server_ip != server_ip))
 		return EINVAL;
 
 	/* Valid router advertisement received! */
+	state->ipv4 = packet->dest_ipv4;
 	return 0;
 }
 
@@ -227,12 +227,10 @@ cleanup_unlock (void *o)
  *   It adds NAT binding maintenance brittleness in addition to implementation
  *   complexity, and is not necessary for RFC4380 compliance.
  *   Also STUN RFC3489bis deprecates this type of behavior.
- * - NAT cone type probing was removed in Miredo version 0.9.5. Since then,
- *   Miredo qualification state machine became explicitly incompliant with
- *   RFC4380. However, this made the startup much faster in many cases (many
- *   NATs are restricted or symmetric), and is in accordance with deprecation
- *   of NAT type determination in STUN RFC3489bis.
- * - NAT symmtric probing was removd in Miredo version 1.1.0, which deepens
+ * - NAT cone type probing was removed in Miredo version 0.9.5. This violated
+ *   RFC4380. Since then, draft-krishnan-v6ops-teredo-update has nevertheless
+ *   confirmed that the cone type should be dropped.
+ * - NAT symmetric probing was removed in Miredo version 1.1.0, which deepens
  *   the gap between Miredo and RFC4380. Still, this is fairly consistent with
  *   RFC3489bis.
  */
@@ -293,6 +291,7 @@ void maintenance_thread (teredo_maintenance *m)
 
 			/* wait some time before next resolution attempt */
 			deadline.tv_sec += m->restart_delay;
+			server_ip = 0;
 			wait_reply_ignore (m, &deadline);
 		}
 
@@ -307,8 +306,9 @@ void maintenance_thread (teredo_maintenance *m)
 		teredo_send_rs (m->fd, server_ip, nonce, false);
 
 		int val = 0;
-		union teredo_addr newaddr;
-		uint16_t mtu = 1280;
+		teredo_state newst;
+		newst.mtu = 1280;
+		newst.up = true;
 
 		/* RECEIVE ROUTER ADVERTISEMENT */
 		do
@@ -319,7 +319,7 @@ void maintenance_thread (teredo_maintenance *m)
 
 			/* check received packet */
 			val = maintenance_recv (m->incoming, server_ip,
-			                        nonce, false, &mtu, &newaddr);
+			                        nonce, false, &newst);
 			m->incoming = NULL;
 			pthread_cond_signal (&m->processed);
 		}
@@ -362,21 +362,19 @@ void maintenance_thread (teredo_maintenance *m)
 			count = 0;
 
 			/* 12-bits Teredo flags randomization */
-			newaddr.teredo.flags = c_state->addr.teredo.flags;
-			if (!IN6_ARE_ADDR_EQUAL (&c_state->addr.ip6, &newaddr.ip6))
+			newst.addr.teredo.flags = c_state->addr.teredo.flags;
+			if (!IN6_ARE_ADDR_EQUAL (&c_state->addr.ip6, &newst.addr.ip6))
 			{
 				uint16_t f = teredo_get_flbits (deadline.tv_sec);
-				newaddr.teredo.flags =
+				newst.addr.teredo.flags =
 					f & htons (TEREDO_RANDOM_MASK);
 			}
 
 			if ((!c_state->up)
-			 || !IN6_ARE_ADDR_EQUAL (&c_state->addr.ip6, &newaddr.ip6)
-			 || (c_state->mtu != mtu))
+			 || !IN6_ARE_ADDR_EQUAL (&c_state->addr.ip6, &newst.addr.ip6)
+			 || (c_state->mtu != newst.mtu))
 			{
-				c_state->addr = newaddr;
-				c_state->mtu = mtu;
-				c_state->up = true;
+				memcpy(c_state, &newst, sizeof (*c_state));
 
 				syslog (LOG_NOTICE, _("New Teredo address/MTU"));
 				m->state.cb (c_state, m->state.opaque);
@@ -464,8 +462,8 @@ teredo_maintenance_start (int fd, teredo_state_cb cb, void *opaque,
 	if (err == 0)
 		return m;
 
-	syslog (LOG_ALERT, _("Error (%s): %s\n"), "pthread_create",
-	        strerror (err));
+	errno = err;
+	syslog (LOG_ALERT, _("Error (%s): %m"), "pthread_create");
 
 	pthread_cond_destroy (&m->processed);
 	pthread_cond_destroy (&m->received);

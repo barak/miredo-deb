@@ -1,6 +1,5 @@
 /*
  * clock.c - Fast-lookup 1Hz clock
- * $Id: clock.c 2083 2008-01-05 12:08:43Z remi $
  */
 
 /***********************************************************************
@@ -54,9 +53,11 @@ static void clock_tick (union sigval val)
 	int orun = timer_getoverrun (context->handle);
 	context->value += 1 + orun;
 
+#ifdef DELAYTIMER_MAX
 	if (orun == DELAYTIMER_MAX)
 		/* We have a big problem, let next caller fix it */
 		context->active = false;
+#endif
 
 	if (!context->active)
 	{

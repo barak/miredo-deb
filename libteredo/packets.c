@@ -1,6 +1,5 @@
 /*
  * packets.c - helpers to send Teredo packet from relay/client
- * $Id: packets.c 2052 2007-10-03 18:53:24Z remi $
  *
  * See "Teredo: Tunneling IPv6 over UDP through NATs"
  * for more information

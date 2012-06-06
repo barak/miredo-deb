@@ -1,6 +1,5 @@
 /*
  * privproc.h - Privileged process for Miredo
- * $Id: privproc.h 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************
@@ -20,24 +19,13 @@
  *  http://www.gnu.org/copyleft/gpl.html                               *
  ***********************************************************************/
 
-#ifndef __MIREDO_PRIVPROC_H
-# define __MIREDO_PRIVPROC_H
+#ifndef MIREDO_PRIVPROC_H
+# define MIREDO_PRIVPROC_H
 
-struct in6_addr;
-struct tun6;
-
-# ifdef __cplusplus
-extern "C" {
-# endif
-
-int
-miredo_privileged_process (unsigned ifindex, void (*) (void *), void *);
-
-int
-miredo_configure_tunnel (int fd, const struct in6_addr *addr, unsigned mtu);
-
-# ifdef __cplusplus
-}
-# endif
+struct miredo_tunnel_settings
+{
+	struct in6_addr addr;
+	uint16_t mtu;
+};
 
 #endif

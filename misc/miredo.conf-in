@@ -1,7 +1,6 @@
 #! @sbindir@/miredo -f -c
 #
 # Sample configuration file for Miredo
-# $Id: miredo.conf-in 1715 2006-08-24 16:05:53Z remi $
 
 # Please refer to the miredo.conf(5) man page for details.
 
@@ -25,6 +24,9 @@ InterfaceName	teredo
 #      teredo.remlab.net is an experimental service for testing only.      #
 # Please use another server for production and/or large scale deployments. #
 #**************************************************************************#
+#ServerAddress teredo.ipv6.microsoft.com
+#ServerAddress teredo.ginzado.ne.jp
+#ServerAddress teredo.iks-jena.de
 ServerAddress teredo.remlab.net
 #ServerAddress2 teredo2.remlab.net
 

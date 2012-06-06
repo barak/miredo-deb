@@ -1,10 +1,9 @@
 /*
  * tun6.c - IPv6 tunnel interface definition
- * $Id: tun6.c 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************
- *  Copyright © 2004-2007 Rémi Denis-Courmont.                         *
+ *  Copyright © 2004-2009 Rémi Denis-Courmont.                         *
  *  This program is free software; you can redistribute and/or modify  *
  *  it under the terms of the GNU General Public License as published  *
  *  by the Free Software Foundation; version 2 of the license, or (at  *
@@ -82,6 +81,7 @@ typedef struct
       defined (__OpenBSD__) || defined (__OpenBSD_kernel__) || \
       defined (__DragonFly__) || \
       defined (__APPLE__) /* Darwin */
+#include <ifaddrs.h>
 /*
  * BSD tunneling driver
  * NOTE: the driver is NOT tested on Darwin (Mac OS X).
@@ -183,8 +183,7 @@ tun6 *tun6_create (const char *req_name)
 	int fd = open (tundev, O_RDWR);
 	if (fd == -1)
 	{
-		syslog (LOG_ERR, _("Tunneling driver error (%s): %s"), tundev,
-		        strerror (errno));
+		syslog (LOG_ERR, _("Tunneling driver error (%s): %m"), tundev);
 		(void)close (reqfd);
 		free (t);
 		return NULL;
@@ -193,8 +192,7 @@ tun6 *tun6_create (const char *req_name)
 	// Allocates the tunneling virtual network interface
 	if (ioctl (fd, TUNSETIFF, (void *)&req))
 	{
-		syslog (LOG_ERR, _("Tunneling driver error (%s): %s"), "TUNSETIFF",
-		        strerror (errno));
+		syslog (LOG_ERR, _("Tunneling driver error (%s): %m"), "TUNSETIFF");
 		if (errno == EBUSY)
 			syslog (LOG_INFO,
 			        _("Please make sure another instance of the program is "
@@ -236,8 +234,7 @@ tun6 *tun6_create (const char *req_name)
 
 	if (fd == -1)
 	{
-		syslog (LOG_ERR, _("Tunneling driver error (%s): %s"), "/dev/tun*",
-		        strerror (errno));
+		syslog (LOG_ERR, _("Tunneling driver error (%s): %m"), "/dev/tun*");
 		goto error;
 	}
 	else
@@ -256,8 +253,8 @@ tun6 *tun6_create (const char *req_name)
 	int id = if_nametoindex (t->orig_name);
 	if (id == 0)
 	{
-		syslog (LOG_ERR, _("Tunneling driver error (%s): %s"),
-		        t->orig_name, strerror (errno));
+		syslog (LOG_ERR, _("Tunneling driver error (%s): %m"),
+		        t->orig_name);
 		goto error;
 	}
 
@@ -270,8 +267,8 @@ tun6 *tun6_create (const char *req_name)
 	/* Enables TUNSIFHEAD */
 	if (ioctl (fd, TUNSIFHEAD, &(int){ 1 }))
 	{
-		syslog (LOG_ERR, _("Tunneling driver error (%s): %s"),
-		        "TUNSIFHEAD", strerror (errno));
+		syslog (LOG_ERR, _("Tunneling driver error (%s): %m"),
+		        "TUNSIFHEAD");
 #  if defined (__APPLE__)
 		if (errno == EINVAL)
 			syslog (LOG_NOTICE,
@@ -284,8 +281,8 @@ tun6 *tun6_create (const char *req_name)
 	/* Disables TUNSLMODE (deprecated opposite of TUNSIFHEAD) */
 	if (ioctl (fd, TUNSLMODE, &(int){ 0 }))
 	{
-		syslog (LOG_ERR, _("Tunneling driver error (%s): %s"),
-		        "TUNSLMODE", strerror (errno));
+		syslog (LOG_ERR, _("Tunneling driver error (%s): %m"),
+		        "TUNSLMODE");
 		goto error;
 	}
 #endif
@@ -298,8 +295,8 @@ tun6 *tun6_create (const char *req_name)
 
 		if (if_indextoname (id, req.ifr_name) == NULL)
 		{
-			syslog (LOG_ERR, _("Tunneling driver error (%s): %s"),
-			        "if_indextoname", strerror (errno));
+			syslog (LOG_ERR, _("Tunneling driver error (%s): %m"),
+			        "if_indextoname");
 			goto error;
 		}
 		else
@@ -315,13 +312,13 @@ tun6 *tun6_create (const char *req_name)
 #else
 			syslog (LOG_DEBUG,
 "Tunnel interface renaming is not supported on your operating system.\n"
-"To run miredo or isatapd properly, you need to remove the\n"
-"InterfaceName directive from their respective configuration file.\n");
+"To run miredo properly, you need to remove the InterfaceName directive\n"
+"from its configuration file.\n");
 			errno = ENOSYS;
 #endif
 			{
-				syslog (LOG_ERR, _("Tunneling driver error (%s): %s"),
-				        "SIOCSIFNAME", strerror (errno));
+				syslog (LOG_ERR, _("Tunneling driver error (%s): %m"),
+				        "SIOCSIFNAME");
 				goto error;
 			}
 		}
@@ -493,8 +490,7 @@ plen_to_sin6 (unsigned plen, struct sockaddr_in6 *sin6)
 {
 	memset (sin6, 0, sizeof (struct sockaddr_in6));
 
-	/* NetBSD kernel strangeness:
-	 sin6->sin6_family = AF_INET6;*/
+	sin6->sin6_family = AF_INET6;
 # ifdef HAVE_SA_LEN
 	sin6->sin6_len = sizeof (struct sockaddr_in6);
 # endif
@@ -626,8 +622,7 @@ _iface_route (int reqfd, int id, bool add, const struct in6_addr *addr,
 	int s = socket (AF_ROUTE, SOCK_RAW, AF_INET6);
 	if (s == -1)
 	{
-		syslog (LOG_ERR, _("Error (%s): %s\n"), "socket (AF_ROUTE)",
-		        strerror (errno));
+		syslog (LOG_ERR, _("Error (%s): %m"), "socket (AF_ROUTE)");
 		return -1;
 	}
 
@@ -637,8 +632,8 @@ _iface_route (int reqfd, int id, bool add, const struct in6_addr *addr,
 	{
 		struct rt_msghdr hdr;
 		struct sockaddr_in6 dst;
-		struct sockaddr_dl gw;
-		struct sockaddr_in6 mask;
+		struct sockaddr_storage gw;
+		struct sockaddr_storage dummy; /* allocate space for netmask */
 	} msg;
 
 	shutdown (s, 0);
@@ -662,11 +657,32 @@ _iface_route (int reqfd, int id, bool add, const struct in6_addr *addr,
 	msg.dst.sin6_len = sizeof (msg.dst);
 	memcpy (&msg.dst.sin6_addr, addr, sizeof (msg.dst.sin6_addr));
 
-	msg.gw.sdl_family = AF_LINK;
-	msg.gw.sdl_len = sizeof (msg.gw);
-	msg.gw.sdl_index = id;
+	struct ifaddrs *ifap, *ifa;
+	struct sockaddr_dl *sdl = NULL;
 
-	plen_to_sin6 (prefix_len, &msg.mask);
+	if (getifaddrs(&ifap))
+	{
+		syslog (LOG_ERR, _("Error (%s): %m"), "getifaddrs");
+		return -1;
+	}
+	for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
+		if (ifa->ifa_addr == NULL)
+			continue;
+		if (ifa->ifa_addr->sa_family != AF_LINK)
+			continue;
+		if (id == ((struct sockaddr_dl *)ifa->ifa_addr)->sdl_index)
+			sdl = (struct sockaddr_dl *)ifa->ifa_addr;
+	}
+	if (sdl == NULL) {
+		syslog (LOG_ERR, "no sdl found");
+		freeifaddrs(ifap);
+		return -1;
+	}
+	memcpy(&msg.gw, sdl, sdl->sdl_len);
+	freeifaddrs(ifap);
+
+	struct sockaddr_in6 *mask = (struct sockaddr_in6 *)((u_char *)&msg.gw + sdl->sdl_len);
+	plen_to_sin6 (prefix_len, mask);
 
 	errno = 0;
 
@@ -679,6 +695,8 @@ _iface_route (int reqfd, int id, bool add, const struct in6_addr *addr,
 "There is probably another tunnel with a conflicting route present\n"
 "(see also FreeBSD PR kern/100080).\n"
 "Please upgrade to FreeBSD 6.3 or more recent to fix this.\n");
+	else
+		syslog (LOG_NOTICE, "Error creating a route: %m");
 
 	(void)close (s);
 #else

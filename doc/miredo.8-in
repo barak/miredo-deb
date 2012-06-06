@@ -13,7 +13,7 @@
 .\" *  along with this program; if not, you can get it from:              *
 .\" *  http://www.gnu.org/copyleft/gpl.html                               *
 .\" ***********************************************************************
-.TH "MIREDO" "8" "$Date: 2007-02-22 22:55:28 +0200 (Thu, 22 Feb 2007) $" "miredo" "System Manager's Manual"
+.TH "MIREDO" "8" "February 2008" "miredo" "System Manager's Manual"
 .SH NAME
 miredo \- Teredo IPv6 tunneling for Unix
 .SH SYNOPSIS
@@ -127,9 +127,7 @@ The process-id file.
 miredo.conf(5), miredo-server(8), ipv6(7), route(8), ip(8)
 
 .SH AUTHOR
-R\[char233]mi Denis-Courmont <rdenis at simphalempin.com>
-
-$Id: miredo.8-in 1938 2007-02-22 20:55:28Z remi $
+R\[char233]mi Denis-Courmont <remi at remlab dot net>
 
 http://www.remlab.net/miredo/
 

@@ -1,7 +1,7 @@
 # Makefile.am - misc Makefile for miredo
 
 # ***********************************************************************
-# *  Copyright © 2004-2006 Rémi Denis-Courmont.                         *
+# *  Copyright © 2004-2009 Rémi Denis-Courmont.                         *
 # *  This program is free software; you can redistribute and/or modify  *
 # *  it under the terms of the GNU General Public License as published  *
 # *  by the Free Software Foundation; version 2 of the license, or (at  *
@@ -22,8 +22,8 @@ confdir = $(sysconfdir)/miredo
 MOSTLYCLEANFILES = $(examples_DATA) $(conf_SCRIPTS)
 
 # Configuration files
-dist_noinst_DATA = miredo.conf-in miredo-server.conf-in isatapd.conf-in
-examples_DATA = miredo.conf miredo-server.conf isatapd.conf
+dist_noinst_DATA = miredo.conf-in miredo-server.conf-in
+examples_DATA = miredo.conf miredo-server.conf
 
 .conf-in.conf:
 	rm -f -- $@
@@ -34,5 +34,6 @@ dist_noinst_SCRIPTS = client-hook.iproute client-hook.bsd
 conf_SCRIPTS = client-hook
 
 client-hook: client-hook.$(hook_suffix)
-	cat $< > $@
+	cat $(srcdir)/client-hook.$(hook_suffix) > client-hook.tmp
+	mv -f -- client-hook.tmp client-hook
 

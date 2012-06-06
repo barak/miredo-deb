@@ -1,6 +1,5 @@
 /*
  * relayd.c - Miredo: binding between libtun6 and libteredo
- * $Id: relayd.c 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************
@@ -31,7 +30,7 @@
 #include <stdlib.h> // free()
 #include <stdio.h> // fputs()
 #include <sys/types.h>
-#include <string.h> // strerror()
+#include <string.h> // strcasecmp()
 #include <errno.h>
 #include <unistd.h> // close()
 #include <fcntl.h>
@@ -55,6 +54,9 @@
 #ifndef SOL_ICMPV6
 # define SOL_ICMPV6 IPPROTO_ICMPV6
 #endif
+#ifndef PF_LOCAL
+# define PF_LOCAL PF_UNIX
+#endif
 
 #include <libtun6/tun6.h>
 
@@ -65,6 +67,8 @@
 #include "miredo.h"
 #include "conf.h"
 
+static void miredo_setup_fd (int fd);
+static void miredo_setup_nonblock_fd (int fd);
 
 static int relay_diagnose (void)
 {
@@ -196,28 +200,68 @@ ParseRelayType (miredo_conf *conf, const char *name, int *type)
 
 
 #ifdef MIREDO_TEREDO_CLIENT
-static void privproc_clean (void *tunnel)
-{
-	tun6_destroy ((tun6 *)tunnel);
-}
-
 static tun6 *
-create_dynamic_tunnel (const char *ifname, int *fd)
+create_dynamic_tunnel (const char *ifname, int *pfd)
 {
 	tun6 *tunnel = tun6_create (ifname);
 	if (tunnel == NULL)
 		return NULL;
 
-	/* FIXME: we leak all heap-allocated settings in the child process */
-	int res = miredo_privileged_process (tun6_getId (tunnel),
-	                                     privproc_clean, tunnel);
-	if (res == -1)
+	int fd[2];
+	if (socketpair (PF_LOCAL, SOCK_STREAM, 0, fd))
+		goto error;
+
+	miredo_setup_fd (fd[0]);
+	miredo_setup_fd (fd[1]);
+
+	char ifindex[2 * sizeof (unsigned) + 1];
+	snprintf (ifindex, sizeof (ifindex), "%X", tun6_getId (tunnel));
+
+	static const char path[] = PKGLIBDIR"/miredo-privproc";
+	switch (fork ())
 	{
-		tun6_destroy (tunnel);
-		return NULL;
+		case -1:
+			close (fd[0]);
+			close (fd[1]);
+			goto error;
+
+		case 0:
+			if (dup2 (fd[0], 0) == 0 && dup2 (fd[0], 1) == 1)
+				execl (path, path, ifindex, (char *)NULL);
+
+			syslog (LOG_ERR, _("Could not execute %s: %m"), path);
+			exit (1);
 	}
-	*fd = res;
+	close (fd[0]);
+	*pfd = fd[1];
 	return tunnel;
+error:
+	tun6_destroy (tunnel);
+	return NULL;
+}
+
+
+static int
+configure_tunnel (int fd, const struct in6_addr *addr, unsigned mtu)
+{
+	struct miredo_tunnel_settings s;
+	int res;
+
+	if (mtu > 65535)
+	{
+		errno = EINVAL;
+		return -1;
+	}
+
+	memset (&s, 0, sizeof (s));
+	memcpy (&s.addr, addr, sizeof (s.addr));
+	s.mtu = (uint16_t)mtu;
+
+	if ((send (fd, &s, sizeof (s), MSG_NOSIGNAL) != sizeof (s))
+	 || (recv (fd, &res, sizeof (res), MSG_WAITALL) != sizeof (res)))
+		return -1;
+
+	return res;
 }
 
 
@@ -243,12 +287,12 @@ miredo_up_callback (void *data, const struct in6_addr *addr, uint16_t mtu)
 
 	syslog (LOG_NOTICE, _("Teredo pseudo-tunnel started"));
 	if (inet_ntop (AF_INET6, addr, str, sizeof (str)) != NULL)
-		syslog (LOG_INFO, _(" (address: %s, MTU: %u)"),
-		        str, (unsigned)mtu);
+		syslog (LOG_INFO, _(" (address: %s, MTU: %"PRIu16")"),
+		        str, mtu);
 
 	assert (data != NULL);
 
-	miredo_configure_tunnel (((miredo_tunnel *)data)->priv_fd, addr, mtu);
+	configure_tunnel (((miredo_tunnel *)data)->priv_fd, addr, mtu);
 }
 
 
@@ -260,7 +304,7 @@ miredo_down_callback (void *data)
 {
 	assert (data != NULL);
 
-	miredo_configure_tunnel (((miredo_tunnel *)data)->priv_fd, &in6addr_any,
+	configure_tunnel (((miredo_tunnel *)data)->priv_fd, &in6addr_any,
 	                         1280);
 	syslog (LOG_NOTICE, _("Teredo pseudo-tunnel stopped"));
 }
@@ -553,13 +597,13 @@ relay_run (miredo_conf *conf, const char *server_name)
 }
 
 
-extern void miredo_setup_fd (int fd)
+static void miredo_setup_fd (int fd)
 {
 	(void) fcntl (fd, F_SETFD, FD_CLOEXEC);
 }
 
 
-extern void miredo_setup_nonblock_fd (int fd)
+static void miredo_setup_nonblock_fd (int fd)
 {
 	int flags = fcntl (fd, F_GETFL);
 	if (flags == -1)

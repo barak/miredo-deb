@@ -1,6 +1,5 @@
 /*
  * clock_gettime.c - clock_gettime() replacement
- * $Id: clock_gettime.c 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************

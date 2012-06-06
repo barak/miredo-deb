@@ -9,9 +9,6 @@
  * portability at the time of writing (June 2006). Basically, recent
  * GNU/Linux have it, and that's about it... no uClibc support, only in
  * -current for FreeBSD...
- *
- * $Id: clock.h 2052 2007-10-03 18:53:24Z remi $
- *
  */
 
 /***********************************************************************

@@ -1,6 +1,5 @@
 /*
  * server.c - Handling of a single Teredo datagram (server-side).
- * $Id: server.c 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************
@@ -434,7 +433,7 @@ accept:
      	{
 		debug_error_header (&packet.source_ipv4,
 		                    &ip6->ip6_src, &ip6->ip6_dst);
-		debug ("ICMPv6 too large (%u bytes)", (unsigned)plen);
+		debug ("ICMPv6 too large (%zu bytes)", plen);
 		return -2;
 	}
 
@@ -458,6 +457,7 @@ int teredo_server_check (char *errmsg, size_t len)
 		return 0;
 	}
 
+	/* FIXME: not thread-safe (OK but ugly) */
 	snprintf (errmsg, len, _("Raw IPv6 socket not working: %s"),
 	          strerror (errno));
 	return -1;
@@ -512,8 +512,7 @@ teredo_server *teredo_server_create (uint32_t ip1, uint32_t ip2)
 
 	if (raw_fd == -1)
 	{
-		syslog (LOG_ERR, _("Raw IPv6 socket not working: %s"),
-		        strerror (errno));
+		syslog (LOG_ERR, _("Raw IPv6 socket not working: %m"));
 		return NULL;
 	}
 
@@ -531,7 +530,7 @@ teredo_server *teredo_server_create (uint32_t ip1, uint32_t ip2)
 	{
 		int fd;
 
-		memset (s, 0, sizeof (s));
+		memset (s, 0, sizeof (*s));
 		s->server_ip = ip1;
 		s->server_ip2 = ip2;
 		s->prefix = htonl (TEREDO_PREFIX);
@@ -539,7 +538,7 @@ teredo_server *teredo_server_create (uint32_t ip1, uint32_t ip2)
 		s->lladdr.teredo.prefix = htonl (0xfe800000);
 		//s->lladdr.teredo.server_ip = 0;
 		s->lladdr.teredo.flags = htons (TEREDO_FLAG_CONE);
-		s->lladdr.teredo.client_port = htons (IPPORT_TEREDO);
+		s->lladdr.teredo.client_port = ~htons (IPPORT_TEREDO);
 		s->lladdr.teredo.client_ip = ~s->server_ip;
 
 		fd = s->fd_primary = teredo_socket (ip1, htons (IPPORT_TEREDO));
@@ -553,8 +552,7 @@ teredo_server *teredo_server_create (uint32_t ip1, uint32_t ip2)
 				char str[INET_ADDRSTRLEN];
 
 				inet_ntop (AF_INET, &ip2, str, sizeof (str));
-				syslog (LOG_ERR, _("Error (%s): %s\n"), str,
-				        strerror (errno));
+				syslog (LOG_ERR, _("Error (%s): %m"), str);
 			}
 
 			teredo_close (s->fd_primary);
@@ -564,8 +562,7 @@ teredo_server *teredo_server_create (uint32_t ip1, uint32_t ip2)
 			char str[INET_ADDRSTRLEN];
 
 			inet_ntop (AF_INET, &ip1, str, sizeof (str));
-			syslog (LOG_ERR, _("Error (%s): %s\n"), str,
-			        strerror (errno));
+			syslog (LOG_ERR, _("Error (%s): %m"), str);
 		}
 
 		free (s);

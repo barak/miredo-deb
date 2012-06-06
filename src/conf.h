@@ -1,6 +1,5 @@
 /*
  * conf.h - Configuration text file parsing declaration
- * $Id: conf.h 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************

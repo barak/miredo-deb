@@ -9,8 +9,6 @@
  * Libteredo is primilarly used by the miredo daemon.
  * 
  * Refer to tunnel.h for the external API documentation.
- *
- * $Id: tunnel.h 2052 2007-10-03 18:53:24Z remi $
  */
 
 /***********************************************************************
@@ -212,16 +210,6 @@ int teredo_set_relay_mode (teredo_tunnel *t);
  */
 int teredo_set_client_mode (teredo_tunnel *restrict t, const char *s1,
                             const char *s2);
-
-/**
- * Does nothing (backward compatibility stub).
- *
- * @param t Teredo tunnel instance, unused
- * @param ignore <b>previously</b>, whether to ignore the cone flag of other
- * nodes; currently unused
- */
-void teredo_set_cone_ignore (teredo_tunnel *t, bool ignore)
-	LIBTEREDO_DEPRECATED;
 
 /**
  * Sets the private data pointer of a Teredo tunnel instance.
