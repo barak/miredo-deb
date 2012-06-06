@@ -2,13 +2,13 @@
 # Copyright © 2004-2006 Rémi Denis-Courmont
 # This file is distributed under the same licence as the miredo package.
 # Rémi Denis-Courmont <rdenis@simphalempin.com>, 2004.
-# $Id: en_GB.po 1781 2006-10-05 16:36:17Z remi $
+# $Id: en_GB.po 1790 2006-10-08 10:02:50Z remi $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: miredo 0.8.1\n"
 "Report-Msgid-Bugs-To: miredo-devel_no_bulk_mail@remlab.net\n"
-"POT-Creation-Date: 2006-10-05 19:09+0300\n"
+"POT-Creation-Date: 2006-10-08 12:45+0300\n"
 "PO-Revision-Date: 2006-03-20 15:39+0100\n"
 "Last-Translator: Rémi Denis-Courmont <rdenis (at) simphalempin (dot) com>\n"
 "Language-Team: N/A\n"
@@ -62,7 +62,7 @@ msgstr ""
 msgid "No reply from Teredo server"
 msgstr ""
 
-#: libteredo/maintain.c:442
+#: libteredo/maintain.c:440
 msgid "Unsupported symmetric NAT detected."
 msgstr ""
 

@@ -1,6 +1,6 @@
 /*
  * maintain.c - Teredo client qualification & maintenance
- * $Id: maintain.c 1779 2006-10-05 16:07:35Z remi $
+ * $Id: maintain.c 1788 2006-10-08 09:44:02Z remi $
  *
  * See "Teredo: Tunneling IPv6 over UDP through NATs"
  * for more information
@@ -430,8 +430,6 @@ static inline void maintenance_thread (teredo_maintenance *m)
 			if ((c_state->addr.teredo.client_port != newaddr.teredo.client_port)
 			 || (c_state->addr.teredo.client_ip != newaddr.teredo.client_ip))
 			{
-				state = PROBE_RESTRICT;
-
 				if (state == PROBE_SYMMETRIC)
 				{
 					// Symmetric NAT failure
@@ -450,6 +448,8 @@ static inline void maintenance_thread (teredo_maintenance *m)
 					m->state.cb (c_state, m->state.opaque);
 					gettime (&deadline);
 				}
+
+				state = PROBE_RESTRICT;
 			}
 			else
 			{
