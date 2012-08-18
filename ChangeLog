@@ -1,3 +1,90 @@
+commit 32bab6aac1c1c547f436c01be7275b1d568a9833
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Sat Mar 3 13:12:57 2012 +0200
+
+    Update M4 files list
+
+commit f06c51d4817128579acc366c58772a2d93ffb2fc
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Fri Mar 2 19:22:55 2012 +0200
+
+    Sync PO files
+
+commit 6d7a951018636a17cebaf0f92d4693d2af7bd91d
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Fri Mar 2 19:33:05 2012 +0200
+
+    Fix make distcheck
+
+commit 4e60912954a5183b9573afb0e9b348558f53165d
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Fri Mar 2 19:28:13 2012 +0200
+
+    Install systemd conf to libdir rather than /lib
+    
+    This avoids breaking 'make distcheck'. Upstream systemd advocates
+    merging /usr/lib and /lib anyway. Other distributions will need to move
+    the file manually.
+
+commit b35bc56889ee4550e034badedbbef3c0b393657f
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Fri Mar 2 19:32:12 2012 +0200
+
+    Remove example configuration at uninstall if applicable
+
+commit 4dcca007bd7bd49dd6e54a5eeada8aa2051dd31b
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Fri Mar 2 19:20:50 2012 +0200
+
+    News for 1.2.5
+
+commit 06a57f3c804b78048d13d53dc06a78377f88454b
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Fri Mar 2 19:17:22 2012 +0200
+
+    Use pkglibexec instead of pkglib for PROGRAMS
+
+commit ec07a1a34ed77fce836bced83ac226c45f1ddf8d
+Author: Munechika Sumikawa <sumikawa@sumikawa.jp>
+Date:   Wed Nov 16 15:46:59 2011 +0900
+
+    portability fix
+    
+    Signed-off-by: Rémi Denis-Courmont <remi@remlab.net>
+
+commit d59ddd3ab3fd5955987a54cacdc1293165bbd766
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Wed Aug 31 23:37:17 2011 +0300
+
+    Load if_tun with kldload() on FreeBSD kernel
+
+commit 38e7be350e629bf2f6408316022b634e5e42b842
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Wed Aug 31 23:37:10 2011 +0300
+
+    Check for FreeBSD kldload
+
+commit 9e114bce8519b5956fa5c10a7139ced4825c4d73
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Wed Aug 31 23:28:42 2011 +0300
+
+    Add systemd service file
+    
+    Based on earlier work from
+    Michael Stapelberg <michael+db20090501@stapelberg.de>
+
+commit f08dc10a299f6d347cd362e4c3ccd39f9af4f9c3
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Wed Aug 31 23:22:14 2011 +0300
+
+    Bump version
+
+commit 64583348aa81e7692622ef93241102e2fa212893
+Author: Rémi Denis-Courmont <remi@remlab.net>
+Date:   Wed Jul 20 18:26:24 2011 +0300
+
+    Check for errors while setting the group IDs
+
 commit 8ebf8114503b2c57bfab8361db735ebf013c4295
 Author: Rémi Denis-Courmont <remi@remlab.net>
 Date:   Tue Jul 5 21:14:39 2011 +0300

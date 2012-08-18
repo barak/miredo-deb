@@ -67,6 +67,9 @@
 /* Define to 1 if you have the <Judy.h> header file. */
 #undef HAVE_JUDY_H
 
+/* Define to 1 if you have the `kldload' function. */
+#undef HAVE_KLDLOAD
+
 /* Define to 1 if you have the `cap' library (-lcap). */
 #undef HAVE_LIBCAP
 
