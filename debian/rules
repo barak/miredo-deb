@@ -1,11 +1,8 @@
 #!/usr/bin/make -f
 
-include /usr/share/cdbs/1/rules/utils.mk
-include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/class/autotools.mk
+%:
+	dh $@ --parallel --with autoreconf
 
-DEB_AC_AUX_DIR = $(DEB_SRCDIR)/admin
-DEB_CONFIGURE_SCRIPT_ENV += LDFLAGS="-Wl,-z,defs -Wl,--as-needed"
 DEB_CONFIGURE_EXTRA_FLAGS =	--enable-static --disable-shared \
 				--disable-binreloc --enable-miredo-user \
 				--disable-sample-conf \
@@ -14,48 +11,17 @@ ifeq (,$(filter noopt,$(DEB_BUILD_OPTIONS)))
 DEB_CONFIGURE_EXTRA_FLAGS +=	--disable-assert
 endif
 
-# Uho, problem on hppa and m68k pbuilder
-#ifeq (,$(filter $(DEB_HOST_ARCH_CPU),hppa m68k))
-# testsuite is native, would fail if cross-compiling
-#ifeq ($(DEB_BUILD_GNU_TYPE),$(DEB_HOST_GNU_TYPE))
-#DEB_MAKE_CHECK_TARGET = check
-#endif
-#endif
+export DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
-DEB_UPDATE_RCD_PARAMS_miredo = "defaults"
+override_dh_auto_configure:
+	dh_auto_configure -- $(DEB_CONFIGURE_EXTRA_FLAGS)
 
-pre-build:: stamp-autoreconf
-clean::
-	rm -f stamp-autoreconf
+override_dh_auto_install:
+	dh_auto_install
+	find debian/tmp/ -name '*isatap*' -exec rm -f --verbose -- {} ';'
+	-rm --verbose -Rf debian/tmp/usr/include
+	-rm --verbose -Rf debian/tmp/usr/lib/${DEB_HOST_MULTIARCH}/*.*a
 
-stamp-autoreconf:
-	autoreconf -fi
-	touch $@
-
-common-install-arch::
-	find debian/tmp/ -name '*isatap*' -exec rm -f -- {} ';'
-
-install/miredo::
-	-rm -Rf debian/tmp/usr/include
-	-rm -Rf debian/tmp/usr/lib/*.*a
-
-install/miredo-server::
-	mkdir -p debian/tmp/usr/share/doc/miredo-server/examples/
-	mv debian/tmp/usr/share/doc/miredo/examples/miredo-server* \
-		debian/tmp/usr/share/doc/miredo-server/examples/
-
-binary-post-install/miredo::
-	cp -f debian/miredo.conf debian/miredo/etc
-	install -m 0755 debian/miredo.ifup \
-		debian/miredo/etc/network/if-up.d/miredo
-
-binary-post-install/miredo-server::
-	cp -f debian/miredo-server.conf debian/miredo-server/etc/
-
-# Only used in development build:
-binary-post-install/miredo-dbg::
-	rm -Rf debian/miredo-dbg/usr/share/doc/miredo-dbg
-	cd debian/miredo-dbg/usr/share/doc && ln -sf miredo miredo-dbg
-
-common-binary-post-install-arch:: list-missing
-
+override_dh_install:
+	dh_install
+	-rm --verbose -Rf debian/miredo-dbg/usr/share/doc/miredo-dbg
