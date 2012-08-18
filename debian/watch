@@ -5,4 +5,4 @@ version=3
 
 # <Webpage URL> <string match>
 http://www.remlab.net/files/miredo/archive/miredo-(.*).tar.bz2
-
+http://www.remlab.net/files/miredo/archive/miredo-(.*).tar.xz
