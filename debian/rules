@@ -18,7 +18,6 @@ override_dh_auto_configure:
 
 override_dh_auto_install:
 	dh_auto_install
-	find debian/tmp/ -name '*isatap*' -exec rm -f --verbose -- {} ';'
 	-rm --verbose -Rf debian/tmp/usr/include
 	-rm --verbose -Rf debian/tmp/usr/lib/${DEB_HOST_MULTIARCH}/*.*a
 
