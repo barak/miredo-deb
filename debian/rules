@@ -21,6 +21,6 @@ override_dh_auto_install:
 	-rm --verbose -Rf debian/tmp/usr/include
 	-rm --verbose -Rf debian/tmp/usr/lib/${DEB_HOST_MULTIARCH}/*.*a
 
-override_dh_install:
-	dh_install
+override_dh_link:
 	-rm --verbose -Rf debian/miredo-dbg/usr/share/doc/miredo-dbg
+	dh_link
